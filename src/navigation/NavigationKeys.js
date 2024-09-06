@@ -1,5 +1,6 @@
 export const TabNav = {
   MainHome: 'MainHome',
+  Feed: 'Feed',
   ExploreTab: 'ExploreTab',
   FavoritesTab: 'FavoritesTab',
   TicketsTab: 'TicketsTab',

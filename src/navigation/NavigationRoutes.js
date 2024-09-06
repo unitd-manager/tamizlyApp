@@ -1,6 +1,7 @@
 // Tab Routes
 import MainHome from '../containers/tabbar/main/HomeTab';
 import TaskTab from '../containers/tabbar/taskList/TaskTab';
+import Feed from '../containers/tabbar/main/Feed';
 
 // // Screens Route
 import Splash from '../containers/auth/Splash';
@@ -18,6 +19,7 @@ import HomeListCard from '../containers/tabbar/HomeListCard';
 
 export const TabRoute = {
   MainHome,
+  Feed,
   TaskTab,
   HomeListCard,
   Connect,
