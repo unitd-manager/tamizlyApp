@@ -50,15 +50,15 @@ export default function TabBarNavigation() {
       initialRouteName={TabNav.MainHome}>
       
       <Tab.Screen
-        name={TabNav.MainHome}
-        component={TabRoute.MainHome}
+        name={TabNav.Feed}
+        component={TabRoute.Feed}
         options={({navigation}) => ({
           tabBarIcon: ({focused}) => (
             <TabText
               IconType={focused ? <HomeActiveWh /> : <HomeUnActive />}
               focused={focused}
               label={strings.home}
-              onPress={() => navigation.navigate(TabNav.MainHome)}
+              onPress={() => navigation.navigate(TabNav.Feed)}
             />
           ),
         })}
