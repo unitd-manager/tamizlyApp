@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
 import HomeHeader from '../../../components/homeComponent/HomeHeader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../../api/api';
+import {moderateScale} from '../../../common/constants';
 
 /*const posts = [
   {
@@ -29,28 +30,60 @@ import api from '../../../api/api';
   },
 ];*/
 
-const Post = ({ name, time, content, images }) => (
-  <View style={styles.postContainer}>
-    <Text style={styles.name}>{name}</Text>
-    <Text style={styles.time}>{time}</Text>
-    <Text style={styles.content}>{content}</Text>
-    <FlatList
-      horizontal
-      data={images}
-      renderItem={({ item }) => (
-        <Image source={{
-            uri: `http://tamizhy.smartprosoft.com/media/normal/${item}`,
-          }} style={styles.image} />
-      )}
-      keyExtractor={(item) => item.feed_id}
-    />
-  </View>
-);
+const Post = ({ feedId, name, time, content }) => {
+    // Log images to console to check if they are being passed correctly
+    const [images, setImages] = useState([]);
+    useEffect(() => {
+        api.post('feedlistImages.php',{feed_id :feedId})  // Replace with the correct endpoint for fetching categories
+            .then(response => {
+                setImages(response.data.data);
+            })
+            .catch(error => {
+                console.error('There was an error fetching the categories!', error);
+            });
+    }, []);
+
+    console.log('images array:', images);
+    
+    return (
+      <View style={styles.postContainer}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Image
+            source={{uri: 'http://tamizhy.smartprosoft.com/media/normal/434_images.jpg'}}
+            style={styles.userImageStyle}
+            />
+            <View>
+                <Text style={styles.name}>{name}</Text>
+                <Text style={styles.time}>{time}</Text>
+            </View>
+        </View>
+        <Text style={styles.content}>{content}</Text>
+        <FlatList
+          data={images}
+          renderItem={({ item }) => {
+            console.log('image item', item); // Log each image item
+            return (
+              <Image
+                source={{
+                  uri: `http://tamizhy.smartprosoft.com/media/normal/${item.file_name}`,
+                }}
+                style={styles.image}
+              />
+            );
+          }}
+          numColumns={2}
+          keyExtractor={(item, index) => index.toString()} // Using index if item doesn't have a unique key
+        />
+      </View>
+    );
+  };
+  
+  
 
 const App = () => {
   const [user, setUser] = useState(null);
-  const [posts, setPosts] = useState(null);
-
+  const [posts, setPosts] = useState([]);
+console.log('print',posts);
   const getUser = async () => {
     try {
       let userData = await AsyncStorage.getItem('USER');
@@ -84,10 +117,11 @@ useEffect(() => {
         data={posts}
         renderItem={({ item }) => (
           <Post
+            feedId={item.feed_id}
             name={item.name}
             time='12 min ago'
             content={item.short_description}
-            images={item.file_name}
+            images={Array.isArray(item.file_name) ? item.file_name : [item.file_name]}
           />
         )}
         keyExtractor={(item) => item.id}
@@ -103,14 +137,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   postContainer: {
-    marginBottom: 24,
-    backgroundColor: '#f9f9f9',
+    marginBottom: 20,
+    backgroundColor: '#ffffff',
     padding: 16,
-    borderRadius: 8,
+    borderBottomColor: '#f3f4f6',
+    borderBottomWidth: 2,
+    paddingBottom:30
   },
   name: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: 'black',
   },
   time: {
     fontSize: 12,
@@ -122,10 +159,18 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   image: {
-    width: 100,
-    height: 100,
-    marginRight: 8,
+    width: 170,
+    height: 170,
+    marginRight: 10,
+    marginBottom:5,
     borderRadius: 8,
+    marginTop:5,
+  },
+  userImageStyle: {
+    width: moderateScale(40),
+    height: moderateScale(40),
+    borderRadius: moderateScale(25),
+    marginRight:15,
   },
 });
 

@@ -339,13 +339,15 @@ const localstyles = StyleSheet.create({
     color: '#FFFFFF',
     fontFamily: 'Courier New',
     fontSize:20,
+    marginLeft:-15,
   },
   getStartedText: {
     color: '#FFF',
-    fontWeight: 'bold',
-    marginLeft: 5,
-    backgroundColor: '#ADD8E6',
+    marginLeft: 10,
+    backgroundColor: '#85c1f9',
     padding:10,
+    borderRadius:8,
+    fontSize:14,
   },
   container: {
     flex: 1,
@@ -382,11 +384,11 @@ const localstyles = StyleSheet.create({
   marginBottom: 20,  // Allows space for the shadow at the bottom
 },
 elevation:{
-  backgroundColor: 'skyblue',  // Use a darker color for a darker shadow
+  backgroundColor: '#93c5f3',  // Use a darker color for a darker shadow
   borderRadius: 60,  // Increase the blur radius to spread the shadow out more
   elevation: 8, 
   Opacity: 0.9,    // Increase the opacity to make the shadow darker
-  paddingTop: 15,
+  paddingTop: 20,
 }
 ,  
 arrowIcon: {

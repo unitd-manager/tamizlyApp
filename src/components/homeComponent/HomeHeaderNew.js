@@ -97,7 +97,7 @@ function HomeHeader({user}) {
 };
 
   return (
-    <View style={{backgroundColor:'#ffffff'}}>
+    <View style={{backgroundColor:'#004AAD'}}>
        <View style={localStyles.headerContainer}>            
        <TouchableOpacity
           onPress={onPressProfilePic}
@@ -119,8 +119,11 @@ function HomeHeader({user}) {
         </TouchableOpacity>
       
       <View style={localStyles.textContainer}>
-        <EText type="B20" numberOfLines={1} color='#1882e4'>
-          Hi {user && user.first_name}
+        <EText type="m16" numberOfLines={1} color={colors.white}>
+          Welcome to Smartcon
+        </EText>
+        <EText type="B20" numberOfLines={1} color={colors.white}>
+          {user && user.first_name}
         </EText>
         
       </View>
@@ -158,9 +161,9 @@ const localStyles = StyleSheet.create({
   headerContainer: {
     ...styles.rowSpaceBetween,
     ...styles.flex,
+    ...styles.mt15,
    flex:0,
    marginHorizontal:20,
-   marginTop:-20,
   },
   userImageStyle: {
     width: moderateScale(50),
