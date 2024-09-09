@@ -65,7 +65,7 @@ export default function TabBarNavigation() {
       />
 
       <Tab.Screen
-        name={TabNav.HomeListCard}
+        name={TabNav.MainHome}
         component={TabRoute.MainHome}  // Keep this component as MainHome to stay on the same page
         options={({navigation}) => ({
           tabBarIcon: ({focused}) => (
@@ -95,15 +95,15 @@ export default function TabBarNavigation() {
       />
 
       <Tab.Screen
-        name={TabNav.TaskTab}
-        component={TabRoute.MainHome}  // Keep this component as MainHome to stay on the same page
+        name={TabNav.Profile}
+        component={TabRoute.Profile}  // Keep this component as MainHome to stay on the same page
         options={({navigation}) => ({
           tabBarIcon: ({focused}) => (
             <TabText
               IconType={focused ? <TicketActiveWh /> : <TicketUnActive />}
               focused={focused}
               label={strings.TaskList}
-              onPress={() => navigation.navigate(TabNav.MainHome)}  // Always navigate to MainHome
+              onPress={() => navigation.navigate(TabNav.Profile)}  // Always navigate to MainHome
             />
           ),
         })}

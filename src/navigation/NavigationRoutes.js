@@ -2,7 +2,7 @@
 import MainHome from '../containers/tabbar/main/HomeTab';
 import TaskTab from '../containers/tabbar/taskList/TaskTab';
 import Feed from '../containers/tabbar/main/Feed';
-
+import Profile from '../containers/tabbar/main/ProfileTab';
 // // Screens Route
 import Splash from '../containers/auth/Splash';
 import WelcomeScreen from '../containers/WelcomeScreen';
@@ -23,6 +23,7 @@ export const TabRoute = {
   TaskTab,
   HomeListCard,
   Connect,
+  Profile,
 };
 
 export const StackRoute = {

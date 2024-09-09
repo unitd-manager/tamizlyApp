@@ -55,7 +55,6 @@ export default function HomeTab({navigation}) {
           });
   }, []);
   useEffect(() => {
-      console.log("Categories Data Updated:", categoriesData);
   }, [categoriesData]);
   
 
