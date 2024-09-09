@@ -179,12 +179,12 @@ const Login = () => {
         <View style={localstyles.mainContainer}>
         <View style={[{flex:2}]}>
             <AppFavicon
-                width={moderateScale(100)}
-                height={moderateScale(100)}
+                width={moderateScale(90)}
+                height={moderateScale(90)}
                 style={[localstyles.logoBg,styles.mv20,styles.selfCenter]}
             />
           </View>
-                    <View style={localstyles.elevation}>
+                    <View style={localstyles.elevation}></View>
 
           <View style={localstyles.formContainer}>
 
@@ -247,7 +247,6 @@ const Login = () => {
                   {strings.forgotPass}
                 </EText>
               </TouchableOpacity>
-          </View>
           </View>
         </View>
         </ImageBackground>
@@ -315,19 +314,20 @@ const localstyles = StyleSheet.create({
   logoBg:{
     backgroundColor:"#fff",
     borderRadius:20,
+    marginBottom:50,
   },
   loginBg:{
     backgroundColor:"#fff",
     ...styles.ph20,
     borderTopRightRadius:100,
-    paddingTop:50
+    paddingTop:10
   },
   backgroundImage: {
     flex: 1,
     justifyContent: 'center',
   },
   header: {
-    padding: 70,
+    padding: 60,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -389,6 +389,10 @@ elevation:{
   elevation: 8, 
   Opacity: 0.9,    // Increase the opacity to make the shadow darker
   paddingTop: 20,
+  height:50,
+  marginBottom:-35,
+  marginLeft:15,
+  marginRight:15,
 }
 ,  
 arrowIcon: {
@@ -402,11 +406,15 @@ arrowIcon: {
     borderColor: '#ddd',
     borderWidth: 1,
     paddingLeft: 15,
-    backgroundColor: '#f9f9f9',
-    width: '100%',
+    borderColor: '#D3D3D3',
+    width: '88%',
+    marginLeft:20,
+    marginRight:20,
+    paddingHorizontal: 15,
   },
   inputBox: {
     color: '#333',
+    borderBottomWidth:0,
   },
   signInButton: {
     height: 50,
@@ -415,7 +423,7 @@ arrowIcon: {
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 20,
-    width: '100%',
+    width: '88%',
   },
   forgotPasswordText: {
     color: '#007BFF',

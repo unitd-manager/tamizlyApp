@@ -246,12 +246,12 @@ const SignUp = () => {
 
                     <View style={[styles.logoBg11]}>
             <AppFavicon
-                width={moderateScale(70)}
-                height={moderateScale(70)}
+                width={moderateScale(90)}
+                height={moderateScale(90)}
                 style={[styles.logoBg]}
             />
           </View>
-                    <View style={styles.elevation}>
+                    <View style={styles.elevation}></View>
 
                     <View style={styles.formContainer}>
                     <EText type={'h24'} style={styles.welcomeText}>
@@ -350,7 +350,6 @@ const SignUp = () => {
                                 bgColor={isSubmitDisabled ? colors.primary6 : colors.primary6}
                                 />
                     </View>
-                    </View>
                 </View>
                 </ImageBackground>
             </KeyBoardAvoidWrapper>
@@ -380,8 +379,7 @@ const styles = StyleSheet.create({
       logoBg11:{
         flex: 2,
         justifyContent: 'center',
-        paddingHorizontal: 150,
-
+        paddingHorizontal: 160,
       },
     mainContainer: {
         flex: 1,
@@ -391,11 +389,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         paddingHorizontal: 90,
-        marginTop: 10,
+        marginTop: 20,
     },
     arrowIcon: {
         marginRight: 25,
         color: '#FFF',
+        marginTop:20,
       },
     welcomeText: {
         textAlign: 'center',
@@ -420,14 +419,18 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontFamily: 'Courier New',
         fontSize:20,
+        marginTop:15,
       },
       getStartedText: {
         color: '#FFF',
-        fontWeight: 'bold',
-        marginLeft: 5,
-        backgroundColor: '#ADD8E6',
+        marginLeft: 10,
+        backgroundColor: '#85c1f9',
         padding:10,
-      },
+        borderRadius:8,
+        fontSize:14,
+        marginTop:10,
+        fontWeight:'bold',
+          },
     signInText: {
         fontSize: 16,
         color: '#1E90FF',
@@ -445,34 +448,45 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 10,
         width: '100%',
-paddingBottom:50,
+        paddingBottom:50,
         backgroundColor: '#FFF',
+        borderRadius: 20,
        
     },
     elevation:{
-        backgroundColor: 'skyblue',  // Use a darker color for a darker shadow
+        backgroundColor: '#93c5f3',  // Use a darker color for a darker shadow
         borderRadius: 60,  // Increase the blur radius to spread the shadow out more
         elevation: 8, 
         Opacity: 0.9,    // Increase the opacity to make the shadow darker
         paddingTop: 15,
-      }, 
+        height:50,
+        marginBottom:-35,
+        marginLeft:15,
+        marginRight:15,
+    }, 
     inputContainerStyle: {
         height: 50,
-        borderRadius: 25,
+        borderRadius: 12,
         borderWidth: 1,
         borderColor: '#D3D3D3',
         marginVertical: 10,
         paddingHorizontal: 15,
+        marginTop:0,
+        marginLeft:20,
+        marginRight:20,
     },
     inputBoxStyle: {
-        color: '#222',
+        color: 'red',
+        borderBottomWidth:0,
     },
     signBtnContainer: {
         alignItems: 'center',
         justifyContent: 'center',
         height: 50,
-        borderRadius: 25,
+        borderRadius: 12,
         marginVertical: 10,
         backgroundColor: '#1E90FF',
+        marginLeft:20,
+        marginRight:20,
     },
 });
