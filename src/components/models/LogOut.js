@@ -26,7 +26,7 @@ const LogOut = props => {
       await AsyncStorage.clear()
       signOut()
       await removeUserDetail(ACCESS_TOKEN);
-     // SheetRef?.current?.hide();
+      SheetRef?.current?.hide();
       // setTimeout(() => {
       //   navigation.reset({
       //     index: 0,

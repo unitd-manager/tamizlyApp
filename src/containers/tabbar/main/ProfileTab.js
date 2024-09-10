@@ -61,8 +61,8 @@ const ProfileScreen = () => {
 
           style={localStyles.profileImage} 
         />
-        <Text style={localStyles.name}>  {user && user.first_name ? `${user.first_name}` : 'Loading...'}        </Text>
-        <Text style={localStyles.email}>  {user && user.email ? `${user.email}` : 'Loading...'}        </Text>
+        <Text style={localStyles.name}>{user && user.first_name ? `Welcome ${user.first_name}` : 'Loading...'}</Text>
+        <Text style={localStyles.email}>{user && user.email ? `${user.email}` : 'Loading...'}</Text>
         <TouchableOpacity style={localStyles.editButton}>
           <Text style={localStyles.editText}>Edit Profile</Text>
         </TouchableOpacity>
