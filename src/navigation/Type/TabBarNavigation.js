@@ -26,7 +26,7 @@ export default function TabBarNavigation() {
       <View style={localStyle.tabViewContainer}>
         {IconType}
         <EText
-          style={[styles.mt5, {color: colors.white}]}
+          style={[styles.mt5, {color:'#1983e5', fontWeight: 'bold',}]}
           numberOfLines={1}
           color={focused ? colors.textColor : colors.grayScale5}
           type={'R14'}>
@@ -43,11 +43,18 @@ export default function TabBarNavigation() {
         headerShown: false,
         tabBarStyle: [
           localStyle.tabBarStyle,
-          {backgroundColor: colors.backgroundColor3},
+          {backgroundColor: '#f5f5f5',     shadowColor: 'red',
+            shadowOffset: { width: 5, height: 125 },
+            shadowOpacity: 1,
+            shadowRadius: 1,  
+            elevation: 5,
+            height:70,
+
+        },
         ],
         tabBarShowLabel: false,
       }}
-      initialRouteName={TabNav.MainHome}>
+      initialRouteName={TabNav.Feed}>
       
       <Tab.Screen
         name={TabNav.Feed}

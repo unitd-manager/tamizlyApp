@@ -16,6 +16,8 @@ import {EditDark, EditLight} from '../../assets/svgs';
 
 function HomeHeader({user}) {
 
+  const name = user?.[0]?.first_name || null;
+  console.log('contactId',name)
   const navigation = useNavigation();
   const colors = useSelector(state => state.theme.theme);
   const [selectImage, setSelectImage] = useState('');
@@ -119,8 +121,8 @@ function HomeHeader({user}) {
         </TouchableOpacity>
       
       <View style={localStyles.textContainer}>
-        <EText type="B20" numberOfLines={1} color='#1882e4'>
-          Hi {user && user.first_name}
+        <EText type="B16" numberOfLines={1} color='#1882e4'>
+          Hi {name}
         </EText>
         
       </View>
