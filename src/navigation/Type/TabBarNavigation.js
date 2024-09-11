@@ -80,7 +80,7 @@ export default function TabBarNavigation() {
               IconType={focused ? <TicketActiveWh /> : <TicketUnActive />}
               focused={focused}
               label={strings.Directory}
-              onPress={() => navigation.navigate(TabNav.MainHome)}  // Always navigate to MainHome
+              onPress={() => navigation.navigate(TabNav.Feed)}  // Always navigate to MainHome
             />
           ),
         })}
@@ -95,7 +95,7 @@ export default function TabBarNavigation() {
               IconType={focused ? <TicketActiveWh /> : <TicketUnActive />}
               focused={focused}
               label={strings.Classified}
-              onPress={() => navigation.navigate(TabNav.MainHome)}  // Always navigate to MainHome
+              onPress={() => navigation.navigate(TabNav.Feed)}  // Always navigate to MainHome
             />
           ),
         })}

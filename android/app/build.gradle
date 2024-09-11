@@ -93,9 +93,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.ConstructPro"
+    namespace "com.Tamizhy"
     defaultConfig {
-        applicationId "com.ConstructPro"
+        applicationId "com.Tamizhy"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

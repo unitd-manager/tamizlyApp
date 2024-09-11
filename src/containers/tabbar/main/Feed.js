@@ -49,7 +49,7 @@ const Post = ({ feedId, name, time, content }) => {
           <Text style={styles.time}>{time}</Text>
         </View>
       </View>
-      <HTMLView style={styles.content} value={content} />
+      <HTMLView style={[styles.content, { color: 'blue' }]} value={content} />
 
       <FlatList
         data={images}
@@ -179,6 +179,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#f3f4f6',
     borderBottomWidth: 2,
     paddingBottom: 30,
+    marginLeft:-8,
   },
   name: {
     fontSize: 16,
@@ -192,7 +193,7 @@ const styles = StyleSheet.create({
   content: {
     marginVertical: 12,
     fontSize: 14,
-    color: '#333',
+    color: 'red',
     marginBottom:-50,
   },
   image: {
