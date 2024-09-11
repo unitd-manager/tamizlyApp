@@ -111,7 +111,6 @@ export default function HomeTab({navigation}) {
           borderBottomLeftRadius: 50,
           ...styles.pb50,
         }}>
-        <HomeHeader user={user} />
 
         <SearchComponent
           search={searchQuery}
@@ -139,21 +138,41 @@ export default function HomeTab({navigation}) {
                 }
             />
 
-            <FlatList
-                data={selectedCategoryData}
-                keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
-                renderItem={({ item }) => (
-                    <View style={localStyles.serviceCard}>
-                        <Image source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${item.file_name}` }}  style={localStyles.serviceIcon} />
+<FlatList
+    data={selectedCategoryData}
+    keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
+    renderItem={({ item }) => (
+      <>
+      <View style={localStyles.serviceCard}>
+        <View style={localStyles.leftSection}>
+          <Image 
+            source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${item.file_name}` }} 
+            style={localStyles.serviceIcon} 
+          />
+          <Text style={localStyles.name}>{item.name}</Text>
+          <Text style={localStyles.mobile}>{item.mobile}</Text>
+          <Text style={localStyles.location}>{item.location}</Text>
+          <Text style={localStyles.area}>{item.area}</Text>
+        </View>
+        
+        <View style={localStyles.rightSection}>
+          <Text style={localStyles.name}>{item.name}</Text>
+          <Text style={localStyles.description}>{item.description || "Write description here"}</Text>
+          <Text style={localStyles.serviceTitle}>{item.category_title}</Text>
 
-                        <View>
-                            <Text style={localStyles.serviceTitle}>{item.category_title}</Text>
-                            <Text>{item.description}</Text>
-                            <Text>{item.mobile}</Text>
-                        </View>
-                    </View>
-                )}
-            />
+          {/* New row for nationality and languages */}
+         
+        </View>
+      
+      </View>
+        <View style={localStyles.bottomInfo}>
+        <Text style={localStyles.nationality}>{item.nationality || "Nationality not specified"}</Text>
+        <Text style={localStyles.languages}>{item.languages || "Languages not specified"}</Text>
+      </View>
+        </>
+    )}
+/>
+
       </View>
 
     
@@ -194,27 +213,75 @@ viewAllText: {
     color: 'blue',
 },
 serviceCard: {
-    flexDirection: 'row',
-    padding: 5,
-    backgroundColor: '#fff',
-    marginTop: 5,
-
-    borderRadius: 10,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 2,
+  flexDirection: 'row',  // Main container with two columns: one for the logo, the other for the text
+  padding: 20,
+  backgroundColor: '#fff',
+  marginTop: 10,
+  borderRadius: 10,
+  marginBottom: 10,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 4,
+  elevation: 2,
+},
+leftSection: {
+  flex: 0.5,  // Left section for the logo
+},
+rightSection: {
+  flex: 0.5,  // Right section for the text content
+  flexDirection: 'column',  // Stack the text elements vertically
+  justifyContent: 'center',
+  paddingLeft: 10,
+  paddingBottom: 20,
+},
+name: {
+  fontSize: 16,
+  color: 'skyblue',
+  fontWeight: 'bold',
+},
+description: {
+  fontSize: 16,
+  color: '#666',
+  fontWeight: 'bold',
+  marginBottom: 5,
+},
+mobile: {
+  fontSize: 14,
+  color: '#333',
+},
+location: {
+  fontSize: 14,
+  color: '#333',
+},
+area: {
+  fontSize: 14,
+  color: '#333',
 },
 serviceIcon: {
-    width: 50,
-    height: 50,
-    marginRight: 15,
+  width: 90,
+  height: 90,
 },
 serviceTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
+  fontSize: 19,
+  fontWeight: 'bold',
+},
 
+// New style for nationality and languages
+bottomInfo: {
+  flexDirection: 'row',  // Align nationality and languages in a row
+  justifyContent: 'space-between',  // Space them apart
+  borderTopWidth: 1,  // Add top border
+  borderTopColor: '#ccc',  // Light grey border color
+  marginTop: 10,  // Add margin from the top
+  paddingTop: 10,  // Add padding at the top to give space between text and border
+},
+nationality: {
+  fontSize: 14,
+  color: '#333',
+},
+languages: {
+  fontSize: 14,
+  color: '#333',
 },
 });
