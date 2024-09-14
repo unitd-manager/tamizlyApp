@@ -3,7 +3,7 @@ import {moderateScale} from '../common/constants';
 // App Font-Family:
 const fontWeights = {
   Regular: {
-    fontFamily: 'Urbanist-Regular',
+    fontFamily: 'Gilroy-Black',
   },
   Medium: {
     fontFamily: 'Urbanist-Medium',

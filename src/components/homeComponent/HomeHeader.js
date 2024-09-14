@@ -101,7 +101,7 @@ function HomeHeader({user}) {
   return (
     <View style={{backgroundColor:'#ffffff'}}>
        <View style={localStyles.headerContainer}>            
-       <TouchableOpacity
+       {/* <TouchableOpacity
           onPress={onPressProfilePic}
           style={[styles.selfCenter, styles.mb20]}>
           {!!selectImage?.path ? (
@@ -118,7 +118,7 @@ function HomeHeader({user}) {
           <View style={localStyles.editIcon}>
             {colors.dark ? <EditDark /> : <EditLight />}
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       
       <View style={localStyles.textContainer}>
         <EText type="B16" numberOfLines={1} color='#1882e4'>
@@ -127,7 +127,7 @@ function HomeHeader({user}) {
         
       </View>
 
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={onPressLogOutBtn}
         style={[
           localStyles.notificationContainer,
@@ -146,7 +146,7 @@ function HomeHeader({user}) {
         onPressCamera={onPressCamera}
         onPressGallery={onPressGallery}
         SheetRef={ProfilePictureSheetRef}
-      />
+      /> */}
 
     </View>
     </View>
@@ -172,6 +172,8 @@ const localStyles = StyleSheet.create({
   textContainer: {
     ...styles.mh10,
     ...styles.flex,
+    marginLeft:-5,
+    marginBottom:20,
   },
   notificationContainer: {
     ...styles.center,

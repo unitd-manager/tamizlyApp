@@ -42,13 +42,10 @@ const LogOut = props => {
     try {
       await AsyncStorage.clear();
       await removeUserDetail(ACCESS_TOKEN);
-      SheetRef?.current?.hide();
+      //SheetRef?.current?.hide();
       
       // Reset navigation stack after sign out
-      navigation.reset({
-        index: 0,
-        routes: [{ name: StackNav.Auth }],
-      });
+      navigation.navigate(StackNav.Login);
   
       signOut();
       return true;

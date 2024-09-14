@@ -352,7 +352,6 @@ const localstyles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-
   },
   welcomeText: {
     textAlign: 'center',
@@ -360,7 +359,7 @@ const localstyles = StyleSheet.create({
     color: '#6c757d',
     fontWeight:'bold',
     fontSize:30,
-   
+    fontFamily: 'Gilroy-Regular',   
   },
   enterDetailsText: {
     textAlign: 'center',

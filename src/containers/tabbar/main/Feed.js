@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, FlatList, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, Image, StyleSheet, FlatList, TouchableOpacity, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import HomeHeader from '../../../components/homeComponent/HomeHeader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../../api/api';
@@ -7,13 +7,16 @@ import { moderateScale } from '../../../common/constants';
 import ImageViewing from 'react-native-image-viewing';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Assuming you're using vector icons
 import HTMLView from 'react-native-htmlview';
+import flex from '../../../themes/flex';
 
-const Post = ({ feedId, name, time, content }) => {
-  const [images, setImages] = useState([]);
+const { width: screenWidth } = Dimensions.get('window');  // Get screen width
+const Post = ({ feedId, name, time, content, images }) => {
+  console.log('images', images);
+//  const [images, setImages] = useState([]);
   const [visible, setIsVisible] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0); // To track the selected image index
-
-  useEffect(() => {
+  const [imageHeights, setImageHeights] = useState({});
+  /*useEffect(() => {
     api.post('feedlistImages.php', { feed_id: feedId })  // Replace with the correct endpoint for fetching images
       .then(response => {
         setImages(response.data.data); // Assuming response.data.data contains the image array
@@ -21,7 +24,7 @@ const Post = ({ feedId, name, time, content }) => {
       .catch(error => {
         console.error('There was an error fetching the images!', error);
       });
-  }, []);
+  }, []);*/
 
   // Function to navigate to the previous image
   const handlePrevious = () => {
@@ -35,6 +38,40 @@ const Post = ({ feedId, name, time, content }) => {
     if (selectedImageIndex < images.length - 1) {
       setSelectedImageIndex(selectedImageIndex + 1);
     }
+  };
+
+  const handleImageLoad = (uri, width, height) => {
+    const aspectRatio = height / width;
+    const imageWidth = images.length === 1 ? screenWidth : screenWidth * 0.42;
+    setImageHeights((prevHeights) => ({
+      ...prevHeights,
+      [uri]: imageWidth * aspectRatio, // Calculate height based on aspect ratio
+    }));
+  };
+
+  const renderImage = ({ item, index }) => {
+    const isSingleImage = images.length === 1; // Check if there is only one image
+    const imageWidth = isSingleImage ? screenWidth * 0.87 : screenWidth * 0.42; // 100% for a single image, 45% for multiple
+    const imageHeight = imageHeights[item] || (isSingleImage ? screenWidth * 0.6 : screenWidth * 0.5); // Adjust height based on aspect ratio or default
+
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          setIsVisible(true);
+          setSelectedImageIndex(index); // Set the selected image index
+        }}
+      >
+        <Image
+          source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${item}` }}
+          style={[styles.image, { width: imageWidth, height: imageHeight }]} // Apply dynamic width and height
+          resizeMode="contain" // Ensures aspect ratio is maintained
+          onLoad={(e) => {
+            const { width, height } = e.nativeEvent.source;
+            handleImageLoad(item, width, height); // Handle image load to calculate aspect ratio
+          }}
+        />
+      </TouchableOpacity>
+    );
   };
 
   return (
@@ -53,53 +90,34 @@ const Post = ({ feedId, name, time, content }) => {
 
       <FlatList
         data={images}
-        renderItem={({ item, index }) => {
-          return (
-            <>
-              <TouchableOpacity onPress={() => {
-                setIsVisible(true);
-                setSelectedImageIndex(index);  // Set the selected image index
-              }}>
-                <Image
-                  source={{
-                    uri: `http://tamizhy.smartprosoft.com/media/normal/${item.file_name}`,
-                  }}
-                  style={styles.image}
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
-            </>
-          );
-        }}
-        numColumns={2}
-        keyExtractor={(item, index) => index.toString()} // Unique key for each image
+        renderItem={renderImage}
+        numColumns={images.length === 1 ? 1 : 2} // Single column if only one image
+        columnWrapperStyle={images.length > 1 ? styles.row : null} // Ensure correct spacing between columns for multiple images
+        keyExtractor={(item, index) => index.toString()}
       />
 
-      {images.length > 0 && (
-        <ImageViewing
-          images={images.map((img) => ({ uri: `http://tamizhy.smartprosoft.com/media/large/${img.file_name}` }))} // Provide all images for viewing
-          imageIndex={selectedImageIndex}  // Start at the selected image
-          visible={visible}
-          onRequestClose={() => setIsVisible(false)}
-          FooterComponent={() => (
-            <View style={styles.footerContainer}>
-              {/* Previous button */}
-              {selectedImageIndex > 0 && (
-                <TouchableOpacity onPress={handlePrevious} style={styles.previousButton}>
-                  <Icon name="chevron-left" size={30} color="#fff" />
-                </TouchableOpacity>
-              )}
-
-              {/* Next button */}
-              {selectedImageIndex < images.length - 1 && (
-                <TouchableOpacity onPress={handleNext} style={styles.nextButton}>
-                  <Icon name="chevron-right" size={30} color="#fff" />
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
-        />
-      )}
+{images.length > 0 && (
+  <ImageViewing
+    images={images.map((img) => ({ uri: `http://tamizhy.smartprosoft.com/media/large/${img}` }))}
+    imageIndex={selectedImageIndex}
+    visible={visible}
+    onRequestClose={() => setIsVisible(false)}
+    FooterComponent={() => (
+      <View style={styles.footerContainer}>
+        {selectedImageIndex > 0 && (
+          <TouchableOpacity onPress={handlePrevious} style={styles.previousButton}>
+            <Icon name="chevron-left" size={30} color="#fff" />
+          </TouchableOpacity>
+        )}
+        {selectedImageIndex < images.length - 1 && (
+          <TouchableOpacity onPress={handleNext} style={styles.nextButton}>
+            <Icon name="chevron-right" size={30} color="#fff" />
+          </TouchableOpacity>
+        )}
+      </View>
+    )}
+  />
+)}
     </View>
   );
 };
@@ -157,7 +175,7 @@ const App = () => {
             name={item.name}
             time={formatDateTime(item.creation_date)}
             content={item.description}
-            images={Array.isArray(item.file_name) ? item.file_name : [item.file_name]}
+            images={Array.isArray(item.media_files) ? item.media_files : [item.media_files]}
           />
         )}
         keyExtractor={(item) => item.id}
@@ -184,7 +202,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: 'black',
+    color: 'black',    
   },
   time: {
     fontSize: 12,
@@ -193,16 +211,11 @@ const styles = StyleSheet.create({
   content: {
     marginVertical: 12,
     fontSize: 14,
-    color: 'red',
     marginBottom:-50,
   },
   image: {
-    width: 170,
-    height: 170,
-    marginRight: 10,
-    marginBottom: 5,
+    margin: 5, // Margin between images
     borderRadius: 8,
-    marginTop: 5,
   },
   userImageStyle: {
     width: moderateScale(40),

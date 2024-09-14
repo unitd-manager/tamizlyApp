@@ -476,7 +476,7 @@ const styles = StyleSheet.create({
         marginRight:20,
     },
     inputBoxStyle: {
-        color: 'red',
+        color: '#333',
         borderBottomWidth:0,
     },
     signBtnContainer: {
