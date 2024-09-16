@@ -47,7 +47,7 @@ export default {
   tickets: 'Tickets',
   featured: 'Featured',
   popularEvent: 'Popular Event 🔥', 
-  searchPlaceholder1: 'Search Project...',
+  searchPlaceholder1: 'Search Category...',
   new: 'New',
   empty: 'Empty',
   emptyDesc: "You don't have any notifications at this time",

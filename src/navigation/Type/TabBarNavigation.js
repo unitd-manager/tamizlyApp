@@ -106,7 +106,7 @@ export default function TabBarNavigation() {
 
               focused={focused}
               label={strings.Directory}
-              onPress={() => navigation.navigate(TabNav.Feed)}  // Always navigate to MainHome
+              onPress={() => navigation.navigate(TabNav.MainHome)}  // Always navigate to MainHome
             />
           ),
         })}
