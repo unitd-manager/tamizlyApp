@@ -86,11 +86,11 @@ const SignUp = () => {
         setEmail(val2.trim());
         setEmailError(msg);
     };
-    const onChangedPhone = val3 => {
-        // const { msg } = validateEmail(val.trim());
-        setPhone(val3.trim());
-        // setEmailError(msg);
-    };
+    const onChangedPhone = (value) => {
+        // Ensure only numeric characters are entered
+        const numericValue = value.replace(/[^0-9]/g, '');
+        setPhone(numericValue);
+      };
     const onChangedPassword = val4 => {
         // const {msg} = validatePassword(val.trim());
         setPassword(val4.trim());
@@ -238,9 +238,9 @@ const SignUp = () => {
                 <View style={styles.mainContainer}>
                     <View style={styles.header}>
                     <ArrowIcon/>
-                        <Text style={styles.signUpText}>Getting Started</Text>
+                    <EText type={'m12'} style={styles.signUpText}>Getting Started</EText>
                         <TouchableOpacity onPress={onPressSignIn}>
-                            <Text style={styles.getStartedText}>Sign In</Text>
+                            <EText type={'m12'} style={styles.getStartedText}>Sign In</EText>
                         </TouchableOpacity>
                     </View>
 
@@ -254,7 +254,7 @@ const SignUp = () => {
                     <View style={styles.elevation}></View>
 
                     <View style={styles.formContainer}>
-                    <EText type={'h24'} style={styles.welcomeText}>
+                    <EText type={'b16'} style={styles.welcomeText}>
                 Getting Started
               </EText>
               <EText type={'b16'} style={styles.enterDetailsText}>
@@ -299,6 +299,8 @@ const SignUp = () => {
                             toGetTextFieldValue={onChangedPhone}
                             inputContainerStyle={styles.inputContainerStyle}
                             inputBoxStyle={styles.inputBoxStyle}
+                            keyboardType="phone-pad"  // Ensures only numeric keyboard is shown
+                            maxLength={10}
                         />
 
                         <EInput
@@ -399,10 +401,8 @@ const styles = StyleSheet.create({
     welcomeText: {
         textAlign: 'center',
         marginBottom: 10,
-        color: '#6c757d',
-        fontWeight:'bold',
-        fontSize:30,
-       
+        color: '#000',
+        fontSize:30,       
       },
       enterDetailsText: {
         textAlign: 'center',
@@ -417,9 +417,8 @@ const styles = StyleSheet.create({
     },
     signUpText: {
         color: '#FFFFFF',
-        fontFamily: 'Courier New',
         fontSize:20,
-        marginTop:15,
+        marginTop:18,
       },
       getStartedText: {
         color: '#FFF',
@@ -427,9 +426,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#85c1f9',
         padding:10,
         borderRadius:8,
-        fontSize:14,
-        marginTop:10,
-        fontWeight:'bold',
+        marginTop:15,
           },
     signInText: {
         fontSize: 16,
@@ -478,6 +475,7 @@ const styles = StyleSheet.create({
     inputBoxStyle: {
         color: '#333',
         borderBottomWidth:0,
+        fontFamily: 'Gilroy-Medium',
     },
     signBtnContainer: {
         alignItems: 'center',

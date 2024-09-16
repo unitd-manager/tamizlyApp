@@ -33,9 +33,7 @@ export const StackRoute = {
   Login,
   SignUp,
   ForgotPass,
- 
   TabBar,
- 
   SelfieWithId,
   
 };

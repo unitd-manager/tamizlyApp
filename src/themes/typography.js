@@ -6,13 +6,13 @@ const fontWeights = {
     fontFamily: 'Gilroy-Black',
   },
   Medium: {
-    fontFamily: 'Urbanist-Medium',
+    fontFamily: 'Gilroy-Medium',
   },
   SemiBold: {
-    fontFamily: 'Urbanist-SemiBold',
+    fontFamily: 'Gilroy-SemiBold',
   },
   Bold: {
-    fontFamily: 'Urbanist-Bold',
+    fontFamily: 'Gilroy-Bold',
   },
 };
 

@@ -8,6 +8,7 @@ import ImageViewing from 'react-native-image-viewing';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Assuming you're using vector icons
 import HTMLView from 'react-native-htmlview';
 import flex from '../../../themes/flex';
+import EText from '../../../components/common/EText'; 
 
 const { width: screenWidth } = Dimensions.get('window');  // Get screen width
 const Post = ({ feedId, name, time, content, images }) => {
@@ -82,11 +83,11 @@ const Post = ({ feedId, name, time, content, images }) => {
           style={styles.userImageStyle}
         />
         <View>
-          <Text style={styles.name}>{name}</Text>
-          <Text style={styles.time}>{time}</Text>
+          <EText type={'m15'} style={styles.name}>{name}</EText>
+          <EText type={'m15'} style={styles.time}>{time}</EText>
         </View>
       </View>
-      <HTMLView style={[styles.content, { color: 'blue' }]} value={content} />
+      <HTMLView stylesheet={htmlStyles} value={content} />
 
       <FlatList
         data={images}
@@ -201,17 +202,18 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: 'black',    
+    color: 'black',
   },
   time: {
     fontSize: 12,
     color: '#888',
+    marginTop:2,
   },
   content: {
     marginVertical: 12,
     fontSize: 14,
     marginBottom:-50,
+    fontFamily: 'Gilroy-Medium',
   },
   image: {
     margin: 5, // Margin between images
@@ -241,4 +243,26 @@ const styles = StyleSheet.create({
   },
 });
 
+const htmlStyles = StyleSheet.create({
+  p: {
+    fontFamily: 'Gilroy-Regular', // Your custom font
+    fontSize: 15,
+    color:'#242B48',
+    marginTop:20,
+    marginBottom:-50,
+  },
+  h1: {
+    fontFamily: 'Gilroy-Bold', // Custom font for headings
+    fontSize: 20,
+    color:'#242B48',
+  },
+  // Add other styles for different HTML elements if needed
+  b: {
+    fontFamily: 'Gilroy-Bold',
+  },
+  strong: {
+    fontFamily: 'Gilroy-Bold',
+  },
+  
+});
 export default App;

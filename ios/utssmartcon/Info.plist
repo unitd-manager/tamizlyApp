@@ -64,6 +64,10 @@
 	<false/>
 	<key>UIAppFonts</key>
 	<array>
+		<string>fonts/Gilroy-Bold.ttf</string>
+		<string>fonts/Gilroy-Medium.ttf</string>
+		<string>fonts/Gilroy-Regular.ttf</string>
+		<string>fonts/Gilroy-SemiBold.ttf</string>
 		<string>fonts/Urbanist-Bold.ttf</string>
 		<string>fonts/Urbanist-Medium.ttf</string>
 		<string>fonts/Urbanist-Regular.ttf</string>

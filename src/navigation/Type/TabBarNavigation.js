@@ -2,7 +2,9 @@ import {StyleSheet, View, TouchableOpacity} from 'react-native';
 import React, {memo} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {useSelector} from 'react-redux';
-
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import {moderateScale} from '../../common/constants';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 // Local Imports
 import {TabRoute} from '../NavigationRoutes';
 import {TabNav} from '../NavigationKeys';
@@ -26,10 +28,10 @@ export default function TabBarNavigation() {
       <View style={localStyle.tabViewContainer}>
         {IconType}
         <EText
-          style={[styles.mt5, {color:'#1983e5', fontWeight: 'bold',}]}
+          style={focused?[styles.mt5, {color:'#1983e5'}]:[styles.mt5, {color:'#8694B2'}]}
           numberOfLines={1}
           color={focused ? colors.textColor : colors.grayScale5}
-          type={'R14'}>
+          type={'m14'}>
           {label}
         </EText>
       </View>
@@ -43,13 +45,12 @@ export default function TabBarNavigation() {
         headerShown: false,
         tabBarStyle: [
           localStyle.tabBarStyle,
-          {backgroundColor: '#f5f5f5',     shadowColor: 'red',
-            shadowOffset: { width: 5, height: 125 },
+          {backgroundColor: '#fff', shadowColor: 'black',
+            shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 1,
-            shadowRadius: 1,  
-            elevation: 5,
-            height:70,
-
+            shadowRadius: 8,  
+            elevation: 10,
+            zIndex: 1,
         },
         ],
         tabBarShowLabel: false,
@@ -62,7 +63,19 @@ export default function TabBarNavigation() {
         options={({navigation}) => ({
           tabBarIcon: ({focused}) => (
             <TabText
-              IconType={focused ? <HomeActiveWh /> : <HomeUnActive />}
+              IconType={focused ?           
+              <FontAwesome
+                name="rss"
+                size={moderateScale(20)}
+                color='#399AF4'
+                style={styles.mr5}/>
+              :           
+              <FontAwesome
+                name="rss"
+                size={moderateScale(20)}  
+                color='#8694B2'
+                style={styles.mr5}/>
+              }
               focused={focused}
               label={strings.home}
               onPress={() => navigation.navigate(TabNav.Feed)}
@@ -77,7 +90,20 @@ export default function TabBarNavigation() {
         options={({navigation}) => ({
           tabBarIcon: ({focused}) => (
             <TabText
-              IconType={focused ? <TicketActiveWh /> : <TicketUnActive />}
+              IconType={focused ?               
+              <FontAwesome
+                name="folder-open"
+                size={moderateScale(20)}
+                color='#399AF4'
+                style={styles.mr5}/>
+              :           
+              <FontAwesome
+                name="folder-open"
+                size={moderateScale(20)}  
+                color='#8694B2'
+                style={styles.mr5}/>
+              }
+
               focused={focused}
               label={strings.Directory}
               onPress={() => navigation.navigate(TabNav.Feed)}  // Always navigate to MainHome
@@ -92,7 +118,19 @@ export default function TabBarNavigation() {
         options={({navigation}) => ({
           tabBarIcon: ({focused}) => (
             <TabText
-              IconType={focused ? <TicketActiveWh /> : <TicketUnActive />}
+              IconType={focused ? 
+                <Ionicons
+                name="grid-outline"
+                size={moderateScale(20)}
+                color='#399AF4'
+                style={styles.mr5}/>
+              :           
+              <Ionicons
+                name="grid-outline"
+                size={moderateScale(20)}  
+                color='#8694B2'
+                style={styles.mr5}/>
+              }
               focused={focused}
               label={strings.Classified}
               onPress={() => navigation.navigate(TabNav.Feed)}  // Always navigate to MainHome
@@ -107,7 +145,19 @@ export default function TabBarNavigation() {
         options={({navigation}) => ({
           tabBarIcon: ({focused}) => (
             <TabText
-              IconType={focused ? <TicketActiveWh /> : <TicketUnActive />}
+              IconType={focused ? 
+                <Ionicons
+                name="settings-outline"
+                size={moderateScale(20)}
+                color='#399AF4'
+                style={styles.mr5}/>
+              :           
+              <Ionicons
+                name="settings-outline"
+                size={moderateScale(20)}  
+                color='#8694B2'
+                style={styles.mr5}/>
+              }
               focused={focused}
               label={strings.TaskList}
               onPress={() => navigation.navigate(TabNav.Profile)}  // Always navigate to MainHome
@@ -122,9 +172,9 @@ export default function TabBarNavigation() {
 
 const localStyle = StyleSheet.create({
   tabBarStyle: {
-    height: getHeight(60),
+    height: getHeight(80),
     ...styles.ph20,
-    borderTopWidth: 0,
+    borderTopWidth: 1,
   },
   tabViewContainer: {
     ...styles.center,

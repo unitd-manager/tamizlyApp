@@ -166,11 +166,11 @@ const Login = () => {
                 style={localstyles.signUpContainer}>
                   <ArrowIcon/>
                 <EText
-                  type={'b16'}
+                  type={'m16'}
                   style={localstyles.signUpText}>
                   {strings.dontHaveAccount}
                 </EText>
-                <EText type={'b16'} style={localstyles.getStartedText}>
+                <EText type={'m12'} style={localstyles.getStartedText}>
                   {' '}
                   {strings.getStarted}
                 </EText>
@@ -188,7 +188,7 @@ const Login = () => {
 
           <View style={localstyles.formContainer}>
 
-          <EText type={'h24'} style={localstyles.welcomeText}>
+          <EText type={'b16'} style={localstyles.welcomeText}>
                 Welcome Back
               </EText>
               <EText type={'b16'} style={localstyles.enterDetailsText}>
@@ -205,7 +205,7 @@ const Login = () => {
   // insideLeftIcon={() => <EmailIcon />}
   toGetTextFieldValue={onChangedEmail}
   inputContainerStyle={localstyles.inputContainer}
-  inputBoxStyle={localstyles.inputBox}
+  inputBoxStyle={[localstyles.inputBox, { fontFamily: 'Gilroy-Medium' }]}
   _onFocus={onFocusEmail}
   onBlur={onBlurEmail}
 />
@@ -226,9 +226,7 @@ const Login = () => {
   onBlur={onBlurPassword}
   rightAccessory={() => <RightPasswordEyeIcon />}
 />
-
-          
-
+      
 <EButton
                 title="Sign In"
                 containerStyle={localstyles.signInButton}
@@ -237,16 +235,16 @@ const Login = () => {
                 onPress={onPressSignWithPassword}
                 bgColor={isSubmitDisabled && colors.primary6}
               />
-
             <TouchableOpacity
                 onPress={onPressForgotPass}
                 style={localstyles.forgotPasswordText}>
                 <EText
-                  type={'b16'}
+                  type={'m15'}
                   color={colors.dark ? colors.grayScale7 : colors.grayScale5}>
-                  {strings.forgotPass}
+                  {strings.forgotPassword}
                 </EText>
               </TouchableOpacity>
+
           </View>
         </View>
         </ImageBackground>
@@ -337,8 +335,6 @@ const localstyles = StyleSheet.create({
   },
   signUpText: {
     color: '#FFFFFF',
-    fontFamily: 'Courier New',
-    fontSize:20,
     marginLeft:-15,
   },
   getStartedText: {
@@ -347,7 +343,6 @@ const localstyles = StyleSheet.create({
     backgroundColor: '#85c1f9',
     padding:10,
     borderRadius:8,
-    fontSize:14,
   },
   container: {
     flex: 1,
@@ -356,10 +351,8 @@ const localstyles = StyleSheet.create({
   welcomeText: {
     textAlign: 'center',
     marginBottom: 10,
-    color: '#6c757d',
-    fontWeight:'bold',
+    color: '#000',
     fontSize:30,
-    fontFamily: 'Gilroy-Regular',   
   },
   enterDetailsText: {
     textAlign: 'center',
@@ -410,10 +403,12 @@ arrowIcon: {
     marginLeft:20,
     marginRight:20,
     paddingHorizontal: 15,
+    fontFamily: 'Gilroy-Medium',
   },
   inputBox: {
     color: '#333',
     borderBottomWidth:0,
+    fontFamily: 'Gilroy-Medium',
   },
   signInButton: {
     height: 50,
@@ -427,6 +422,6 @@ arrowIcon: {
   forgotPasswordText: {
     color: '#007BFF',
     textAlign: 'center',
-    marginTop: 10,
+    marginTop: 30,
   },
 });

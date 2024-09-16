@@ -15,7 +15,7 @@ export default function AuthStack() {
         initialRouteName={StackNav.Splash}>
           <Stack.Screen name={StackNav.Login} component={StackRoute.Login} />
           <Stack.Screen name={StackNav.SignUp} component={StackRoute.SignUp} />
-
+          <Stack.Screen name={StackNav.ForgotPass} component={StackRoute.ForgotPass} />
       </Stack.Navigator>
    
   );
