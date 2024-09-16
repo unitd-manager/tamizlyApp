@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, Animated, StyleSheet } from 'react-native';
+import { View, TextInput, Animated, StyleSheet } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 const EInput = ({
   label,
@@ -29,6 +30,15 @@ const EInput = ({
     if (onBlur) onBlur();
   };
 
+  // Display error message as a toast if _errorText is present
+  /*if (_errorText) {
+    Toast.show({
+      type: 'error',
+      text1: 'Error',
+      text2: _errorText,
+    });
+  }*/
+
   return (
     <View style={[styles.container, inputContainerStyle]}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -39,7 +49,7 @@ const EInput = ({
               styles.label,
               {
                 top: isFocused || _value ? 0 : 18,
-                fontSize: isFocused || _value ? 16 : 16,
+                fontSize: isFocused || _value ? 14 : 14,
                 color: isFocused ? '#aaa' : placeholderTextColor || '#aaa',
               },
             ]}
@@ -60,7 +70,8 @@ const EInput = ({
         </View>
         {rightAccessory && rightAccessory()}
       </View>
-      {_errorText ? <Text style={styles.errorText}>{_errorText}</Text> : null}
+      {/* Remove in-line error text since it's now shown as a toast */}
+      {/* {_errorText ? <Text style={styles.errorText}>{_errorText}</Text> : null} */}
     </View>
   );
 };
@@ -82,6 +93,7 @@ const styles = StyleSheet.create({
     left: 0,
     paddingLeft: 0,
     color: '#000',
+    fontFamily: 'Gilroy-Medium',
   },
   errorText: {
     color: 'red',

@@ -37,7 +37,8 @@ export default function StackNavigation() {
       }}>
           {state.userToken == null ? ( <Stack.Screen name={StackNav.Auth} component={AuthStack} />) : (<>
             <Stack.Screen name={StackNav.TabBar} component={StackRoute.TabBar} />
-          </>)}
+            <Stack.Screen name={StackNav.Login} component={StackRoute.Login} />
+                    </>)}
      
     
     </Stack.Navigator>

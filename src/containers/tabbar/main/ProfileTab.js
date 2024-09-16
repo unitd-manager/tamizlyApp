@@ -45,19 +45,13 @@ const ProfileScreen = () => {
         style={[
           localStyles.notificationContainer,
           {borderColor: colors.dark ? colors.grayScale8 : colors.grayScale3},
-        ]}>
-        <Ionicons
-          name={'log-out-outline'}
-          size={moderateScale(28)}
-          color={colors.redColor}
-          style={{backgroundColor:'#fff',padding:5,borderRadius:50}}
-        /> 
+        ]}><Text style={localStyles.logout}>Logout</Text>
       </TouchableOpacity>
       <LogOut SheetRef={LogOutSheetRef} navigation={navigation} />
       <View style={localStyles.profileSection}>
         <Image 
           //source={imagess.sky} 
-          source={require('../../../assets/images/sky.jpg')}
+          source={{ uri: 'http://tamizhy.smartprosoft.com/media/normal/435_9187604.png' }}
 
           style={localStyles.profileImage} 
         />
@@ -93,13 +87,10 @@ const ProfileScreen = () => {
 const localStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fbff',
+    backgroundColor: '#fff',
     paddingHorizontal: 20,
   },
   notificationContainer: {
-    ...styles.center,
-    ...styles.ph10,
-    ...styles.pv10,
   },
   profileSection: {
     alignItems: 'center',
@@ -112,26 +103,31 @@ const localStyles = StyleSheet.create({
   },
   name: {
     fontSize: 18,
-    fontWeight: 'bold',
     marginTop: 10,
+    fontFamily: 'Gilroy-Bold',
+    color:'#000',
   },
   email: {
     fontSize: 14,
-    color: '#888',
+    color: '#8694B2',
     marginBottom: 20,
+    fontFamily: 'Gilroy-Medium',
   },
   editButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 5,
+    backgroundColor: '#399af4',
+    borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 30,
   },
   editText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontFamily: 'Gilroy-Medium',
+    fontSize:15,
   },
   optionsContainer: {
     marginTop: 20,
+    marginLeft:20,
+    marginRight:20,
   },
   option: {
     paddingVertical: 15,
@@ -140,14 +136,20 @@ const localStyles = StyleSheet.create({
   },
   optionText: {
     fontSize: 16,
+    fontFamily: 'Gilroy-Medium',
+    color:'#242B48',
   },
   logoutButton: {
     marginTop: 40,
     alignItems: 'center',
   },
-  logoutText: {
-    color: '#007AFF',
-    fontWeight: 'bold',
+  logout: {
+    color: '#399AF4',
+    fontFamily: 'Gilroy-Medium',
+    fontSize: 17,
+    textAlign:'right',
+    marginTop:15,
+    marginRight:20,
   },
 });
 
