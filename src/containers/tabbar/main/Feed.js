@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, FlatList, TouchableOpacity, TouchableWithoutFeedback, Dimensions } from 'react-native';
+import { View, Text, Image, ActivityIndicator, StyleSheet, FlatList, TouchableOpacity, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import HomeHeader from '../../../components/homeComponent/HomeHeader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../../api/api';
@@ -12,11 +12,12 @@ import EText from '../../../components/common/EText';
 
 const { width: screenWidth } = Dimensions.get('window');  // Get screen width
 const Post = ({ feedId, name, time, content, images }) => {
-  console.log('images', images);
+  //console.log('images', images);
 //  const [images, setImages] = useState([]);
   const [visible, setIsVisible] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0); // To track the selected image index
   const [imageHeights, setImageHeights] = useState({});
+
   /*useEffect(() => {
     api.post('feedlistImages.php', { feed_id: feedId })  // Replace with the correct endpoint for fetching images
       .then(response => {
@@ -75,8 +76,10 @@ const Post = ({ feedId, name, time, content, images }) => {
     );
   };
 
-  return (
-    <View style={styles.postContainer}>
+  
+  
+  return (       
+      <View style={styles.postContainer}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Image
           source={{ uri: 'http://tamizhy.smartprosoft.com/media/normal/435_9187604.png' }}
@@ -126,6 +129,7 @@ const Post = ({ feedId, name, time, content, images }) => {
 const App = () => {
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const getUser = async () => {
     try {
@@ -143,12 +147,15 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    setLoading(true);
     api.get('feedlist.php')  // Replace with the correct endpoint for fetching posts
       .then(response => {
-        setPosts(response.data.data);
+        setPosts(response.data.data); 
+        setLoading(false);
       })
       .catch(error => {
         console.error('There was an error fetching the posts!', error);
+        setLoading(false);
       });
   }, []);
 
@@ -164,6 +171,14 @@ const App = () => {
       hour12: true, // use false for 24-hour format
     }).format(date);
   };
+
+  if ( loading ) {
+    return (
+      <View style={{flex:1, justifyContent:'center',alignItems:'center'}}>
+        <ActivityIndicator size={"large"} color="#0000ff"  />
+      </View>
+    )
+  }
 
   return (
     <View style={styles.container}>

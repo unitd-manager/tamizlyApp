@@ -4,19 +4,21 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useSelector } from 'react-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native'
+import { AppFavicon } from '../../assets/svgs';
 
 // Local Imports
 import strings from '../../i18n/strings';
 import { styles } from '../../themes';
 import { getHeight, moderateScale } from '../../common/constants';
 import ESafeAreaView from '../../components/common/ESafeAreaView';
-import EInput from '../../components/common/EInput';
+import EInput from '../../components/common/Einpuut';
 import { validateEmail } from '../../utils/validators';
 import KeyBoardAvoidWrapper from '../../components/common/KeyBoardAvoidWrapper';
 import EButton from '../../components/common/EButton';
 import api from '../../api/api';
 import EText from '../../components/common/EText';
 import { StackNav } from '../../navigation/NavigationKeys';
+import Toast from 'react-native-toast-message';
 
 const ForgotPass = () => {
     const navigation = useNavigation()
@@ -77,15 +79,18 @@ const ForgotPass = () => {
     };
 
     const onPressSignWithPassword = async () => {
-        api.post('/contact/forgotPass', {
+        api.post('forgotPassword.php', {
             email: email,
         }).then(async (res) => {
             SendEmail(res.data.data);
         }).catch(() => {
-            Alert.alert('Please verify the email address and try again.')
+            //Alert.alert('Please verify the email address and try again.')
+            Toast.show({
+                type: 'error',
+                text1:'Please verify the email address and try again',
+              });
         })
     };
-
 
     const SendEmail = (emailData) => {
 
@@ -122,32 +127,30 @@ const ForgotPass = () => {
                     style={localStyles.backgroundImage}
                 >
                     <View style={localStyles.mainContainer}>
+                    <View style={[localStyles.logoBg11]}>
+                            <AppFavicon
+                                width={moderateScale(90)}
+                                height={moderateScale(90)}
+                                style={[localStyles.logoBg]}
+                            />
+                        </View>
 
                         <View style={[{ flex: 2 }]}></View>
 
-                        <View style={[localStyles.loginBg, { justifyContent: 'space-between' }]}>
-
-                            {/* <Image
-                                style={localStyles.banner}
-                                // source={require('../../assets/images/logo.jpeg')}
-                            /> */}
-                            
+                        <View style={[localStyles.loginBg, { justifyContent: 'space-between' }]}>                            
                             <View>
-                                <EText
-                                    type={'b16'}
-                                    color={colors.dark ? colors.grayScale7 : colors.primary5}>
-                                    Enter Your Email
-                                </EText>
-
+                            <EText type={'b16'} style={localStyles.welcomeText}>
+                                Forgot Password?
+                            </EText>
                                 <EInput
-                                    placeHolder={strings.email}
+                                    label={'Enter your registered email'}
                                     placeholderTextColor={colors.primary5}
                                     keyBoardType={'email-address'}
                                     _value={email}
                                     _errorText={emailError}
                                     errorStyle={colors.primary5}
                                     autoCapitalize={'none'}
-                                    insideLeftIcon={() => <EmailIcon />}
+                                    //insideLeftIcon={() => <EmailIcon />}
                                     toGetTextFieldValue={onChangedEmail}
                                     inputContainerStyle={[
                                         localStyles.inputContainerStyle,
@@ -164,14 +167,14 @@ const ForgotPass = () => {
                                     color={isSubmitDisabled && colors.white}
                                     containerStyle={localStyles.signBtnContainer}
                                     onPress={onPressSignWithPassword}
-                                    bgColor={isSubmitDisabled && colors.primary5}
+                                    bgColor={isSubmitDisabled && colors.primary6}
                                 />
 
                                 <TouchableOpacity
                                     onPress={onPressSignIn}
                                     style={localStyles.signUpContainer}>
                                     <EText
-                                        type={'b16'}
+                                        type={'m15'}
                                         color={colors.dark ? colors.grayScale7 : colors.grayScale5}>
                                         Back to Login
                                     </EText>
@@ -196,30 +199,36 @@ const localStyles = StyleSheet.create({
         justifyContent: 'center'
     },
     signBtnContainer: {
-        ...styles.center,
-        width: '100%',
+        width: '88%',
         ...styles.mv20,
-        height: getHeight(60),
+        height: 50,
         borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft:20,
     },
     inputContainerStyle: {
-        height: getHeight(60),
-        ...styles.ph15,
-        borderBottomWidth: moderateScale(1.5),
-        borderTopWidth: moderateScale(1.5),
-        borderLeftWidth: moderateScale(1.5),
-        borderRightWidth: moderateScale(1.5),
+        height: 50,
+        marginBottom: 15,
         borderRadius: 10,
-        color: '#222'
-    },
+        borderWidth: 1,
+        paddingLeft: 15,
+        borderColor: 'red',
+        width: '88%',
+        marginLeft:20,
+        marginRight:20,
+        paddingHorizontal: 15,
+        fontFamily: 'Gilroy-Medium',
+        },
     backgroundImage: {
         flex: 1,
         resizeMode: 'cover',
         justifyContent: 'center',
     },
     inputBoxStyle: {
-        ...styles.ph15,
-        color: '#222'
+        color: '#333',
+        borderBottomWidth:0,
+        fontFamily: 'Gilroy-Medium',
     },
     root: {
         flex: 3,
@@ -233,7 +242,7 @@ const localStyles = StyleSheet.create({
         ...styles.ph20,
         borderTopRightRadius: 30,
         borderTopLeftRadius: 30,
-        paddingTop: 30
+        paddingTop: 40,
     },
     banner: {
         width: '60%',
@@ -242,6 +251,30 @@ const localStyles = StyleSheet.create({
     },
     signUpContainer: {
         ...styles.rowCenter,
-        ...styles.mb20,
+        ...styles.mb40,
+        color: '#007BFF',
     },
+    logoBg11:{
+        flex: 2,
+        justifyContent: 'center',
+        paddingHorizontal: 150,
+        marginBottom:47,
+        marginTop:120,
+    },
+
+    logoBg:{
+        backgroundColor:"#fff",
+        borderRadius:20,      
+    },
+    welcomeText: {
+        textAlign: 'center',
+        marginBottom: 50,
+        color: '#000',
+        fontSize:30,       
+      },
+    emailLabel: {
+        marginBottom:10,
+        marginLeft:3,
+    }
+
 });

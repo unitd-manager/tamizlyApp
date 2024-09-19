@@ -19,6 +19,7 @@ import api from '../../api/api';
 import { useNavigation } from '@react-navigation/native'
 import EText from '../../components/common/EText';
 import { StackNav } from '../../navigation/NavigationKeys';
+import Toast from 'react-native-toast-message';
 
 const SignUp = () => {
     const navigation = useNavigation()
@@ -88,7 +89,7 @@ const SignUp = () => {
     };
     const onChangedPhone = (value) => {
         // Ensure only numeric characters are entered
-        const numericValue = value.replace(/[^0-9]/g, '');
+        const numericValue = value.replace(/[^0-9]/g, '').slice(0, 9);
         setPhone(numericValue);
       };
     const onChangedPassword = val4 => {
@@ -101,11 +102,21 @@ const SignUp = () => {
         setConPassword(val.trim());
         // setPasswordError(msg);
     };
-
-
-    const Insert = () => {
-        if (!name || !email || !password || !phone) {
-            Alert.alert('Please fill in all fields');
+    
+    const Insert = () => {  
+        if(conPassword !== password){
+            Toast.show({
+                type: 'error',
+                text1:'Password and confirm password are not same',
+              });
+            return;
+        }
+        if (!name || !email || !password || !phone || !conPassword) {
+            //Alert.alert('Please fill in all fields');
+            Toast.show({
+                type: 'error',
+                text1:'Please fill in all fields',
+              });
             return;
         }
 
@@ -120,13 +131,25 @@ const SignUp = () => {
             .post('insertRegister.php', registerData)
             .then(response => {
                 console.log('Error11',response.data);
-
+                if(response.data.msg === 'Failed'){
+                    Toast.show({
+                        type: 'error',
+                        text1:'Email already exist',
+                      });
+                    return;
+                  }
+        
                 if (response.status === 200) {
                     // setTimeout(() => {
                     //     SendEmail();
                     // }, 500);
-                    Alert.alert('You have successfully registered');
-                    setTimeout(() => {
+                    //Alert.alert('You have successfully registered');
+                    Toast.show({
+                        type: 'error',
+                        text1:'You have successfully registered',
+                      });
+                    return;
+                            setTimeout(() => {
                         navigation.navigate(StackNav.Login)
                     }, 500);
                 } else {
@@ -230,7 +253,8 @@ const SignUp = () => {
 
     return (
         <ESafeAreaView style={styles.root}>
-            <KeyBoardAvoidWrapper contentContainerStyle={{ flex: 1 }}>
+        <ScrollView>
+        <KeyBoardAvoidWrapper contentContainerStyle={{ flex: 1 }}>
             <ImageBackground
           source={require('../../assets/images/sky.jpg')} // Replace with your gradient image
           style={styles.backgroundImage}
@@ -292,7 +316,7 @@ const SignUp = () => {
                         <EInput
                             label="Phone"
                             placeholderTextColor={colors.primary5}
-                            keyBoardType={'number'}
+                            keyBoardType={'phone-pad'}
                             _value={phone}
                             autoCapitalize={'none'}
                             // insideLeftIcon={() => <FontAwesome name="phone" size={moderateScale(20)} color={'black'} />}
@@ -300,7 +324,7 @@ const SignUp = () => {
                             inputContainerStyle={styles.inputContainerStyle}
                             inputBoxStyle={styles.inputBoxStyle}
                             keyboardType="phone-pad"  // Ensures only numeric keyboard is shown
-                            maxLength={10}
+                            maxLength={9}
                         />
 
                         <EInput
@@ -355,7 +379,8 @@ const SignUp = () => {
                 </View>
                 </ImageBackground>
             </KeyBoardAvoidWrapper>
-        </ESafeAreaView>
+            </ScrollView>
+            </ESafeAreaView>
     );
 };
 
@@ -381,7 +406,9 @@ const styles = StyleSheet.create({
       logoBg11:{
         flex: 2,
         justifyContent: 'center',
-        paddingHorizontal: 160,
+        paddingHorizontal: 150,
+        marginBottom:47,
+        marginTop:50,
       },
     mainContainer: {
         flex: 1,

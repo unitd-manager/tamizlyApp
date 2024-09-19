@@ -22,6 +22,7 @@ import AuthContext from "../../navigation/Type/Auth";
 import { StackNav } from '../../navigation/NavigationKeys';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import EText from '../../components/common/EText';
+import Toast from 'react-native-toast-message';
 
 const Login = () => {
   const navigation = useNavigation()
@@ -122,21 +123,44 @@ const Login = () => {
   );
 
   const onPressSignWithPassword = async () => {
-    api.post('loginApp.php', {
-      email:email,
-      password:password
-    }).then(async(res) => { 
-      console.log(res.data.data)
-      if (res && res.data.msg === 'Success') {
-        await AsyncStorage.setItem('USER_TOKEN','loggedin')
-        await AsyncStorage.setItem('USER',JSON.stringify(res.data.data))
-        signIn('124')  
+    if (emailError || email === '' || password === ''){
+      if (emailError || email === ''){
+          //Alert.alert('Enter valid email');
+          Toast.show({
+            type: 'error',
+            text1: 'Enter valid email',
+          });
       } else {
-        Alert.alert('Invalid Credentials')
-      }
-    }).catch(()=>{
-      Alert.alert('Invalid Credentials')
-    })
+         //Alert.alert('Enter a password');
+         Toast.show({
+          type: 'error',
+          text1:'Password should not empty',
+        });
+    }
+    } else {
+        api.post('loginApp.php', {
+          email:email,
+          password:password
+        }).then(async(res) => { 
+          console.log(res.data.data)
+          if (res && res.data.msg === 'Success') {
+            await AsyncStorage.setItem('USER_TOKEN','loggedin')
+            await AsyncStorage.setItem('USER',JSON.stringify(res.data.data))
+            signIn('124')  
+          } else {
+            //Alert.alert('Invalid Credentials')
+            Toast.show({
+              type: 'error',
+              text1:'Invalid Credentials',
+            });    
+          }
+        }).catch(()=>{
+          Toast.show({
+            type: 'error',
+            text1:'Invalid Credentials',
+          });    
+      })
+    }
   };
 
 
