@@ -1,5 +1,5 @@
 // Library Imports
-import {StyleSheet, View, Alert, FlatList,TouchableOpacity,Text,Image} from 'react-native';
+import {StyleSheet, View, Alert, FlatList,TouchableOpacity,Text,Image,Modal, TextInput, Button} from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 import {useSelector} from 'react-redux';
 //import {FlashList} from '@shopify/flash-list';
@@ -11,12 +11,17 @@ import HomeHeader from '../../../components/homeComponent/HomeHeader';
 import SearchComponent from '../../../components/homeComponent/SearchComponent';
 import ProjectConfirmModal from '../../../components/models/ProjectConfirmModal';
 import CardData from './CardData';
+import EInput from '../../../components/common/EInput';
+
 import strings from '../../../i18n/strings';
 import api from '../../../api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Geolocation from '@react-native-community/geolocation';
 
 export default function HomeTab({navigation}) {
+
+// Add new state variables for the modal and form inputs
+
   const colors = useSelector(state => state.theme.theme);
 
   const [categories, setCategories] = useState('');
@@ -101,7 +106,53 @@ export default function HomeTab({navigation}) {
   const selectedCategoryData = selectedCategory
       ? categories.filter(item => item.category_title === selectedCategory.title)
       : [];
+      const RightPasswordEyeIcon = () => (
+     
+            <TouchableOpacity onPress={toggleModal} >
 
+            <Image source={require('../../../assets/images/logos.png')}
+              style={{ width: 33, height: 34 }} 
+                />
+            
+          </TouchableOpacity>
+      );
+      const [isModalVisible, setIsModalVisible] = useState(false);
+      const [location, setLocation] = useState('');
+      const [city, setCity] = useState('');
+      const [nationality, setNationality] = useState('');
+      const [languages, setLanguages] = useState([]);
+      const [address, setAddress] = useState('');
+      
+      // Function to toggle the modal
+      const toggleModal = () => {
+        setIsModalVisible(!isModalVisible);
+      };
+      
+      // Function to handle form submission
+      const handleFormSubmit = () => {
+        // Filter based on all fields entered by the user
+        const filteredData = categories.filter(category => {
+          const matchesLocation = location ? (category.location || '').toLowerCase().includes(location.toLowerCase()) : true;
+          const matchesCity = city ? (category.city || '').toLowerCase().includes(city.toLowerCase()) : true;
+          const matchesNationality = nationality ? (category.nationality || '').toLowerCase().includes(nationality.toLowerCase()) : true;
+          const matchesLanguages = languages.length > 0 
+            ? languages.some(lang => (category.languages || []).map(l => l.toLowerCase()).includes(lang.toLowerCase()))
+            : true;
+          const matchesAddress = address ? (category.address || '').toLowerCase().includes(address.toLowerCase()) : true;
+      
+          return matchesLocation || matchesCity || matchesNationality || matchesLanguages || matchesAddress;
+        });
+      
+        if (filteredData.length === 0) {
+          Alert.alert('No results found', 'No categories match your search criteria.');
+        } else {
+          setFilteredCategories(filteredData);
+        }
+      
+        toggleModal();  // Close the modal after form submission
+      };
+      
+      
   return (
     <View style={{flexGrow:1, backgroundColor: '#F5F5F5'}}>
          <View style={{ 
@@ -110,13 +161,20 @@ export default function HomeTab({navigation}) {
           borderBottomLeftRadius: 50,
           paddingBottom: 50,
       }}>
-        <SearchComponent
-          search={searchQuery}
-          onSearchInput={handleSearch}
-          isLoading={loading}
-          error={error}
-          rightIcon="blue-search-icon-path"  // You can customize the icon path here
-        />
+          <View style={{ flexDirection: 'row', alignItems: 'center',paddingRight: 50 ,   marginBottom: 5,}}>
+        {/* SearchComponent on the left */}
+        <View style={{ flex: 1 }}>
+          <SearchComponent
+            search={searchQuery}
+            onSearchInput={handleSearch}
+            isLoading={loading}
+            error={error}
+          />
+        </View>
+
+        {/* RightPasswordEyeIcon on the right */}
+        <RightPasswordEyeIcon />
+      </View>
       </View>
 
       <View style={{flex: 1, marginTop: -40, paddingHorizontal: 20}}>
@@ -179,8 +237,71 @@ export default function HomeTab({navigation}) {
 
       </View>
 
+<Modal
+  visible={isModalVisible}
+  animationType="slide"
+  transparent={true}
+  onRequestClose={toggleModal}
+>
+  <View style={localStyles.modalContainer}>
+    <View style={localStyles.modalContent}>
+
+      {/* Input for State */}
+      <EInput
+        placeholder="State"
+        value={location}
+        onChangeText={setLocation}
+        style={localStyles.inputField}
+      />
+
+      {/* Input for City */}
+      <EInput
+        placeholder="City"
+        value={city}
+        onChangeText={setCity}
+        style={localStyles.inputField}
+      />
+
+      {/* Input for Nationality */}
+      <EInput
+        placeholder="Nationality"
+        value={nationality}
+        onChangeText={setNationality}
+        style={localStyles.inputField}
+      />
+
+      {/* Languages (use a multi-select or text input based on your needs) */}
+      <EInput
+        placeholder="Languages (e.g., English, French)"
+        value={languages.join(', ')}  // Join array for display
+        onChangeText={text => setLanguages(text.split(',').map(lang => lang.trim()))}
+        style={localStyles.inputField}
+      />
+
+      {/* Input for Address */}
+      <EInput
+        placeholder="Address"
+        value={address}
+        onChangeText={setAddress}
+        style={localStyles.inputField}
+      />
+      <Text style={localStyles.modalTitle}></Text>
+
+
+
+      <Button   title="Search" onPress={handleFormSubmit} />
+
+      {/* Button to Close Modal */}
+      <TouchableOpacity onPress={toggleModal}>
+        <Text style={localStyles.closeModalText}>Close</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
+
     
     </View>
+    
   );
 }
 
@@ -188,11 +309,72 @@ const localStyles = StyleSheet.create({
   contentContainerStyle: {
     ...styles.ph20,
     ...styles.pb20,
+    fontFamily: 'Gilroy-Medium',
+  },
+  inputContainer: {
+    height: 100,
+    marginBottom: 15,
+    borderRadius: 10,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    paddingLeft: 15,
+    borderColor: '#D3D3D3',
+    width: '88%',
+    marginLeft:20,
+    marginRight:20,
+    paddingHorizontal: 15,
+    fontFamily: 'Gilroy-Medium',
+  },
+  inputBox: {
+    color: '#333',
+    borderBottomWidth:0,
+    fontFamily: 'Gilroy-Medium',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    
+  },
+  modalContent: {
+    width: '80%',
+ 
+
+    width: '100%',
+    backgroundColor:'#FFFFFF',
+     borderRadius: 20,
+     paddingVertical: 70,
+     paddingHorizontal: 30,
+     alignItems: 'center',
+     marginTop: 200, 
+     fontFamily: 'Gilroy-Medium',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    fontFamily: 'Gilroy-Medium',
+  },
+  inputField: {
+    width: '100%',
+    padding: 10,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    fontFamily: 'Gilroy-Medium',
+  },
+  closeModalText: {
+    color: 'blue',
+    marginTop: 40,
+    fontSize: 20,
+    fontFamily: 'Gilroy-Medium',
   },
   categoryContainer: {
     alignItems: 'center',
     marginRight: 25,
     marginTop: 65,
+    fontFamily: 'Gilroy-Medium',
 
 },
 categoryIcon: {
@@ -205,12 +387,13 @@ categoryHeading: {
   fontWeight: 'bold',
   paddingBottom: 0,
   paddingLeft: 15,
+  fontFamily: 'Gilroy-Medium',
 },
 categoryText: {
     fontSize: 16,
     textAlign: 'center',
     marginTop: 5,
-
+    fontFamily: 'Gilroy-Medium',
 },
 viewAllButton: {
     justifyContent: 'center',
@@ -222,7 +405,7 @@ viewAllButton: {
 viewAllText: {
     color: 'blue',
     fontSize: 20,
-
+    fontFamily: 'Gilroy-Medium',
 },
 serviceCard: {
   flexDirection: 'row',  // Main container with two columns: one for the logo, the other for the text
@@ -236,43 +419,52 @@ serviceCard: {
   shadowOpacity: 0.3,
   shadowRadius: 4,
   elevation: 2,
+  fontFamily: 'Gilroy-Medium',
 },
 leftSection: {
   flex: 0.5,  // Left section for the logo
+  fontFamily: 'Gilroy-Medium',
 },
 rightSection: {
   flex: 0.5,  // Right section for the text content
   flexDirection: 'column',  // Stack the text elements vertically
   justifyContent: 'center',
   paddingLeft: 10,
+  fontFamily: 'Gilroy-Medium',
   paddingBottom: 20,
 },
 name: {
   fontSize: 16,
   color: 'skyblue',
   fontWeight: 'bold',
+  fontFamily: 'Gilroy-Medium',
 },
 name1: { 
   fontSize: 16,
   color: '#ccc',
+  fontFamily: 'Gilroy-Medium',
 },
 description: {
   fontSize: 16,
   color: '#666',
   fontWeight: 'bold',
   marginBottom: 5,
+  fontFamily: 'Gilroy-Medium',
 },
 mobile: {
   fontSize: 14,
   color: '#333',
+  fontFamily: 'Gilroy-Medium',
 },
 location: {
   fontSize: 14,
   color: '#333',
+  fontFamily: 'Gilroy-Medium',
 },
 area: {
   fontSize: 14,
   color: '#333',
+  fontFamily: 'Gilroy-Medium',
 },
 serviceIcon: {
   width: 90,
@@ -281,6 +473,7 @@ serviceIcon: {
 serviceTitle: {
   fontSize: 19,
   fontWeight: 'bold',
+  fontFamily: 'Gilroy-Medium',
 },
 
 // New style for nationality and languages
@@ -298,6 +491,7 @@ bottomInfo: {
   shadowOpacity: 0.3,
   shadowRadius: 4,
   elevation: 1,
+  fontFamily: 'Gilroy-Medium',
 },
 nationality: {
   fontSize: 14,
@@ -305,13 +499,13 @@ nationality: {
   paddingStart:10,
   marginBottom: 12, 
   fontWeight: 'bold',
-
+  fontFamily: 'Gilroy-Medium',
 },
 languages: {
   fontSize: 14,
   color: '#333',
   paddingEnd:10,
   fontWeight: 'bold',
-
+  fontFamily: 'Gilroy-Medium',
 },
 });
