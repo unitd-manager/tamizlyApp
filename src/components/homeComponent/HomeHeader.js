@@ -174,6 +174,7 @@ const localStyles = StyleSheet.create({
     ...styles.flex,
     marginLeft:-5,
     marginBottom:20,
+    marginTop:20,
   },
   notificationContainer: {
     ...styles.center,
