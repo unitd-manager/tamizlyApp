@@ -1,5 +1,6 @@
 // Tab Routes
 import MainHome from '../containers/tabbar/main/HomeTab';
+import Classified from '../containers/tabbar/main/Classified';
 import TaskTab from '../containers/tabbar/taskList/TaskTab';
 import Feed from '../containers/tabbar/main/Feed';
 import Profile from '../containers/tabbar/main/ProfileTab';
@@ -19,6 +20,7 @@ import HomeListCard from '../containers/tabbar/HomeListCard';
 
 export const TabRoute = {
   MainHome,
+  Classified,
   Feed,
   TaskTab,
   HomeListCard,

@@ -1,5 +1,8 @@
+import ClassifiedPage from "../containers/tabbar/main/Classified";
+
 export const TabNav = {
   MainHome: 'MainHome',
+  Classified: 'Classified',
   Feed: 'Feed',
   Profile: 'Profile',
   Feed: 'Feed',
