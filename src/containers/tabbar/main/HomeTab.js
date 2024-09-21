@@ -293,7 +293,7 @@ export default function HomeTab({navigation}) {
 
 
 
-      <Button   title="Search" onPress={handleFormSubmit} />
+      <Button   title="Submit" onPress={handleFormSubmit} />
 
       {/* Button to Close Modal */}
       <TouchableOpacity onPress={toggleModal}>
@@ -345,10 +345,10 @@ const localStyles = StyleSheet.create({
     width: '100%',
     backgroundColor:'#FFFFFF',
      borderRadius: 20,
-     paddingVertical: 70,
-     paddingHorizontal: 30,
+     paddingVertical: 50,
+     paddingHorizontal: 50,
      alignItems: 'center',
-     marginTop: 200, 
+     marginTop: 280, 
      fontFamily: 'Gilroy-Medium',
   },
   modalTitle: {
@@ -360,15 +360,15 @@ const localStyles = StyleSheet.create({
   inputField: {
     width: '100%',
     padding: 10,
-    borderColor: 'gray',
+    borderColor: 'white',
     borderWidth: 1,
-    borderRadius: 5,
+    borderRadius: 10,
     fontFamily: 'Gilroy-Medium',
   },
   closeModalText: {
-    color: 'blue',
+    color: '#399AF4',
     marginTop: 40,
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: 'Gilroy-Medium',
   },
   categoryContainer: {
