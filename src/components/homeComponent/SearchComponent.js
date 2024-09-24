@@ -36,17 +36,17 @@ const SearchComponent = props => {
     );
   };
   return (
-    <View style={[{marginHorizontal:20},style]}>
+    <View style={[{marginLeft:30, marginRight:10,}]}>
       <EInput
         key="searchProject"
-        placeHolder={strings.searchPlaceholder1}
+        placeHolder="Search for all services"
         keyBoardType={'default'}
         _value={search}
         toGetTextFieldValue={onSearchInput}
         autoCapitalize={'none'}
         insideLeftIcon={searchIcon}
+        inputBoxStyle={localStyles.inputBox}
         inputContainerStyle={[
-          {backgroundColor: colors.inputBg},
           localStyles.inputContainerStyle,
         ]}
         
@@ -58,8 +58,13 @@ const SearchComponent = props => {
 
 const localStyles = StyleSheet.create({
   inputContainerStyle: {
-    borderRadius: moderateScale(15),
-    borderWidth: moderateScale(1),
+    color:'red',
+    backgroundColor:'#f3f4f6',
+  },
+  inputBox: {
+    color: '#333',
+    fontFamily: 'Gilroy-Medium',
+    fontSize:14,
   },
 });
 
