@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, ActivityIndicator, StyleSheet, FlatList, TouchableOpacity, TouchableWithoutFeedback, Dimensions } from 'react-native';
+import React, { useState, useEffect,useRef } from 'react';
+import { View, Text, Image, ActivityIndicator, StyleSheet, FlatList, TouchableOpacity, TouchableWithoutFeedback, Dimensions,Modal } from 'react-native';
 import HomeHeader from '../../../components/homeComponent/HomeHeader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../../api/api';
@@ -9,15 +9,19 @@ import Icon from 'react-native-vector-icons/FontAwesome'; // Assuming you're usi
 import HTMLView from 'react-native-htmlview';
 import flex from '../../../themes/flex';
 import EText from '../../../components/common/EText'; 
+import Video, {VideoRef} from 'react-native-video';
 
 const { width: screenWidth } = Dimensions.get('window');  // Get screen width
-const Post = ({ feedId, name, time, content, images }) => {
+const Post = ({ feedId, name, time, content, images,videos }) => {
   //console.log('images', images);
 //  const [images, setImages] = useState([]);
   const [visible, setIsVisible] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0); // To track the selected image index
   const [imageHeights, setImageHeights] = useState({});
-
+  const [visibleVideo, setIsVisibleVideo] = useState(false);
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState(0); // To track the selected image index
+  const [videoHeights, setVideoHeights] = useState({});
+  const videoRef = useRef(null);
   /*useEffect(() => {
     api.post('feedlistImages.php', { feed_id: feedId })  // Replace with the correct endpoint for fetching images
       .then(response => {
@@ -72,11 +76,79 @@ const Post = ({ feedId, name, time, content, images }) => {
             handleImageLoad(item, width, height); // Handle image load to calculate aspect ratio
           }}
         />
+          {/* <Video 
+    // Can be a URL or a local file.
+    source={ {uri: 'http://tamizhy.smartprosoft.com/media/normal/461_SampleVideo_640x360_1mb.mp4'}}
+    // Store reference  
+    ref={videoRef}
+    // Callback when remote video is buffering                                      
+    //onBuffer={onBuffer}
+    // Callback when video cannot be loaded              
+    //onError={onError}               
+    style={styles.backgroundVideo}
+   /> */}
       </TouchableOpacity>
     );
   };
+  const handleVideoPress = (index) => {
+    setSelectedVideoIndex(index);
+    setIsVisibleVideo(true);
+  };
 
-  
+  const closeVideoModal = () => {
+    setIsVisibleVideo(false);
+    videoRef.current?.seek(0); // Reset video to start
+  };
+  // Function to navigate to the previous image
+  const handlePreviousVideo = () => {
+    if (selectedVideoIndex > 0) {
+      setSelectedVideoIndex(selectedVideoIndex - 1);
+    }
+  };
+
+  // Function to navigate to the next image
+  const handleNextVideo = () => {
+    if (selectedVideoIndex < videos.length - 1) {
+      setSelectedVideoIndex(selectedVideoIndex + 1);
+    }
+  };
+
+  const handleVideoLoad = (uri, width, height) => {
+    const aspectRatio = height / width;
+    const videoWidth = videos.length === 1 ? screenWidth : screenWidth * 0.42;
+    setVideoHeights((prevHeights) => ({
+      ...prevHeights,
+      [uri]: videoWidth * aspectRatio, // Calculate height based on aspect ratio
+    }));
+  };
+
+  const renderVideo = ({ item, index }) => {
+    const isSingleVideo = videos.length === 1; // Check if there is only one image
+    const videoWidth = isSingleVideo ? screenWidth * 0.87 : screenWidth * 0.42; // 100% for a single image, 45% for multiple
+    const videoHeight = videoHeights[item] || (isSingleVideo ? screenWidth * 0.6 : screenWidth * 0.5); // Adjust height based on aspect ratio or default
+
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          setIsVisibleVideo(true);
+          setSelectedVideoIndex(index); // Set the selected image index
+        }}
+      >
+      
+          <Video 
+    // Can be a URL or a local file.
+    source={ {uri: `http://tamizhy.smartprosoft.com/media/normal/${item}`}}
+    // Store reference  
+    ref={videoRef}
+    // Callback when remote video is buffering                                      
+    //onBuffer={onBuffer}
+    // Callback when video cannot be loaded              
+    //onError={onError}               
+    style={[styles.image, { width: videoWidth, height: videoHeight }]} // Apply dynamic width and height
+   />
+      </TouchableOpacity>
+    );
+  };
   
   return (       
       <View style={styles.postContainer}>
@@ -99,7 +171,13 @@ const Post = ({ feedId, name, time, content, images }) => {
         columnWrapperStyle={images.length > 1 ? styles.row : null} // Ensure correct spacing between columns for multiple images
         keyExtractor={(item, index) => index.toString()}
       />
-
+ {videos.length >0 &&<FlatList
+        data={videos}
+        renderItem={renderVideo}
+        numColumns={videos.length === 1 ? 1 : 2} // Single column if only one image
+        columnWrapperStyle={videos.length > 1 ? styles.row : null} // Ensure correct spacing between columns for multiple images
+        keyExtractor={(item, index) => index.toString()}
+      />}
 {images.length > 0 && (
   <ImageViewing
     images={images.map((img) => ({ uri: `http://tamizhy.smartprosoft.com/media/large/${img}` }))}
@@ -122,6 +200,25 @@ const Post = ({ feedId, name, time, content, images }) => {
     )}
   />
 )}
+ 
+ <Modal
+        visible={visibleVideo}
+        onRequestClose={closeVideoModal}
+        animationType="slide"
+        transparent={false} // Set to false to take full screen
+      >
+        <Text>video:{videos[selectedVideoIndex]}</Text>
+        <Video
+          ref={videoRef}
+          source={{ uri: `http://tamizhy.smartprosoft.com/media/large/${videos[selectedVideoIndex]}` }}
+          style={styles.fullscreenVideo}
+          controls
+          resizeMode="contain"
+        />
+        <TouchableOpacity onPress={closeVideoModal} style={styles.closeButton}>
+          <Icon name="close" size={30} color="#fff" />
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 };
@@ -151,6 +248,7 @@ const App = () => {
     api.get('feedlist.php')  // Replace with the correct endpoint for fetching posts
       .then(response => {
         setPosts(response.data.data); 
+        console.log('video res',response.data.data)
         setLoading(false);
       })
       .catch(error => {
@@ -192,6 +290,7 @@ const App = () => {
             time={formatDateTime(item.creation_date)}
             content={item.description}
             images={Array.isArray(item.media_files) ? item.media_files : [item.media_files]}
+            videos={Array.isArray(item.media_videos) ? item.media_videos : [item.media_videos]}
           />
         )}
         keyExtractor={(item) => item.id}
@@ -255,6 +354,23 @@ const styles = StyleSheet.create({
   nextButton: {
     position: 'absolute',
     right: 10,
+  },
+  backgroundVideo: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
+  fullscreenVideo: {
+    width: '100%',
+    height: '100%',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    zIndex: 1,
   },
 });
 
