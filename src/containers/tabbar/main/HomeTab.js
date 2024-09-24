@@ -106,14 +106,11 @@ export default function HomeTab({navigation}) {
   const selectedCategoryData = selectedCategory
       ? categories.filter(item => item.category_title === selectedCategory.title)
       : [];
-      const RightPasswordEyeIcon = () => (
-     
-            <TouchableOpacity onPress={toggleModal} >
-
+      const RightPasswordEyeIcon = () => (     
+          <TouchableOpacity onPress={toggleModal} >
             <Image source={require('../../../assets/images/logos.png')}
-              style={{ width: 33, height: 34 }} 
-                />
-            
+              style={{ width: 40, height: 40, marginTop:3 }} 
+                />            
           </TouchableOpacity>
       );
       const [isModalVisible, setIsModalVisible] = useState(false);
@@ -154,14 +151,14 @@ export default function HomeTab({navigation}) {
       
       
   return (
-    <View style={{flexGrow:1, backgroundColor: '#F5F5F5'}}>
+    <View style={{flexGrow:1, backgroundColor: '#fff', paddingTop:10,}}>
          <View style={{ 
           // backgroundColor: colors.backgroundColor3, 
           borderBottomRightRadius: 50, 
           borderBottomLeftRadius: 50,
-          paddingBottom: 50,
+          paddingBottom: 20,
       }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center',paddingRight: 50 ,   marginBottom: 5,}}>
+      <View style={{ flexDirection: 'row', alignItems: 'center',paddingRight: 30, marginBottom: 5,}}>
         {/* SearchComponent on the left */}
         <View style={{ flex: 1 }}>
           <SearchComponent
@@ -177,13 +174,17 @@ export default function HomeTab({navigation}) {
       </View>
       </View>
 
-      <View style={{flex: 1, marginTop: -40, paddingHorizontal: 20}}>
-        <Text style={localStyles.categoryHeading}>Categories
+
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal:30,}}>
+        <View style={{ flex: 1 }}>
+            <Text style={localStyles.categoryHeading}>Categories</Text>
+        </View>
         <TouchableOpacity onPress={handleViewAll} style={localStyles.viewAllButton}>
-              <Text style={localStyles.viewAllText}>View All</Text>
-            </TouchableOpacity>
-        </Text>
-      
+            <Text style={localStyles.viewAllText}>View all</Text>
+        </TouchableOpacity>        
+      </View>
+
+      <View style={{paddingHorizontal: 30,}}>      
         <FlatList
           data={categoriesToDisplay}
           keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
@@ -197,46 +198,49 @@ export default function HomeTab({navigation}) {
         
         />
       </View>
-<View style={{flex: 1, marginTop: -200}}>
-
-<FlatList
-    data={selectedCategoryData}
-    keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
-    renderItem={({ item }) => (
-      <>
-      <View style={localStyles.serviceCard}>
-        <View style={localStyles.leftSection}>
-          <Image 
-            source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${item.file_name}` }} 
-            style={localStyles.serviceIcon} 
+      <View style={{paddingHorizontal: 30,}}> 
+        <Text style={localStyles.catTitle}>Category</Text>     
+      </View>
+      <View style={{paddingHorizontal: 30,}}>
+          <FlatList
+              data={selectedCategoryData}
+              keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
+              renderItem={({ item }) => (
+                <>
+                <View style={localStyles.serviceCard}>
+                  <View style={{ flexDirection: 'row'}}>
+                    <View style={localStyles.leftSection}>
+                      <Image 
+                        source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${item.file_name}` }} 
+                        style={localStyles.serviceIcon} 
+                      />
+                    </View>
+                    
+                    <View style={localStyles.rightSection}>
+                      <Text style={localStyles.title}>{item.name}</Text>
+                      <Text style={localStyles.description}>{item.description || "Write description here"}</Text>
+                    </View>
+                  </View>
+                  <View style={{ flexDirection: 'row'}}>
+                      <View style={{ flex: 1 }}>
+                          <Text style={localStyles.name}>{item.name}</Text>
+                      </View>
+                      <Text style={localStyles.serviceTitle}>{item.category_title}</Text>                  
+                  </View>
+                  <View>
+                      <Text style={localStyles.area}>{item.area}</Text>
+                      <Text style={localStyles.location}>{item.location}</Text>
+                      <Text style={localStyles.mobile}>{item.mobile}</Text>
+                    </View>
+                  <View style={localStyles.bottomInfo}>
+                      <Text style={localStyles.nationality}><Text style={localStyles.name1}>Nationality</Text>{'\n'}{'\n'}{item.nationality || "not specified"}</Text>
+                      <Text style={localStyles.languages}><Text style={localStyles.name1}>Language</Text>{'\n'}{'\n'}{item.language || "Languages not specified"}</Text>
+                  </View>      
+                </View>
+                </>
+              )}
           />
-          <Text style={localStyles.name}>{item.name}</Text>
-          <Text style={localStyles.mobile}>{item.mobile}</Text>
-          <Text style={localStyles.location}>{item.location}</Text>
-          <Text style={localStyles.area}>{item.area}</Text>
-        </View>
-        
-        <View style={localStyles.rightSection}>
-          <Text style={localStyles.name}>{item.name}</Text>
-          <Text style={localStyles.description}>{item.description || "Write description here"}</Text>
-          <Text style={localStyles.serviceTitle}>{item.category_title}</Text>
-
-          {/* New row for nationality and languages */}
-         
-        </View>
       </View>
-
-        <View style={localStyles.bottomInfo}>
-        <Text style={localStyles.nationality}><Text style={localStyles.name1}>Nationality</Text>{'\n'}{'\n'}{item.nationality || "not specified"}</Text>
-        <Text style={localStyles.languages}><Text style={localStyles.name1}>Language</Text>{'\n'}{'\n'}{item.language || "Languages not specified"}</Text>
-      </View>
-      
-        </>
-    )}
-/>
-
-      </View>
-
 <Modal
   visible={isModalVisible}
   animationType="slide"
@@ -289,7 +293,7 @@ export default function HomeTab({navigation}) {
 
 
 
-      <Button   title="Search" onPress={handleFormSubmit} />
+      <Button   title="Submit" onPress={handleFormSubmit} />
 
       {/* Button to Close Modal */}
       <TouchableOpacity onPress={toggleModal}>
@@ -338,16 +342,13 @@ const localStyles = StyleSheet.create({
     
   },
   modalContent: {
-    width: '80%',
- 
-
     width: '100%',
     backgroundColor:'#FFFFFF',
      borderRadius: 20,
-     paddingVertical: 70,
-     paddingHorizontal: 30,
+     paddingVertical: 50,
+     paddingHorizontal: 50,
      alignItems: 'center',
-     marginTop: 200, 
+     marginTop: 280, 
      fontFamily: 'Gilroy-Medium',
   },
   modalTitle: {
@@ -359,153 +360,149 @@ const localStyles = StyleSheet.create({
   inputField: {
     width: '100%',
     padding: 10,
-    borderColor: 'gray',
+    borderColor: 'white',
     borderWidth: 1,
-    borderRadius: 5,
+    borderRadius: 10,
     fontFamily: 'Gilroy-Medium',
   },
   closeModalText: {
-    color: 'blue',
+    color: '#399AF4',
     marginTop: 40,
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: 'Gilroy-Medium',
   },
   categoryContainer: {
     alignItems: 'center',
-    marginRight: 25,
-    marginTop: 65,
+    marginRight: 20,
+    marginTop: 20,
     fontFamily: 'Gilroy-Medium',
-
 },
 categoryIcon: {
-    width: 50,
-    height: 50,
+    width: 70,
+    height: 70,
     marginBottom: 5,
+    borderRadius:5,
+},
+catTitle: {
+  fontSize: 18,
+  fontFamily: 'Gilroy-SemiBold',
+  color:'#242B48',
+  marginBottom:25,
+  marginTop:20,
 },
 categoryHeading: {
-  fontSize: 22,
-  fontWeight: 'bold',
-  paddingBottom: 0,
-  paddingLeft: 15,
-  fontFamily: 'Gilroy-Medium',
+  fontSize: 18,
+  fontFamily: 'Gilroy-SemiBold',
+  color:'#242B48',
 },
 categoryText: {
-    fontSize: 16,
+    fontSize: 14,
     textAlign: 'center',
     marginTop: 5,
-    fontFamily: 'Gilroy-Medium',
-},
-viewAllButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 150,
-    marginRight: 85,
-    marginTop: 95,
+    fontFamily: 'Gilroy-SemiBold',
+    color:'#4A537E',
+    marginBottom:10,
 },
 viewAllText: {
-    color: 'blue',
-    fontSize: 20,
-    fontFamily: 'Gilroy-Medium',
-},
+    color: '#8694B2',
+    fontSize: 18,
+    fontFamily: 'Gilroy-Light',
+    textDecorationLine:'underline',
+  },
 serviceCard: {
-  flexDirection: 'row',  // Main container with two columns: one for the logo, the other for the text
-  padding: 20,
+  padding: 10,
   backgroundColor: '#fff',
-  marginTop: 10,
   borderRadius: 10,
-  marginBottom: 10,
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.3,
-  shadowRadius: 4,
-  elevation: 2,
+  marginBottom: 20,
   fontFamily: 'Gilroy-Medium',
+  borderColor:'#EEEEEE',
+  borderWidth:1,
 },
 leftSection: {
-  flex: 0.5,  // Left section for the logo
   fontFamily: 'Gilroy-Medium',
+  marginRight:10,
 },
 rightSection: {
-  flex: 0.5,  // Right section for the text content
   flexDirection: 'column',  // Stack the text elements vertically
   justifyContent: 'center',
   paddingLeft: 10,
   fontFamily: 'Gilroy-Medium',
   paddingBottom: 20,
 },
+title: {
+  fontSize: 14,
+  color: '#242B48',
+  fontFamily: 'Gilroy-SemiBold',
+  justifyContent: 'center',
+
+},
 name: {
-  fontSize: 16,
-  color: 'skyblue',
-  fontWeight: 'bold',
-  fontFamily: 'Gilroy-Medium',
+  fontSize: 17,
+  color: '#399AF4',
+  fontFamily: 'Gilroy-SemiBold',
+  justifyContent: 'center',
+
 },
 name1: { 
-  fontSize: 16,
-  color: '#ccc',
-  fontFamily: 'Gilroy-Medium',
+  fontSize: 12,
+  color: '#8694B2',
+  fontFamily: 'Gilroy-Light',
 },
 description: {
-  fontSize: 16,
-  color: '#666',
-  fontWeight: 'bold',
+  fontSize: 12,
+  color: '#8694B2',
   marginBottom: 5,
-  fontFamily: 'Gilroy-Medium',
+  fontFamily: 'Gilroy-Light',
 },
 mobile: {
-  fontSize: 14,
-  color: '#333',
+  fontSize: 12,
+  color: '#8694B2',
   fontFamily: 'Gilroy-Medium',
+  marginTop:5,
 },
 location: {
-  fontSize: 14,
-  color: '#333',
+  fontSize: 12,
+  color: '#8694B2',
   fontFamily: 'Gilroy-Medium',
 },
 area: {
-  fontSize: 14,
-  color: '#333',
+  fontSize: 12,
+  color: '#8694B2',
   fontFamily: 'Gilroy-Medium',
 },
 serviceIcon: {
-  width: 90,
-  height: 90,
+  width: 75,
+  height: 75,
 },
 serviceTitle: {
-  fontSize: 19,
-  fontWeight: 'bold',
-  fontFamily: 'Gilroy-Medium',
+  fontSize: 12,
+  fontFamily: 'Gilroy-SemiBold',  
+  color: '#4A537E',
+  backgroundColor: '#F0F7FF',
+  paddingHorizontal: 15,
+  paddingVertical:5,
+  borderRadius:10,
 },
 
 // New style for nationality and languages
 bottomInfo: {
   backgroundColor: '#fff',
-
   flexDirection: 'row',  // Align nationality and languages in a row
   justifyContent: 'space-between',  // Space them apart
-  borderTopWidth: 3,  // Add top border
-  borderTopColor: '#FFF',  // Light grey border color
-  marginBottom: 12,  // Add margin from the top
-  paddingTop: 15,  // Add padding at the top to give space between text and border
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.3,
-  shadowRadius: 4,
-  elevation: 1,
+  borderTopWidth : 1,  // Add top border
+  borderTopColor: '#eee',  // Light grey border color
+  paddingTop: 5,  // Add padding at the top to give space between text and border
   fontFamily: 'Gilroy-Medium',
+  marginTop:10,
 },
 nationality: {
-  fontSize: 14,
-  color: '#333',
-  paddingStart:10,
-  marginBottom: 12, 
-  fontWeight: 'bold',
+  fontSize: 12,
+  color: '#000000',
   fontFamily: 'Gilroy-Medium',
 },
 languages: {
-  fontSize: 14,
-  color: '#333',
-  paddingEnd:10,
-  fontWeight: 'bold',
+  fontSize: 12,
+  color: '#000000',
   fontFamily: 'Gilroy-Medium',
 },
 });
