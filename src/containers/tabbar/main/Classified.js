@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Image, StyleSheet ,Modal,ScrollView} from 'react-native';
 import SearchComponent from '../../../components/homeComponent/SearchComponent';
 import api from '../../../api/api';  // Ensure this is your correct API import
-
+import ClassifiedForm from './ClassifiedForm'; // Assuming ClassifiedForm is in the same directory
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const ClassifiedPage = () => {
@@ -18,7 +18,13 @@ const ClassifiedPage = () => {
 
 
     const [dropdownVisible, setDropdownVisible] = useState(false); // Dropdown visibility state
+    const [isFormVisible, setIsFormVisible] = useState(false);
 
+    // Handle form submission
+    const handleFormSubmit = (newItem) => {
+        // Add the new item to your items list
+        setItems([...items, newItem]);
+    };
     // Fetch categories on component mount
     useEffect(() => {
         setLoading(true);
@@ -163,9 +169,19 @@ const ClassifiedPage = () => {
             )}
 
             {/* Floating Action Button */}
-            <TouchableOpacity style={styles.floatingButton}>
+            <TouchableOpacity
+                style={styles.floatingButton}
+                onPress={() => setIsFormVisible(true)} // Open the form modal
+            >
                 <Icon name="add" size={24} color="#fff" />
             </TouchableOpacity>
+
+            {/* Classified Form Modal */}
+            <ClassifiedForm
+                visible={isFormVisible}
+                onClose={() => setIsFormVisible(false)} // Close the modal
+                onSubmit={handleFormSubmit} // Handle form submission
+            />
         </View>
     );
 };
