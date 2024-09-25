@@ -242,7 +242,9 @@ export default function HomeTab({navigation}) {
                       <View style={{ flex: 1 }}>
                           <Text style={localStyles.name}>{item.name}</Text>
                       </View>
+                      <View style={{ flex: 1 }}>
                       <Text style={localStyles.serviceTitle}>{item.category_title}</Text>                  
+                      </View>
                   </View>
                   <View>
                       <Text style={localStyles.area}>{item.area}</Text>
@@ -395,8 +397,8 @@ const localStyles = StyleSheet.create({
     fontFamily: 'Gilroy-Medium',
 },
 categoryIcon: {
-    width: 70,
-    height: 70,
+    width: 60,
+    height: 60,
     marginBottom: 5,
     borderRadius:5,
 },
@@ -413,7 +415,7 @@ categoryHeading: {
   color:'#242B48',
 },
 categoryText: {
-    fontSize: 14,
+    fontSize: 13,
     textAlign: 'center',
     marginTop: 5,
     fontFamily: 'Gilroy-SemiBold',
