@@ -12,6 +12,34 @@ import EText from '../../../components/common/EText';
 import Video, {VideoRef} from 'react-native-video';
 
 const { width: screenWidth } = Dimensions.get('window');  // Get screen width
+const VideoPlayer = ({ videoUri, visible, onClose }) => {
+  
+  return(
+  <Modal
+    visible={visible}
+    transparent={true}
+    animationType="slide"
+    onRequestClose={onClose}
+  >
+    <View style={styles.modalContainer}>
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={styles.overlay} />
+      </TouchableWithoutFeedback>
+      <View style={styles.mvideoContainer}>
+        <Video
+          source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${videoUri}` }}
+          style={styles.fullscreenVideo}
+          controls
+          resizeMode="contain"
+        />
+      </View>
+      <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+        <Text style={styles.closeText}>Close</Text>
+      </TouchableOpacity>
+    </View>
+  </Modal>
+)};
+
 const Post = ({ feedId, name, time, content, images,videos }) => {
   //console.log('images', images);
 //  const [images, setImages] = useState([]);
@@ -45,6 +73,12 @@ const Post = ({ feedId, name, time, content, images,videos }) => {
       setSelectedImageIndex(selectedImageIndex + 1);
     }
   };
+
+
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+ 
 
   const handleImageLoad = (uri, width, height) => {
     const aspectRatio = height / width;
@@ -90,10 +124,11 @@ const Post = ({ feedId, name, time, content, images,videos }) => {
       </TouchableOpacity>
     );
   };
-  const handleVideoPress = (index) => {
-    setSelectedVideoIndex(index);
-    setIsVisibleVideo(true);
-  };
+
+  // const handleVideoPress = (index) => {
+  //   setSelectedVideoIndex(index);
+  //   setIsVisibleVideo(true);
+  // };
 
   const closeVideoModal = () => {
     setIsVisibleVideo(false);
@@ -121,35 +156,79 @@ const Post = ({ feedId, name, time, content, images,videos }) => {
       [uri]: videoWidth * aspectRatio, // Calculate height based on aspect ratio
     }));
   };
+  const videoRefs = useRef(videos.map(() => React.createRef()));
+  const [pausedStates, setPausedStates] = useState(Array(videos.length).fill(true));
 
+  // const togglePlayPause = (index) => {
+  //   setPausedStates((prev) => {
+  //     const newStates = [...prev];
+  //     newStates[index] = !newStates[index];
+  //     return newStates;
+  //   });
+
+  //   if (pausedStates[index]) {
+  //     videoRefs.current[index].current.play();
+  //   } else {
+  //     videoRefs.current[index].current.pause();
+  //   }
+  // };
+  const togglePlayPause = (index) => {
+    const newPausedState = !pausedStates[index];
+    setPausedStates((prev) => {
+      const newStates = [...prev];
+      newStates[index] = newPausedState;
+      return newStates;
+    });
+  };
   const renderVideo = ({ item, index }) => {
     const isSingleVideo = videos.length === 1; // Check if there is only one image
-    const videoWidth = isSingleVideo ? screenWidth * 0.87 : screenWidth * 0.42; // 100% for a single image, 45% for multiple
-    const videoHeight = videoHeights[item] || (isSingleVideo ? screenWidth * 0.6 : screenWidth * 0.5); // Adjust height based on aspect ratio or default
+    const videoWidth = screenWidth; // 100% for a single image, 45% for multiple
+    const videoHeight = videoHeights[item] || screenWidth; // Adjust height based on aspect ratio or default
 
     return (
       <TouchableOpacity
-        onPress={() => {
-          setIsVisibleVideo(true);
-          setSelectedVideoIndex(index); // Set the selected image index
-        }}
+        // onPress={() => {
+        //   setIsVisibleVideo(true);
+        //   setSelectedVideoIndex(index); // Set the selected image index
+        // }}
+        onPress={() => handleVideoPress(item)}
       >
-      
+         <View style={styles.videoContainer}>
           <Video 
     // Can be a URL or a local file.
     source={ {uri: `http://tamizhy.smartprosoft.com/media/normal/${item}`}}
     // Store reference  
-    ref={videoRef}
+    paused={pausedStates[index]}
+    ref={videoRefs.current[index]}
     // Callback when remote video is buffering                                      
     //onBuffer={onBuffer}
     // Callback when video cannot be loaded              
-    //onError={onError}               
-    style={[styles.image, { width: videoWidth, height: videoHeight }]} // Apply dynamic width and height
+    //onError={onError}    
+     resizeMode="contain" // Ensures aspect ratio is maintained        
+    style={styles.video} // Apply dynamic width and height
    />
+      
+       <TouchableOpacity
+        style={styles.controlButton}
+        onPress={() => togglePlayPause(index)}
+      >
+        <Icon name={pausedStates[index] ? 'play' : 'pause'} size={30} color="#fff" />
+      </TouchableOpacity>
+   
+       </View>
+
       </TouchableOpacity>
     );
   };
-  
+  const handleVideoPress = (video) => {
+    setSelectedVideo(video);
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedVideo(null);
+  };
   return (       
       <View style={styles.postContainer}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -170,12 +249,12 @@ const Post = ({ feedId, name, time, content, images,videos }) => {
         numColumns={images.length === 1 ? 1 : 2} // Single column if only one image
         columnWrapperStyle={images.length > 1 ? styles.row : null} // Ensure correct spacing between columns for multiple images
         keyExtractor={(item, index) => index.toString()}
-      />
+      /> 
  {videos.length >0 &&<FlatList
         data={videos}
         renderItem={renderVideo}
-        numColumns={videos.length === 1 ? 1 : 2} // Single column if only one image
-        columnWrapperStyle={videos.length > 1 ? styles.row : null} // Ensure correct spacing between columns for multiple images
+        numColumns={1} // Single column if only one image
+        columnWrapperStyle={null } // Ensure correct spacing between columns for multiple images
         keyExtractor={(item, index) => index.toString()}
       />}
 {images.length > 0 && (
@@ -200,7 +279,13 @@ const Post = ({ feedId, name, time, content, images,videos }) => {
     )}
   />
 )}
- 
+ {selectedVideo && (
+        <VideoPlayer
+          videoUri={selectedVideo}
+          visible={modalVisible}
+          onClose={closeModal}
+        />
+      )}
  <Modal
         visible={visibleVideo}
         onRequestClose={closeVideoModal}
@@ -305,6 +390,12 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
   },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)', // Black with transparency
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   postContainer: {
     marginBottom: 20,
     backgroundColor: '#ffffff',
@@ -333,6 +424,34 @@ const styles = StyleSheet.create({
     margin: 5, // Margin between images
     borderRadius: 8,
   },
+  video: {
+    margin: 5, // Margin between images
+    padding:0,
+    borderRadius: 8,
+    width:'100%',
+    height: 200
+  },
+  videoContainer: {
+    position: 'relative',
+    width: '100%',
+    height: 200,
+    marginBottom: 10,
+  },
+  controlButton: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -15 }, { translateY: -25 }],
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Optional background
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // video: {
+  //   width: '100%',
+  //   height: '100%',
+  // },
   userImageStyle: {
     width: moderateScale(40),
     height: moderateScale(40),
@@ -370,7 +489,27 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 40,
     right: 20,
-    zIndex: 1,
+    zIndex: 3,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)', // Dark background
+  },
+  mvideoContainer: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 2, // Ensure video is above the overlay
+  },
+
+  closeText: {
+    color: '#fff',
+    fontSize: 18,
   },
 });
 
