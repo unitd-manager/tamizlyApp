@@ -210,12 +210,12 @@ const Post = ({ feedId, name, time, content, images,videos }) => {
     style={styles.video} // Apply dynamic width and height
    />
          
-       {/* <TouchableOpacity
+       <TouchableOpacity
         style={styles.controlButton}
         onPress={() => togglePlayPause(index)}
       >
         <Icon name={pausedStates[index] ? 'play' : 'pause'} size={30} color="#fff" />
-      </TouchableOpacity> */}
+      </TouchableOpacity>
    
        </View>
 
