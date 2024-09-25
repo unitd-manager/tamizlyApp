@@ -1,5 +1,5 @@
 // Library Imports
-import {StyleSheet, View, Alert, FlatList,TouchableOpacity,Text,Image,Modal, TextInput, Button} from 'react-native';
+import {StyleSheet, View, ScrollView, Alert, FlatList,TouchableOpacity,Text,Image,Modal, TextInput, Button} from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 import {useSelector} from 'react-redux';
 //import {FlashList} from '@shopify/flash-list';
@@ -104,9 +104,12 @@ export default function HomeTab({navigation}) {
   const categoriesToDisplay = showAll ? filteredCategories : filteredCategories.slice(0, 3);
 
   const selectedCategoryData = selectedCategory
-      ? categories.filter(item => item.category_title === selectedCategory.title)
-      : [];
-      const RightPasswordEyeIcon = () => (     
+    ? categories.filter(item => item.category_title === selectedCategory.title)
+    : categories.length > 0
+        ? categories.filter(item => item.category_title === categories[0].category_title) // Use the first category as default
+        : [];
+
+        const RightPasswordEyeIcon = () => (     
           <TouchableOpacity onPress={toggleModal} >
             <Image source={require('../../../assets/images/logos.png')}
               style={{ width: 40, height: 40, marginTop:3 }} 
@@ -119,7 +122,8 @@ export default function HomeTab({navigation}) {
       const [nationality, setNationality] = useState('');
       const [languages, setLanguages] = useState([]);
       const [address, setAddress] = useState('');
-      
+      const [item, setItem] = useState(null);
+
       // Function to toggle the modal
       const toggleModal = () => {
         setIsModalVisible(!isModalVisible);
@@ -149,11 +153,10 @@ export default function HomeTab({navigation}) {
         toggleModal();  // Close the modal after form submission
       };
       
-      
   return (
     <View style={{flexGrow:1, backgroundColor: '#fff', paddingTop:10,}}>
          <View style={{ 
-          // backgroundColor: colors.backgroundColor3, 
+          // b ackgroundColor: colors.backgroundColor3, 
           borderBottomRightRadius: 50, 
           borderBottomLeftRadius: 50,
           paddingBottom: 20,
@@ -190,16 +193,30 @@ export default function HomeTab({navigation}) {
           keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
           horizontal
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleCategorySelect(item)} style={localStyles.categoryContainer}>
-              <Image source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${item.file_name}` }} style={localStyles.categoryIcon} />
-              <Text style={localStyles.categoryText}>{item.title}</Text>
-            </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => {
+              setSelectedCategory(item); // Set the selected category here
+              setItem(item); // Store the item object for use elsewhere
+            }} 
+            style={localStyles.categoryContainer}
+          >
+            <Image source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${item.file_name}` }} style={localStyles.categoryIcon} />
+            <Text style={localStyles.categoryText}>{item.title}</Text>
+          </TouchableOpacity>
           )}
         
         />
       </View>
       <View style={{paddingHorizontal: 30,}}> 
-        <Text style={localStyles.catTitle}>Category</Text>     
+        {item ? ( 
+          <Text style={localStyles.catTitle}>{item.title}</Text> 
+        ) : ( 
+          selectedCategoryData.length > 0 ? (
+            <Text style={localStyles.catTitle}>{selectedCategoryData[0].category_title}</Text>
+          ) : (
+            <Text style={localStyles.catTitle}></Text>
+          )
+        )}
       </View>
       <View style={{paddingHorizontal: 30,}}>
           <FlatList
@@ -241,12 +258,12 @@ export default function HomeTab({navigation}) {
               )}
           />
       </View>
-<Modal
-  visible={isModalVisible}
-  animationType="slide"
-  transparent={true}
-  onRequestClose={toggleModal}
->
+  <Modal
+    visible={isModalVisible}
+    animationType="slide"
+    transparent={true}
+    onRequestClose={toggleModal}
+  >
   <View style={localStyles.modalContainer}>
     <View style={localStyles.modalContent}>
 
@@ -304,7 +321,7 @@ export default function HomeTab({navigation}) {
 </Modal>
 
     
-    </View>
+</ View>
     
   );
 }
