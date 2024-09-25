@@ -154,10 +154,11 @@ const Login = () => {
               text1:'Invalid Credentials',
             });    
           }
-        }).catch(()=>{
+        }).catch((err)=>{
+          
           Toast.show({
             type: 'error',
-            text1:'Invalid Credentials',
+            text1:err.message,
           });    
       })
     }
