@@ -209,12 +209,7 @@ const Post = ({ feedId, name, time, content, images,videos }) => {
      resizeMode="contain" // Ensures aspect ratio is maintained        
     style={styles.video} // Apply dynamic width and height
    />
-          {paused && (
-          <TouchableOpacity style={styles.thumbnailContainer} onPress={togglePlayPause}>
-            <Image source={{ uri: thumbnailUri }} style={styles.thumbnail} />
-            <Icon name="play" size={30} color="#fff" style={styles.playIcon} />
-          </TouchableOpacity>
-        )}
+         
        {/* <TouchableOpacity
         style={styles.controlButton}
         onPress={() => togglePlayPause(index)}
