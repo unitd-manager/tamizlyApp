@@ -10,6 +10,7 @@ import HTMLView from 'react-native-htmlview';
 import flex from '../../../themes/flex';
 import EText from '../../../components/common/EText'; 
 import Video, {VideoRef} from 'react-native-video';
+import AudioPlayer from './AudioPlayer';
 
 const { width: screenWidth } = Dimensions.get('window');  // Get screen width
 const VideoPlayer = ({ videoUri, visible, onClose }) => {
@@ -195,6 +196,7 @@ const Post = ({ feedId, name, time, content, images,videos }) => {
       >
          <View style={styles.videoContainer}>
           <Video 
+          poster='http://tamizhy.smartprosoft.com/media/normal/538_default.jpg'
     // Can be a URL or a local file.
     source={ {uri: `http://tamizhy.smartprosoft.com/media/normal/${item}`}}
     // Store reference  
@@ -207,7 +209,7 @@ const Post = ({ feedId, name, time, content, images,videos }) => {
      resizeMode="contain" // Ensures aspect ratio is maintained        
     style={styles.video} // Apply dynamic width and height
    />
-      
+         
        <TouchableOpacity
         style={styles.controlButton}
         onPress={() => togglePlayPause(index)}
@@ -380,6 +382,7 @@ const App = () => {
         )}
         keyExtractor={(item) => item.id}
       />
+      <AudioPlayer/>
     </View>
   );
 };
@@ -413,6 +416,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#888',
     marginTop:2,
+  },
+  thumbnailContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  thumbnail: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    resizeMode: 'cover',
   },
   content: {
     marginVertical: 12,
@@ -452,6 +470,14 @@ const styles = StyleSheet.create({
   //   width: '100%',
   //   height: '100%',
   // },
+  placeholderImage: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    resizeMode: 'contain',
+  },
   userImageStyle: {
     width: moderateScale(40),
     height: moderateScale(40),
