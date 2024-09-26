@@ -333,7 +333,7 @@ const App = () => {
     api.get('feedlist.php')  // Replace with the correct endpoint for fetching posts
       .then(response => {
         setPosts(response.data.data); 
-        console.log('video res',response.data.data)
+        //console.log('video res',response.data.data)
         setLoading(false);
       })
       .catch(error => {

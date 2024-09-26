@@ -24,18 +24,24 @@ export default function HomeTab({navigation}) {
 
   const colors = useSelector(state => state.theme.theme);
 
-  const [categories, setCategories] = useState('');
-  const [filteredCategories, setFilteredCategories] = useState([]);
+  const [categoriesData, setCategoriesData] = useState([]); // For categories
+  const [directoryData, setDirectoryData] = useState([]);  // For directory data
+  const [filteredDirectory, setFilteredDirectory] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAll, setShowAll] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [isLoading, setIsLoading] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   // New state for categories
-  const [categoriesData, setCategoriesData] = useState([]);
-  const [user, setUserData] = useState();
+  const [location, setLocation] = useState('');
+  const [city, setCity] = useState('');
+  const [nationality, setNationality] = useState('');
+  const [languages, setLanguages] = useState([]);
+  const [address, setAddress] = useState('');
+  const [item, setItem] = useState(null);
+
   const getUser = async () => {
     let userData = await AsyncStorage.getItem('USER');
     userData = JSON.parse(userData);
@@ -43,86 +49,65 @@ export default function HomeTab({navigation}) {
   };
   // Fetch categories from separate API
   useEffect(() => {
-      api.get('selectCategory(1).php')  // Replace with the correct endpoint for fetching categories
-          .then(response => {
-              if (response.data && response.data.data) {
-                  setCategoriesData(response.data.data);
-                  setFilteredCategories(response.data.data);
-              } else {
-                  setError('Invalid response structure.');
-              }
-              setLoading(false);
-          })
-          .catch(error => {
-              console.error('There was an error fetching the categories!', error);
-              setError('There was an error fetching the categories!');
-              setLoading(false);
-          });
-  }, []);
-  useEffect(() => {
-  }, [categoriesData]);
-  
-
-  // Fetch the directory data from the original API
-  useEffect(() => {
-      api.get('selectCategory.php')
-          .then(response => {
-              if (response.data && response.data.data) {
-                  setCategories(response.data.data);
-              } else {
-                  setError('Invalid response structure.');
-              }
-              setLoading(false);
-          })
-          .catch(error => {
-              console.error('There was an error fetching the data!', error);
-              setError('There was an error fetching the data!');
-              setLoading(false);
-          });
+    api.get('selectCategory.php')
+      .then(response => {
+        if (response.data && response.data.data) {
+          setCategoriesData(response.data.data.category_data);  // Set categories
+          setDirectoryData(response.data.data.directory_data);  // Set directory
+          setFilteredDirectory(response.data.data.directory_data);  // Set initially filtered directory
+        } else {
+          setError('Invalid response structure.');
+        }
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('There was an error fetching the data!', error);
+        setError('There was an error fetching the data!');
+        setLoading(false);
+      });
   }, []);
 
   const handleSearch = (query) => {
-      setSearchQuery(query);
-      if (query) {
-          const filteredData = categoriesData.filter(category =>
-              category.title.toLowerCase().includes(query.toLowerCase())
-          );
-          setFilteredCategories(filteredData);
-      } else {
-          setFilteredCategories(categoriesData);
-      }
+    setSearchQuery(query);
+  
+    let filteredData = directoryData;
+  
+    // If a category is selected, filter the directory data by that category
+    if (selectedCategory) {
+      filteredData = filteredData.filter(item => item.category_title === selectedCategory.title);
+    }
+  
+    // Now filter by the search query
+    if (query) {
+      filteredData = filteredData.filter(item => {
+        const nameMatches = item.name?.toLowerCase().includes(query.toLowerCase());
+        const mobileMatches = item.mobile?.toLowerCase().includes(query.toLowerCase());
+        return nameMatches || mobileMatches;
+      });
+    }
+  
+    // Update the filtered directory
+    setFilteredDirectory(filteredData);
   };
-
+  
   const handleViewAll = () => {
       setShowAll(!showAll);
   };
 
   const handleCategorySelect = (category) => {
       setSelectedCategory(category);
+      // Filter directory based on the selected category's title
+    const filteredData = directoryData.filter(item => item.category_title === category.title);
+    setFilteredDirectory(filteredData); // Update the filtered directory state
   };
 
-  const categoriesToDisplay = showAll ? filteredCategories : filteredCategories.slice(0, 3);
+  const categoriesToDisplay = showAll ? categoriesData : categoriesData.slice(0, 3);
 
   const selectedCategoryData = selectedCategory
-    ? categories.filter(item => item.category_title === selectedCategory.title)
-    : categories.length > 0
-        ? categories.filter(item => item.category_title === categories[0].category_title) // Use the first category as default
-        : [];
-
-        const RightPasswordEyeIcon = () => (     
-          <TouchableOpacity onPress={toggleModal} >
-            <Image source={require('../../../assets/images/logos.png')}
-              style={{ width: 40, height: 40, marginTop:3 }} 
-                />            
-          </TouchableOpacity>
-      );
-      const [isModalVisible, setIsModalVisible] = useState(false);
-      const [location, setLocation] = useState('');
-      const [city, setCity] = useState('');
-      const [nationality, setNationality] = useState('');
-      const [languages, setLanguages] = useState([]);
-      const [address, setAddress] = useState('');
-      const [item, setItem] = useState(null);
+    ? directoryData.filter(item => item.category_title === selectedCategory.title)
+    : directoryData.length > 0
+    ? directoryData.filter(item => item.category_title === directoryData[0].category_title)
+    : [];
 
       // Function to toggle the modal
       const toggleModal = () => {
@@ -147,7 +132,7 @@ export default function HomeTab({navigation}) {
         if (filteredData.length === 0) {
           Alert.alert('No results found', 'No categories match your search criteria.');
         } else {
-          setFilteredCategories(filteredData);
+          setFilteredDirectory(filteredData);
         }
       
         toggleModal();  // Close the modal after form submission
@@ -172,11 +157,11 @@ export default function HomeTab({navigation}) {
           />
         </View>
 
-        {/* RightPasswordEyeIcon on the right */}
-        <RightPasswordEyeIcon />
+        <TouchableOpacity onPress={toggleModal}>
+            <Image source={require('../../../assets/images/logos.png')} style={{ width: 40, height: 40, marginTop: 3 }} />
+          </TouchableOpacity>
       </View>
       </View>
-
 
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal:30,}}>
         <View style={{ flex: 1 }}>
@@ -193,20 +178,14 @@ export default function HomeTab({navigation}) {
           keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
           horizontal
           renderItem={({ item }) => (
-          <TouchableOpacity 
-            onPress={() => {
-              setSelectedCategory(item); // Set the selected category here
-              setItem(item); // Store the item object for use elsewhere
-            }} 
-            style={localStyles.categoryContainer}
-          >
-            <Image source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${item.file_name}` }} style={localStyles.categoryIcon} />
-            <Text style={localStyles.categoryText}>{item.title}</Text>
-          </TouchableOpacity>
-          )}
-        
+            <TouchableOpacity onPress={() => handleCategorySelect(item)} style={localStyles.categoryContainer}>
+              <Image source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${item.file_name}` }} style={localStyles.categoryIcon} />
+              <Text style={localStyles.categoryText}>{item.title}</Text>
+            </TouchableOpacity>
+          )}        
         />
       </View>
+
       <View style={{paddingHorizontal: 30,}}> 
         {item ? ( 
           <Text style={localStyles.catTitle}>{item.title}</Text> 
@@ -218,12 +197,11 @@ export default function HomeTab({navigation}) {
           )
         )}
       </View>
-      <View style={{paddingHorizontal: 30,}}>
+      <View style={{paddingHorizontal: 30, marginBottom:90,}}>
           <FlatList
-              data={selectedCategoryData}
+              data={filteredDirectory}
               keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
               renderItem={({ item }) => (
-                <>
                 <View style={localStyles.serviceCard}>
                   <View style={{ flexDirection: 'row'}}>
                     <View style={localStyles.leftSection}>
@@ -242,7 +220,7 @@ export default function HomeTab({navigation}) {
                       <View style={{ flex: 1 }}>
                           <Text style={localStyles.name}>{item.name}</Text>
                       </View>
-                      <View style={{ flex: 1 }}>
+                      <View style={{ }}>
                       <Text style={localStyles.serviceTitle}>{item.category_title}</Text>                  
                       </View>
                   </View>
@@ -256,7 +234,6 @@ export default function HomeTab({navigation}) {
                       <Text style={localStyles.languages}><Text style={localStyles.name1}>Language</Text>{'\n'}{'\n'}{item.language || "Languages not specified"}</Text>
                   </View>      
                 </View>
-                </>
               )}
           />
       </View>
@@ -309,8 +286,6 @@ export default function HomeTab({navigation}) {
         style={localStyles.inputField}
       />
       <Text style={localStyles.modalTitle}></Text>
-
-
 
       <Button   title="Submit" onPress={handleFormSubmit} />
 
@@ -501,6 +476,7 @@ serviceTitle: {
   paddingHorizontal: 15,
   paddingVertical:5,
   borderRadius:10,
+  maxWidth:150,
 },
 
 // New style for nationality and languages
