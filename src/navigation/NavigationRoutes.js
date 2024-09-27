@@ -1,6 +1,7 @@
 // Tab Routes
 import MainHome from '../containers/tabbar/main/HomeTab';
 import Classified from '../containers/tabbar/main/Classified';
+import ProductDetail from '../containers/tabbar/main/ProductDetail';
 import TaskTab from '../containers/tabbar/taskList/TaskTab';
 import Feed from '../containers/tabbar/main/Feed';
 import Profile from '../containers/tabbar/main/ProfileTab';
@@ -33,6 +34,8 @@ export const StackRoute = {
   WelcomeScreen,
   OnBoarding,
   Login,
+  ProductDetail,
+
   SignUp,
   ForgotPass,
   TabBar,

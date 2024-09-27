@@ -19,7 +19,8 @@ export const StackNav = {
   Auth: 'Auth',
   TabBar: 'TabBar',
   Splash: 'Splash',
-  
+  ProductDetail:'ProductDetail',
+
   Login: 'Login',
   SignUp:'SignUp',
   ForgotPass:'ForgotPass',

@@ -64,7 +64,6 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
                 body: JSON.stringify(classifiedData),
                 headers: {
                     Accept: 'application/json',
-                    'Content-Type': 'application/json',
                 },
             });
     
@@ -76,7 +75,7 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
             // Second API call: Upload Media (if image is selected)
             if (selectImage && selectImage.path) {
                 const mediaFormData = new FormData();
-                mediaFormData.append('classified_id', classifiedId); // Pass classified_id here
+                mediaFormData.append('record_id', classifiedId); // Pass classified_id here
                 mediaFormData.append('media', {
                     type: selectImage.mime,
                     uri: selectImage.path,

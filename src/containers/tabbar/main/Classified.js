@@ -3,13 +3,14 @@ import { View, Text, TextInput, TouchableOpacity, FlatList, Image, StyleSheet ,M
 import SearchComponent from '../../../components/homeComponent/SearchComponent';
 import api from '../../../api/api';  // Ensure this is your correct API import
 import ClassifiedForm from './ClassifiedForm'; // Assuming ClassifiedForm is in the same directory
+import { useNavigation } from '@react-navigation/native'; // Import navigation hook
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const ClassifiedPage = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const navigation = useNavigation(); // Initialize navigation
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [categories, setCategories] = useState([]);
     const [items, setItems] = useState([]);
@@ -79,6 +80,7 @@ const ClassifiedPage = () => {
         if (query) {
             const filteredData = items.filter(item =>
                 item.title.toLowerCase().includes(query.toLowerCase()) ||
+                item.category_title.toLowerCase().includes(query.toLowerCase()) ||
                 item.description.toLowerCase().includes(query.toLowerCase())
             );
             setFilteredItems(filteredData);
@@ -160,9 +162,23 @@ const ClassifiedPage = () => {
                     numColumns={2}
                     renderItem={({ item }) => (
                         <View style={styles.itemCard}>
-                            <Image source={{ uri: 'http://tamizhy.smartprosoft.com/media/normal/435_9187604.png' }} style={styles.itemImage} />
+                            <>
+                                <View style={styles.itemImage1}>
+                                <TouchableOpacity
+                     style={styles.itemImage1}
+                    onPress={() => navigation.navigate('ProductDetail', { item })}
+                >
+                            <Image source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${item.file_name}` }} style={styles.itemImage} />
+                           
+                           </TouchableOpacity>
+                            </View>
+                            </>
+                            <Text style={styles.itemCategory}>{item.category_title}</Text>
                             <Text style={styles.itemTitle}>{item.title}</Text>
-                            <Text style={styles.itemPrice}>{item.description}</Text>
+                            <Text style={styles.item}>
+                                {item.description.replace(/(<([^>]+)>)/gi, "").split(' ').slice(0, 5).join(' ')}...
+                            </Text>
+                            <Text style={styles.itemPrice}>$ {item.price}</Text>
                         </View>
                     )}
                 />
@@ -230,27 +246,43 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         margin: 8,
-        padding: 10,
+        padding: 5,
         borderRadius: 10,
-        alignItems: 'center',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
-        elevation: 1,
+        elevation: 2,
+
+        height: 300, // Adjust to control the height of the cards
+        justifyContent: 'space-between' // Space items inside card
     },
     itemImage: {
         width: 100,
         height: 100,
-        marginBottom: 10,
+        justifyContent: 'center',
+        left: 20,
+        top: 30,
+    },
+    itemImage1: {
+        width: 150,
+        height: 150,
+        backgroundColor: '#DCF0F7',
+        
     },
     itemTitle: {
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: 'bold',
-        marginBottom: 5,
+        color: '#000', // Black color for title
     },
     itemPrice: {
-        fontSize: 14,
-        color: '#00A',
+        fontSize: 16,
+        color: '#00A', // Price color as blue
+        fontWeight: 'bold',
+    },
+    itemCategory: {
+        fontSize: 12,
+        color: '#888', // Gray color for category title
+        marginBottom: 2,
     },
     floatingButton: {
         position: 'absolute',
