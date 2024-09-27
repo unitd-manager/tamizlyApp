@@ -36,19 +36,14 @@ export default function HomeTab({navigation}) {
   const [showAll, setShowAll] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [regionFilter, setRegionFilter] = useState([]);
+  const [regionFilter, setRegionFilter] = useState('ALL');
   const [valuelistRegion, setValuelistRegion] = useState([]);
-  const [locationFilter, setLocationFilter] = useState([]);
+  const [locationFilter, setLocationFilter] = useState('ALL');
   const [valuelistLocation, setValuelistLocation] = useState([]);
-  const [countryFilter, setCountryFilter] = useState([]);
+  const [countryFilter, setCountryFilter] = useState('ALL');
   const [valuelistCountry, setValuelistCountry] = useState([]);
   
-  // New state for categories
-  const [location, setLocation] = useState('');
-  const [city, setCity] = useState('');
-  const [nationality, setNationality] = useState('');
   const [languages, setLanguages] = useState([]);
-  const [address, setAddress] = useState('');
   const [item, setItem] = useState(null);
 
   const getUser = async () => {
@@ -165,40 +160,40 @@ export default function HomeTab({navigation}) {
       const toggleModal = () => {
         setIsModalVisible(!isModalVisible);
       };
-      
+
+      const toggleModalClose = () => {
+        setIsModalVisible(!isModalVisible);
+        setRegionFilter('ALL')
+        setCountryFilter('ALL')
+        setLocationFilter('ALL')
+      };
       // Function to handle form submission
       const handleFormSubmit = () => {
         // Filter based on all fields entered by the user
-        let filteredData = directoryData;
+        let filteredData = selectedCategoryData;
       
         // Filter by region
-        if (regionFilter) {
+        if (regionFilter !== 'ALL') {
           filteredData = filteredData.filter(item => item.region?.toLowerCase() === regionFilter.toLowerCase());
         }
       
         // Continue filtering by other fields
-        if (locationFilter) {
+        if (locationFilter !== 'ALL') {
           filteredData = filteredData.filter(item => item.location?.toLowerCase().includes(locationFilter.toLowerCase()));
         }
-      
-        if (city) {
-          filteredData = filteredData.filter(item => item.city?.toLowerCase().includes(city.toLowerCase()));
-        }
-      
-        if (countryFilter) {
+            
+        if (countryFilter !== 'ALL') {
           filteredData = filteredData.filter(item => item.nationality?.toLowerCase().includes(countryFilter.toLowerCase()));
         }
       
         if (languages.length > 0) {
-          filteredData = filteredData.filter(item => 
-            languages.some(lang => (item.languages || []).map(l => l.toLowerCase()).includes(lang.toLowerCase()))
-          );
-        }
-      
-        if (address) {
-          filteredData = filteredData.filter(item => item.address?.toLowerCase().includes(address.toLowerCase()));
-        }
-      
+          filteredData = filteredData.filter(item => {
+            return languages.some(lang => 
+              item.language && item.language.toLowerCase().includes(lang.toLowerCase())
+            );
+          });
+        }        
+            
         if (filteredData.length === 0) {
           Alert.alert('No results found', 'No categories match your search criteria.');
         } else {
@@ -343,7 +338,7 @@ export default function HomeTab({navigation}) {
                   </View>
 
                   <View style={localStyles.bottomInfo}>
-                      <Text style={localStyles.nationality}><Text style={localStyles.name1}>Nationality</Text>{'\n'}{'\n'}{item.nationality || "Not specified"}</Text>
+                      <Text style={localStyles.nationality}><Text style={localStyles.name1}>Nationality</Text>{'\n'}{'\n'}{item.country || "Not specified"}</Text>
                       <Text style={localStyles.languages}><Text style={localStyles.name1}>Language</Text>{'\n'}{'\n'}{item.language || "Not specified"}</Text>
                   </View>      
                 </View>
@@ -365,7 +360,7 @@ export default function HomeTab({navigation}) {
                 onValueChange={(itemValue) => setRegionFilter(itemValue)}
                 style={localStyles.picker}
             >
-                <Picker.Item label="Region" value="" style={localStyles.pickerItem}/>
+                <Picker.Item label="Select Region" value="ALL" style={localStyles.pickerItem}/>
                 {valuelistRegion.map((item) => (
                     <Picker.Item key={item.value} label={item.value} value={item.value} style={localStyles.pickerItem} />
                 ))}
@@ -379,7 +374,7 @@ export default function HomeTab({navigation}) {
                 onValueChange={(itemValue) => setLocationFilter(itemValue)}
                 style={localStyles.picker}
             >
-                <Picker.Item label="Location" value="" style={localStyles.pickerItem}/>
+                <Picker.Item label="Select Location" value="ALL" style={localStyles.pickerItem}/>
                 {valuelistLocation.map((item) => (
                     <Picker.Item key={item.value} label={item.value} value={item.value} style={localStyles.pickerItem} />
                 ))}
@@ -393,9 +388,9 @@ export default function HomeTab({navigation}) {
                 onValueChange={(itemValue) => setCountryFilter(itemValue)}
                 style={localStyles.picker}
             >
-                <Picker.Item label="Nationality" value="" style={localStyles.pickerItem}/>
+                <Picker.Item label="Select Nationality" value="ALL" style={localStyles.pickerItem}/>
                 {valuelistCountry.map((item) => (
-                    <Picker.Item key={item.name} label={item.name} value={item.name} style={localStyles.pickerItem} />
+                    <Picker.Item key={item.name} label={item.name} value={item.nationality} style={localStyles.pickerItem} />
                 ))}
             </Picker>
         </View>
@@ -403,8 +398,8 @@ export default function HomeTab({navigation}) {
       {/* Languages (use a multi-select or text input based on your needs) */}
       <EInput
         placeholder="Languages (e.g., English, French)"
-        value={languages.join(', ')}  // Join array for display
-        onChangeText={text => setLanguages(text.split(',').map(lang => lang.trim()))}
+        value={languages.join(', ')}  // Display joined array for the input field
+        onChangeText={text => setLanguages(text.split(',').map(lang => lang.trim()))}  // Split input text into an array of languages
         style={localStyles.inputFieldLang}
       />
 
@@ -413,7 +408,7 @@ export default function HomeTab({navigation}) {
       <Button   title="Submit" onPress={handleFormSubmit} />
 
       {/* Button to Close Modal */}
-      <TouchableOpacity onPress={toggleModal}>
+      <TouchableOpacity onPress={toggleModalClose}>
         <Text style={localStyles.closeModalText}>Close</Text>
       </TouchableOpacity>
     </View>
