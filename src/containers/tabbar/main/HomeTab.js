@@ -1,7 +1,8 @@
 // Library Imports
-import {StyleSheet, View, ScrollView, Alert, FlatList,TouchableOpacity,Text,Image,Modal, TextInput, Button} from 'react-native';
+import {StyleSheet, View, ScrollView, ActivityIndicator, Alert, FlatList,TouchableOpacity,Text,Image,Modal, TextInput, Button} from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 import {useSelector} from 'react-redux';
+import { Picker } from '@react-native-picker/picker';
 //import {FlashList} from '@shopify/flash-list';
 import filter from 'lodash.filter';
 import moment from 'moment';
@@ -12,6 +13,8 @@ import SearchComponent from '../../../components/homeComponent/SearchComponent';
 import ProjectConfirmModal from '../../../components/models/ProjectConfirmModal';
 import CardData from './CardData';
 import EInput from '../../../components/common/EInput';
+import {moderateScale} from '../../../common/constants';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import strings from '../../../i18n/strings';
 import api from '../../../api/api';
@@ -33,13 +36,14 @@ export default function HomeTab({navigation}) {
   const [showAll, setShowAll] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
-  // New state for categories
-  const [location, setLocation] = useState('');
-  const [city, setCity] = useState('');
-  const [nationality, setNationality] = useState('');
+  const [regionFilter, setRegionFilter] = useState('ALL');
+  const [valuelistRegion, setValuelistRegion] = useState([]);
+  const [locationFilter, setLocationFilter] = useState('ALL');
+  const [valuelistLocation, setValuelistLocation] = useState([]);
+  const [countryFilter, setCountryFilter] = useState('ALL');
+  const [valuelistCountry, setValuelistCountry] = useState([]);
+  
   const [languages, setLanguages] = useState([]);
-  const [address, setAddress] = useState('');
   const [item, setItem] = useState(null);
 
   const getUser = async () => {
@@ -49,6 +53,7 @@ export default function HomeTab({navigation}) {
   };
   // Fetch categories from separate API
   useEffect(() => {
+    setLoading(true);
     api.get('selectCategory.php')
       .then(response => {
         if (response.data && response.data.data) {
@@ -67,6 +72,42 @@ export default function HomeTab({navigation}) {
       });
   }, []);
 
+  const getValuelistRegion = () => {
+    api
+      .get('selectRegion.php')
+      .then((res) => {
+        setValuelistRegion(res.data.data);
+      })
+      .catch((error) => {
+        console.log('valuelist not found:', error);
+      });
+  };
+  const getValuelistLocation = () => {
+    api
+      .get('selectLocation.php')
+      .then((res) => {
+        setValuelistLocation(res.data.data);
+      })
+      .catch((error) => {
+        console.log('valuelist not found:', error);
+      });
+  };
+  const getValuelistCountry = () => {
+    api
+      .get('selectCountry.php')
+      .then((res) => {
+        setValuelistCountry(res.data.data);
+      })
+      .catch((error) => {
+        console.log('valuelist not found:', error);
+      });
+  };
+  useEffect(() => {
+    getValuelistLocation()
+    getValuelistRegion()
+    getValuelistCountry()
+  }, []);
+  
   const handleSearch = (query) => {
     setSearchQuery(query);
   
@@ -82,7 +123,13 @@ export default function HomeTab({navigation}) {
       filteredData = filteredData.filter(item => {
         const nameMatches = item.name?.toLowerCase().includes(query.toLowerCase());
         const mobileMatches = item.mobile?.toLowerCase().includes(query.toLowerCase());
-        return nameMatches || mobileMatches;
+        const regionMatches = item.region?.toLowerCase().includes(query.toLowerCase());
+        const locationMatches = item.location?.toLowerCase().includes(query.toLowerCase());
+        const hospitalMatches = item.hospital?.toLowerCase().includes(query.toLowerCase());
+        const specialisationMatches = item.specialisation?.toLowerCase().includes(query.toLowerCase());
+        const areaMatches = item.area?.toLowerCase().includes(query.toLowerCase());
+        const languageMatches = item.language?.toLowerCase().includes(query.toLowerCase());
+        return nameMatches || mobileMatches || regionMatches || locationMatches || hospitalMatches || specialisationMatches || areaMatches || languageMatches;
       });
     }
   
@@ -113,22 +160,40 @@ export default function HomeTab({navigation}) {
       const toggleModal = () => {
         setIsModalVisible(!isModalVisible);
       };
-      
+
+      const toggleModalClose = () => {
+        setIsModalVisible(!isModalVisible);
+        setRegionFilter('ALL')
+        setCountryFilter('ALL')
+        setLocationFilter('ALL')
+      };
       // Function to handle form submission
       const handleFormSubmit = () => {
         // Filter based on all fields entered by the user
-        const filteredData = categories.filter(category => {
-          const matchesLocation = location ? (category.location || '').toLowerCase().includes(location.toLowerCase()) : true;
-          const matchesCity = city ? (category.city || '').toLowerCase().includes(city.toLowerCase()) : true;
-          const matchesNationality = nationality ? (category.nationality || '').toLowerCase().includes(nationality.toLowerCase()) : true;
-          const matchesLanguages = languages.length > 0 
-            ? languages.some(lang => (category.languages || []).map(l => l.toLowerCase()).includes(lang.toLowerCase()))
-            : true;
-          const matchesAddress = address ? (category.address || '').toLowerCase().includes(address.toLowerCase()) : true;
+        let filteredData = selectedCategoryData;
       
-          return matchesLocation || matchesCity || matchesNationality || matchesLanguages || matchesAddress;
-        });
+        // Filter by region
+        if (regionFilter !== 'ALL') {
+          filteredData = filteredData.filter(item => item.region?.toLowerCase() === regionFilter.toLowerCase());
+        }
       
+        // Continue filtering by other fields
+        if (locationFilter !== 'ALL') {
+          filteredData = filteredData.filter(item => item.location?.toLowerCase().includes(locationFilter.toLowerCase()));
+        }
+            
+        if (countryFilter !== 'ALL') {
+          filteredData = filteredData.filter(item => item.nationality?.toLowerCase().includes(countryFilter.toLowerCase()));
+        }
+      
+        if (languages.length > 0) {
+          filteredData = filteredData.filter(item => {
+            return languages.some(lang => 
+              item.language && item.language.toLowerCase().includes(lang.toLowerCase())
+            );
+          });
+        }        
+            
         if (filteredData.length === 0) {
           Alert.alert('No results found', 'No categories match your search criteria.');
         } else {
@@ -138,6 +203,15 @@ export default function HomeTab({navigation}) {
         toggleModal();  // Close the modal after form submission
       };
       
+
+      if ( loading ) {
+        return (
+          <View style={{flex:1, justifyContent:'center',alignItems:'center'}}>
+            <ActivityIndicator size={"large"} color="#0000ff"  />
+          </View>
+        )
+      }
+          
   return (
     <View style={{flexGrow:1, backgroundColor: '#fff', paddingTop:10,}}>
          <View style={{ 
@@ -152,7 +226,6 @@ export default function HomeTab({navigation}) {
           <SearchComponent
             search={searchQuery}
             onSearchInput={handleSearch}
-            isLoading={loading}
             error={error}
           />
         </View>
@@ -197,7 +270,7 @@ export default function HomeTab({navigation}) {
           )
         )}
       </View>
-      <View style={{paddingHorizontal: 30, marginBottom:90,}}>
+      <View style={{paddingHorizontal: 30, marginBottom:600,}}>
           <FlatList
               data={filteredDirectory}
               keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
@@ -213,7 +286,7 @@ export default function HomeTab({navigation}) {
                     
                     <View style={localStyles.rightSection}>
                       <Text style={localStyles.title}>{item.name}</Text>
-                      <Text style={localStyles.description}>{item.description || "Write description here"}</Text>
+                      <Text style={localStyles.description}>{item.description}</Text>
                     </View>
                   </View>
                   <View style={{ flexDirection: 'row'}}>
@@ -225,13 +298,48 @@ export default function HomeTab({navigation}) {
                       </View>
                   </View>
                   <View>
-                      <Text style={localStyles.area}>{item.area}</Text>
-                      <Text style={localStyles.location}>{item.location}</Text>
-                      <Text style={localStyles.mobile}>{item.mobile}</Text>
-                    </View>
+                      {/* Area and Location */}
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <FontAwesome
+                          name="map-marker"
+                          size={moderateScale(15)}  
+                          color='#399AF4'
+                          style={styles.mr15}/>
+                        <View>
+                        <Text style={localStyles.area}>{item.area}</Text>
+                        <Text style={localStyles.location}>{item.location}, {item.region}</Text>
+                        </View>
+                      </View>
+
+                      {/* Mobile */}
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <FontAwesome
+                          name="phone"
+                          size={moderateScale(15)}  
+                          color='#399AF4'
+                          style={styles.mr10}/>
+                        <Text style={localStyles.mobile}>{item.mobile}</Text>
+                      </View>
+
+                      {/* Doctor Section */}
+                      {item.category_title === 'Doctor' && (
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <FontAwesome
+                            name="hospital-o"
+                            size={moderateScale(15)}  
+                            color='#399AF4'
+                            style={styles.mr10}/>
+                          <View>
+                            <Text style={localStyles.mobile}>{item.hospital}</Text>
+                            <Text style={localStyles.mobile}>{item.specialisation}</Text>
+                          </View>
+                        </View>
+                      )}
+                  </View>
+
                   <View style={localStyles.bottomInfo}>
-                      <Text style={localStyles.nationality}><Text style={localStyles.name1}>Nationality</Text>{'\n'}{'\n'}{item.nationality || "not specified"}</Text>
-                      <Text style={localStyles.languages}><Text style={localStyles.name1}>Language</Text>{'\n'}{'\n'}{item.language || "Languages not specified"}</Text>
+                      <Text style={localStyles.nationality}><Text style={localStyles.name1}>Nationality</Text>{'\n'}{'\n'}{item.country || "Not specified"}</Text>
+                      <Text style={localStyles.languages}><Text style={localStyles.name1}>Language</Text>{'\n'}{'\n'}{item.language || "Not specified"}</Text>
                   </View>      
                 </View>
               )}
@@ -245,52 +353,62 @@ export default function HomeTab({navigation}) {
   >
   <View style={localStyles.modalContainer}>
     <View style={localStyles.modalContent}>
+        <View style={localStyles.pickerContainer}>
+            <Picker
+                selectedValue={regionFilter}
+                dropdownIconColor="#8694B2"
+                onValueChange={(itemValue) => setRegionFilter(itemValue)}
+                style={localStyles.picker}
+            >
+                <Picker.Item label="Select Region" value="ALL" style={localStyles.pickerItem}/>
+                {valuelistRegion.map((item) => (
+                    <Picker.Item key={item.value} label={item.value} value={item.value} style={localStyles.pickerItem} />
+                ))}
+            </Picker>
+        </View>
 
-      {/* Input for State */}
-      <EInput
-        placeholder="State"
-        value={location}
-        onChangeText={setLocation}
-        style={localStyles.inputField}
-      />
+        <View style={localStyles.pickerContainer}>
+            <Picker
+                selectedValue={locationFilter}
+                dropdownIconColor="#8694B2"
+                onValueChange={(itemValue) => setLocationFilter(itemValue)}
+                style={localStyles.picker}
+            >
+                <Picker.Item label="Select Location" value="ALL" style={localStyles.pickerItem}/>
+                {valuelistLocation.map((item) => (
+                    <Picker.Item key={item.value} label={item.value} value={item.value} style={localStyles.pickerItem} />
+                ))}
+            </Picker>
+        </View>
 
-      {/* Input for City */}
-      <EInput
-        placeholder="City"
-        value={city}
-        onChangeText={setCity}
-        style={localStyles.inputField}
-      />
-
-      {/* Input for Nationality */}
-      <EInput
-        placeholder="Nationality"
-        value={nationality}
-        onChangeText={setNationality}
-        style={localStyles.inputField}
-      />
+        <View style={localStyles.pickerContainer}>
+            <Picker
+                selectedValue={countryFilter}
+                dropdownIconColor="#8694B2"
+                onValueChange={(itemValue) => setCountryFilter(itemValue)}
+                style={localStyles.picker}
+            >
+                <Picker.Item label="Select Nationality" value="ALL" style={localStyles.pickerItem}/>
+                {valuelistCountry.map((item) => (
+                    <Picker.Item key={item.name} label={item.name} value={item.nationality} style={localStyles.pickerItem} />
+                ))}
+            </Picker>
+        </View>
 
       {/* Languages (use a multi-select or text input based on your needs) */}
       <EInput
         placeholder="Languages (e.g., English, French)"
-        value={languages.join(', ')}  // Join array for display
-        onChangeText={text => setLanguages(text.split(',').map(lang => lang.trim()))}
-        style={localStyles.inputField}
+        value={languages.join(', ')}  // Display joined array for the input field
+        onChangeText={text => setLanguages(text.split(',').map(lang => lang.trim()))}  // Split input text into an array of languages
+        style={localStyles.inputFieldLang}
       />
 
-      {/* Input for Address */}
-      <EInput
-        placeholder="Address"
-        value={address}
-        onChangeText={setAddress}
-        style={localStyles.inputField}
-      />
       <Text style={localStyles.modalTitle}></Text>
 
       <Button   title="Submit" onPress={handleFormSubmit} />
 
       {/* Button to Close Modal */}
-      <TouchableOpacity onPress={toggleModal}>
+      <TouchableOpacity onPress={toggleModalClose}>
         <Text style={localStyles.closeModalText}>Close</Text>
       </TouchableOpacity>
     </View>
@@ -351,13 +469,14 @@ const localStyles = StyleSheet.create({
     marginBottom: 10,
     fontFamily: 'Gilroy-Medium',
   },
-  inputField: {
+  inputFieldLang: {
     width: '100%',
     padding: 10,
-    borderColor: 'white',
-    borderWidth: 1,
-    borderRadius: 10,
+    borderColor: '#8694B2',
+    borderWidth: 0.5,
+    borderRadius: 8,
     fontFamily: 'Gilroy-Medium',
+    marginLeft:18,
   },
   closeModalText: {
     color: '#399AF4',
@@ -435,7 +554,7 @@ name: {
   color: '#399AF4',
   fontFamily: 'Gilroy-SemiBold',
   justifyContent: 'center',
-
+  marginTop : 20,
 },
 name1: { 
   fontSize: 12,
@@ -477,6 +596,7 @@ serviceTitle: {
   paddingVertical:5,
   borderRadius:10,
   maxWidth:150,
+  marginTop:20,
 },
 
 // New style for nationality and languages
@@ -498,6 +618,24 @@ nationality: {
 languages: {
   fontSize: 12,
   color: '#000000',
+  fontFamily: 'Gilroy-Medium',
+},
+pickerContainer: {
+  borderColor: '#8694B2',
+  borderWidth: 0.5,
+  borderRadius: 3,
+  marginVertical: 10,
+  marginLeft:7,
+  width: '100%',
+  borderRadius: 8,
+  height:45,
+  justifyContent: 'center',
+},
+picker: {
+},
+pickerItem: {
+  color: '#8694B2', 
+  fontSize:14,
   fontFamily: 'Gilroy-Medium',
 },
 });
