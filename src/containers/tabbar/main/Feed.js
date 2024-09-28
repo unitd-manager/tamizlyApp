@@ -10,7 +10,8 @@ import HTMLView from 'react-native-htmlview';
 import flex from '../../../themes/flex';
 import EText from '../../../components/common/EText'; 
 import Video, {VideoRef} from 'react-native-video';
-import AudioPlayer from './AudioPlayer';
+import { AudioPlayer } from './AudioPlayer';
+
 
 const { width: screenWidth } = Dimensions.get('window');  // Get screen width
 const VideoPlayer = ({ videoUri, visible, onClose }) => {
@@ -241,6 +242,7 @@ const Post = ({ feedId, name, time, content, images,videos }) => {
         <View>
           <EText type={'m15'} style={styles.name}>{name}</EText>
           <EText type={'m15'} style={styles.time}>{time}</EText>
+          
         </View>
       </View>
       <HTMLView stylesheet={htmlStyles} value={content} />
@@ -259,6 +261,11 @@ const Post = ({ feedId, name, time, content, images,videos }) => {
         columnWrapperStyle={null } // Ensure correct spacing between columns for multiple images
         keyExtractor={(item, index) => index.toString()}
       />}
+    
+    {videos.length <1 && images.length <1 && <>
+     <AudioPlayer/>
+      </>}
+      
 {images.length > 0 && (
   <ImageViewing
     images={images.map((img) => ({ uri: `http://tamizhy.smartprosoft.com/media/large/${img}` }))}
@@ -335,7 +342,7 @@ const App = () => {
     api.get('feedlist.php')  // Replace with the correct endpoint for fetching posts
       .then(response => {
         setPosts(response.data.data); 
-        //console.log('video res',response.data.data)
+        console.log('video res',response.data.data)
         setLoading(false);
       })
       .catch(error => {
@@ -368,6 +375,7 @@ const App = () => {
   return (
     <View style={styles.container}>
       <HomeHeader user={user} />
+      
       <FlatList
         data={posts}
         renderItem={({ item }) => (
@@ -382,7 +390,7 @@ const App = () => {
         )}
         keyExtractor={(item) => item.id}
       />
-      <AudioPlayer/>
+    {/* <AudioPlayer/> */}
     </View>
   );
 };

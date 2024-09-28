@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import EButton from '../../../components/common/EButton';
 
 const ProductDetails = ({ route, navigation }) => {
     const { item } = route.params; // Get the item passed from the previous screen
@@ -25,18 +26,23 @@ const ProductDetails = ({ route, navigation }) => {
             <Text style={styles.description1}>Description</Text>
             <Text style={styles.description}>{removeHtmlTags(item.description)}</Text>
 
-            <Button title="Buy Now" onPress={() => alert('Item purchased!')} />
+            <View style={styles.btnContainer}>
+                <EButton title="Buy Now" onPress={() => alert('Item purchased!')} containerStyle={styles.buyBtn}/>
+            </View>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
+        paddingTop: 20,
         flex: 1,
         backgroundColor: '#fff',
+        fontFamily: 'Gilroy-Medium',
+        paddingHorizontal:30,
     },
     header: {
+        fontFamily: 'Gilroy-Medium',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
@@ -49,9 +55,10 @@ const styles = StyleSheet.create({
         paddingLeft: 15,
     },
     headerTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
+        fontSize: 16,
         textAlign: 'center',
+        fontFamily: 'Gilroy-SemiBold',
+        color: '#242B48',
     },
     image: {
         width: '100%',
@@ -59,28 +66,42 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     title: {
-        fontSize: 24,
-        fontWeight: 'bold',
+        fontSize: 16,
+        fontFamily: 'Gilroy-SemiBold',
+        color: '#242B48',
+        marginBottom: 15,
     },
     price: {
-        fontSize: 20,
-        color: 'green',
-        marginBottom: 10,
+        fontSize: 16,
+        color: '#399AF4',
+        fontFamily: 'Gilroy-SemiBold',
     },
     description1: {
-        fontSize: 26,
-        color: '#000',
+        fontSize: 16,
+        color: '#242B48',
         marginBottom: 10,
         marginTop: 20,
         borderTopWidth : 1,  // Add top border
         borderTopColor: '#eee',  // Light grey border color
+        fontFamily: 'Gilroy-SemiBold',  
+        paddingTop:20,    
     },
     description: {
-        fontSize: 16,
-        color: '#666',
-        marginBottom: 50,
-      
+        fontSize: 14,
+        color: '#8694B2',
+        marginBottom: 30,
+        fontFamily: 'Gilroy-Light',
+        lineHeight:20,      
     },
+    btnContainer:{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',    
+    },
+    buyBtn: {
+        borderRadius:10,
+        paddingHorizontal:50,
+    }
 });
 
 export default ProductDetails;
