@@ -25,9 +25,9 @@ export const AudioPlayer = (props) => {
   const [volume, setVolume] = useState(0.7);
   const [volumeControl, setVolumeControl] = useState(false);
   const [repeat, setRepeat] = useState(false);
-console.log('toHHMMSS(totalLength)',toHHMMSS(totalLength));
+//console.log('toHHMMSS(totalLength)',toHHMMSS(totalLength));
 
-console.log('toHHMMSS(currentPosition)',toHHMMSS(currentPosition));
+//console.log('toHHMMSS(currentPosition)',toHHMMSS(currentPosition));
   const onSeek = (time) => {
     time = Math.round(time);
     videoRef && videoRef.current.seek(time);

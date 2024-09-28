@@ -42,7 +42,7 @@ const VideoPlayer = ({ videoUri, visible, onClose }) => {
   </Modal>
 )};
 
-const Post = ({ feedId, name, time, content, images,videos }) => {
+const Post = ({ feedId, name, time, content, images, videos, audios }) => {
   //console.log('images', images);
 //  const [images, setImages] = useState([]);
   const [visible, setIsVisible] = useState(false);
@@ -262,8 +262,8 @@ const Post = ({ feedId, name, time, content, images,videos }) => {
         keyExtractor={(item, index) => index.toString()}
       />}
     
-    {videos.length <1 && images.length <1 && <>
-     <AudioPlayer/>
+    {audios.length > 0 && <>
+     <AudioPlayer />
       </>}
       
 {images.length > 0 && (
@@ -342,7 +342,7 @@ const App = () => {
     api.get('feedlist.php')  // Replace with the correct endpoint for fetching posts
       .then(response => {
         setPosts(response.data.data); 
-        console.log('video res',response.data.data)
+        //console.log('video res',response.data.data)
         setLoading(false);
       })
       .catch(error => {
@@ -386,6 +386,7 @@ const App = () => {
             content={item.description}
             images={Array.isArray(item.media_files) ? item.media_files : [item.media_files]}
             videos={Array.isArray(item.media_videos) ? item.media_videos : [item.media_videos]}
+            audios={Array.isArray(item.media_audios) ? item.media_audios : [item.media_audios]}
           />
         )}
         keyExtractor={(item) => item.id}
