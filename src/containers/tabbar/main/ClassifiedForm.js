@@ -3,18 +3,27 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, ScrollView,
 import {useSelector} from 'react-redux';
 import images from '../../../assets/images';
 import {moderateScale} from '../../../common/constants';
+import { Picker } from '@react-native-picker/picker';
 
 import ImagePicker from 'react-native-image-crop-picker'; // New image picker library
 import api from '../../../api/api'; // Assuming you have an API utility
 import ProfilePicture from './ProfilePicture'; // Assuming ClassifiedForm is in the same directory
+import EButton from '../../../components/common/EButton';
 
 const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
     const [title, setTitle] = useState('');
     const [category, setCategory] = useState('');
+    const [mobile, setMobile] = useState('');
     const [description, setDescription] = useState('');
     const [media, setMedia] = useState([]);
     const [selectImage, setSelectImage] = useState('');
     const colors = useSelector(state => state.theme.theme);
+    const [regionFilter, setRegionFilter] = useState('ALL');
+    const [valuelistRegion, setValuelistRegion] = useState([]);
+    const [locationFilter, setLocationFilter] = useState('ALL');
+    const [valuelistLocation, setValuelistLocation] = useState([]);
+    const [categoryFilter, setCategoryFilter] = useState('ALL');
+    const [valuelistCategory, setValuelistCategory] = useState([]);
 
     const onPressProfilePic = () => ProfilePictureSheetRef?.current.show();
     const ProfilePictureSheetRef = createRef();
@@ -48,12 +57,48 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
     //       onPressUpdate();
     //     }
     //   }, [selectImage]);
-      
+    const getValuelistRegion = () => {
+      api
+        .get('selectRegion.php')
+        .then((res) => {
+          setValuelistRegion(res.data.data);
+        })
+        .catch((error) => {
+          console.log('valuelist not found:', error);
+        });
+    };
+    const getValuelistLocation = () => {
+      api
+        .get('selectLocation.php')
+        .then((res) => {
+          setValuelistLocation(res.data.data);
+        })
+        .catch((error) => {
+          console.log('valuelist not found:', error);
+        });
+    };
+    const getValuelistCategory = () => {
+      api
+        .get('dropdowncategory.php')
+        .then((res) => {
+          setValuelistCategory(res.data.data);
+        })
+        .catch((error) => {
+          console.log('valuelist not found:', error);
+        });
+    };
+    useEffect(() => {
+      getValuelistLocation()
+      getValuelistRegion()
+      getValuelistCategory()
+    }, []);
+          
     const onPressUpdate = async () => {
         try {
             const classifiedData = {
                 title,
                 description,
+                mobile,
             };
             
             console.log("FormData:", classifiedData);
@@ -113,36 +158,79 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
     return (
         <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
             <ScrollView contentContainerStyle={styles.modalContainer}>
-                <Text style={styles.label}>Title</Text>
-                <TextInput style={styles.input} value={title} onChangeText={setTitle} placeholder="Enter title" />
-                
-             
-                <Text style={styles.label}>Description</Text>
+                <View style={styles.pickerContainer}>
+                  <Picker
+                    selectedValue={categoryFilter}
+                    dropdownIconColor="#8694B2"
+                    onValueChange={(itemValue) => setCategoryFilter(itemValue)}
+                    style={styles.picker}
+                  >
+                    <Picker.Item label="Select Category" value="ALL" style={styles.pickerItem}/>
+                    {valuelistCategory.map((item) => (
+                        <Picker.Item key={item.category_title} label={item.category_title} value={item.category_title} style={styles.pickerItem} />
+                    ))}
+                  </Picker>
+                </View>
+
+                <View style={styles.pickerContainer}>
+                  <Picker
+                    selectedValue={regionFilter}
+                    dropdownIconColor="#8694B2"
+                    onValueChange={(itemValue) => setRegionFilter(itemValue)}
+                    style={styles.picker}
+                  >
+                    <Picker.Item label="Select Region" value="ALL" style={styles.pickerItem}/>
+                    {valuelistRegion.map((item) => (
+                        <Picker.Item key={item.value} label={item.value} value={item.value} style={styles.pickerItem} />
+                    ))}
+                  </Picker>
+                </View>
+
+                <View style={styles.pickerContainer}>
+                    <Picker
+                        selectedValue={locationFilter}
+                        dropdownIconColor="#8694B2"
+                        onValueChange={(itemValue) => setLocationFilter(itemValue)}
+                        style={styles.picker}
+                    >
+                        <Picker.Item label="Select Location" value="ALL" style={styles.pickerItem}/>
+                        {valuelistLocation.map((item) => (
+                            <Picker.Item key={item.value} label={item.value} value={item.value} style={styles.pickerItem} />
+                        ))}
+                    </Picker>
+                </View>
+
+                <TextInput style={[styles.input, { height: 45, marginTop:10, }]} value={title} onChangeText={setTitle} placeholder="Title" />                             
                 <TextInput
                     style={[styles.input, { height: 80 }]}
                     value={description}
                     onChangeText={setDescription}
-                    placeholder="Enter description"
+                    placeholder="Description"
                     multiline
                 />
-      <TouchableOpacity onPress={onPressProfilePic} style={[styles.selfCenter, styles.mb20]}>
-          {!!selectImage?.path ? (
-            <Image
-              source={{ uri: selectImage?.path }}
-              style={styles.userImageStyle}
-            />
-          ) : (
-            <Image
-              source={colors.dark ? images.userDark : images.userLight}
-              style={styles.userImageStyle}
-            />
-          )}
-        </TouchableOpacity>
-<ProfilePicture onPressCamera={onPressCamera} onPressGallery={onPressGallery} SheetRef={ProfilePictureSheetRef} />
+                <TextInput style={[styles.input, { height: 45 }]} value={mobile} onChangeText={setMobile} placeholder="Mobile" />                             
+                {/* <TouchableOpacity onPress={onPressProfilePic} style={[styles.selfCenter, styles.mb20]}>
+                  {!!selectImage?.path ? (
+                    <Image
+                      source={{ uri: selectImage?.path }}
+                      style={styles.userImageStyle}
+                    />
+                  ) : (
+                    <Image
+                      source={colors.dark ? images.userDark : images.userLight}
+                      style={styles.userImageStyle}
+                    />
+                  )}
+                </TouchableOpacity> */}
+                <ProfilePicture onPressCamera={onPressCamera} onPressGallery={onPressGallery} SheetRef={ProfilePictureSheetRef} />
+                <View style={styles.btnContainer}>
+                    <EButton title="Update" onPress={onPressUpdate} containerStyle={styles.submitBtn}/>
 
-                <Button title="Submit" onPress={onPressUpdate} />
-
-                <Button title="Close" onPress={onClose} color="red" />
+                    {/* Button to Close Modal */}
+                    <TouchableOpacity onPress={onClose}>
+                      <Text style={styles.closeModalText}>Close</Text>
+                    </TouchableOpacity>
+                </View>
             </ScrollView>
         </Modal>
     );
@@ -150,9 +238,9 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
 
 const styles = StyleSheet.create({
     modalContainer: {
-        padding: 20,
+        paddingTop: 20,
         backgroundColor: '#fff',
-        flexGrow: 1,
+        paddingHorizontal:30,
     },
     userImageStyle: {
         width: moderateScale(50),
@@ -162,7 +250,8 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 16,
         marginBottom: 8,
-    },
+        fontFamily: 'Gilroy-Medium',
+      },
     input: {
         borderWidth: 1,
         borderColor: '#ccc',
@@ -177,6 +266,38 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 16,
     },
+    pickerContainer: {
+      borderColor: '#8694B2',
+      borderWidth: 0.5,
+      borderRadius: 3,
+      marginVertical: 10,
+      width: '100%',
+      borderRadius: 8,
+      height:45,
+      justifyContent: 'center',
+    },
+    picker: {
+    },
+    pickerItem: {
+      color: '#8694B2', 
+      fontSize:14,
+      fontFamily: 'Gilroy-Medium',
+    },
+    submitBtn: {
+      borderRadius:10,
+      paddingHorizontal:50,
+    },
+    closeModalText: {
+      color: '#399AF4',
+      marginTop: 20,
+      fontSize: 16,
+      fontFamily: 'Gilroy-Medium',
+    },
+    btnContainer:{
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',    
+  },
 });
 
 export default ClassifiedForm;
