@@ -113,8 +113,8 @@ export default function TabBarNavigation() {
       />
 
       <Tab.Screen
-        name={TabNav.Connect}
-        component={TabRoute.MainHome}  // Keep this component as MainHome to stay on the same page
+        name={TabNav.Classified}
+        component={TabRoute.Classified}  // Keep this component as MainHome to stay on the same page
         options={({navigation}) => ({
           tabBarIcon: ({focused}) => (
             <TabText
@@ -133,7 +133,7 @@ export default function TabBarNavigation() {
               }
               focused={focused}
               label={strings.Classified}
-              onPress={() => navigation.navigate(TabNav.Feed)}  // Always navigate to MainHome
+              onPress={() => navigation.navigate(TabNav.Classified)}  // Always navigate to MainHome
             />
           ),
         })}

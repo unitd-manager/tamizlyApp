@@ -1,7 +1,8 @@
 // Library Imports
-import {StyleSheet, View, Alert, FlatList,TouchableOpacity,Text,Image,Modal, TextInput, Button} from 'react-native';
+import {StyleSheet, View, ScrollView, ActivityIndicator, Alert, FlatList,TouchableOpacity,Text,Image,Modal, TextInput, Button} from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 import {useSelector} from 'react-redux';
+import { Picker } from '@react-native-picker/picker';
 //import {FlashList} from '@shopify/flash-list';
 import filter from 'lodash.filter';
 import moment from 'moment';
@@ -12,6 +13,8 @@ import SearchComponent from '../../../components/homeComponent/SearchComponent';
 import ProjectConfirmModal from '../../../components/models/ProjectConfirmModal';
 import CardData from './CardData';
 import EInput from '../../../components/common/EInput';
+import {moderateScale} from '../../../common/constants';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import strings from '../../../i18n/strings';
 import api from '../../../api/api';
@@ -24,18 +27,25 @@ export default function HomeTab({navigation}) {
 
   const colors = useSelector(state => state.theme.theme);
 
-  const [categories, setCategories] = useState('');
-  const [filteredCategories, setFilteredCategories] = useState([]);
+  const [categoriesData, setCategoriesData] = useState([]); // For categories
+  const [directoryData, setDirectoryData] = useState([]);  // For directory data
+  const [filteredDirectory, setFilteredDirectory] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAll, setShowAll] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [isLoading, setIsLoading] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [regionFilter, setRegionFilter] = useState('ALL');
+  const [valuelistRegion, setValuelistRegion] = useState([]);
+  const [locationFilter, setLocationFilter] = useState('ALL');
+  const [valuelistLocation, setValuelistLocation] = useState([]);
+  const [countryFilter, setCountryFilter] = useState('ALL');
+  const [valuelistCountry, setValuelistCountry] = useState([]);
+  
+  const [languages, setLanguages] = useState([]);
+  const [item, setItem] = useState(null);
 
-  // New state for categories
-  const [categoriesData, setCategoriesData] = useState([]);
-  const [user, setUserData] = useState();
   const getUser = async () => {
     let userData = await AsyncStorage.getItem('USER');
     userData = JSON.parse(userData);
@@ -43,147 +53,199 @@ export default function HomeTab({navigation}) {
   };
   // Fetch categories from separate API
   useEffect(() => {
-      api.get('selectCategory(1).php')  // Replace with the correct endpoint for fetching categories
-          .then(response => {
-              if (response.data && response.data.data) {
-                  setCategoriesData(response.data.data);
-                  setFilteredCategories(response.data.data);
-              } else {
-                  setError('Invalid response structure.');
-              }
-              setLoading(false);
-          })
-          .catch(error => {
-              console.error('There was an error fetching the categories!', error);
-              setError('There was an error fetching the categories!');
-              setLoading(false);
-          });
-  }, []);
-  useEffect(() => {
-  }, [categoriesData]);
-  
-
-  // Fetch the directory data from the original API
-  useEffect(() => {
-      api.get('selectCategory.php')
-          .then(response => {
-              if (response.data && response.data.data) {
-                  setCategories(response.data.data);
-              } else {
-                  setError('Invalid response structure.');
-              }
-              setLoading(false);
-          })
-          .catch(error => {
-              console.error('There was an error fetching the data!', error);
-              setError('There was an error fetching the data!');
-              setLoading(false);
-          });
+    setLoading(true);
+    api.get('selectCategory.php')
+      .then(response => {
+        if (response.data && response.data.data) {
+          setCategoriesData(response.data.data.category_data);  // Set categories
+          setDirectoryData(response.data.data.directory_data);  // Set directory
+          setFilteredDirectory(response.data.data.directory_data);  // Set initially filtered directory
+        } else {
+          setError('Invalid response structure.');
+        }
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('There was an error fetching the data!', error);
+        setError('There was an error fetching the data!');
+        setLoading(false);
+      });
   }, []);
 
-  const handleSearch = (query) => {
-      setSearchQuery(query);
-      if (query) {
-          const filteredData = categoriesData.filter(category =>
-              category.title.toLowerCase().includes(query.toLowerCase())
-          );
-          setFilteredCategories(filteredData);
-      } else {
-          setFilteredCategories(categoriesData);
-      }
+  const getValuelistRegion = () => {
+    api
+      .get('selectRegion.php')
+      .then((res) => {
+        setValuelistRegion(res.data.data);
+      })
+      .catch((error) => {
+        console.log('valuelist not found:', error);
+      });
   };
-
+  const getValuelistLocation = () => {
+    api
+      .get('selectLocation.php')
+      .then((res) => {
+        setValuelistLocation(res.data.data);
+      })
+      .catch((error) => {
+        console.log('valuelist not found:', error);
+      });
+  };
+  const getValuelistCountry = () => {
+    api
+      .get('selectCountry.php')
+      .then((res) => {
+        setValuelistCountry(res.data.data);
+      })
+      .catch((error) => {
+        console.log('valuelist not found:', error);
+      });
+  };
+  useEffect(() => {
+    getValuelistLocation()
+    getValuelistRegion()
+    getValuelistCountry()
+  }, []);
+  
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  
+    let filteredData = directoryData;
+  
+    // If a category is selected, filter the directory data by that category
+    if (selectedCategory) {
+      filteredData = filteredData.filter(item => item.category_title === selectedCategory.title);
+    }
+  
+    // Now filter by the search query
+    if (query) {
+      filteredData = filteredData.filter(item => {
+        const nameMatches = item.name?.toLowerCase().includes(query.toLowerCase());
+        const mobileMatches = item.mobile?.toLowerCase().includes(query.toLowerCase());
+        const regionMatches = item.region?.toLowerCase().includes(query.toLowerCase());
+        const locationMatches = item.location?.toLowerCase().includes(query.toLowerCase());
+        const hospitalMatches = item.hospital?.toLowerCase().includes(query.toLowerCase());
+        const specialisationMatches = item.specialisation?.toLowerCase().includes(query.toLowerCase());
+        const areaMatches = item.area?.toLowerCase().includes(query.toLowerCase());
+        const languageMatches = item.language?.toLowerCase().includes(query.toLowerCase());
+        return nameMatches || mobileMatches || regionMatches || locationMatches || hospitalMatches || specialisationMatches || areaMatches || languageMatches;
+      });
+    }
+  
+    // Update the filtered directory
+    setFilteredDirectory(filteredData);
+  };
+  
   const handleViewAll = () => {
       setShowAll(!showAll);
   };
 
   const handleCategorySelect = (category) => {
       setSelectedCategory(category);
+      // Filter directory based on the selected category's title
+    const filteredData = directoryData.filter(item => item.category_title === category.title);
+    setFilteredDirectory(filteredData); // Update the filtered directory state
   };
 
-  const categoriesToDisplay = showAll ? filteredCategories : filteredCategories.slice(0, 3);
+  const categoriesToDisplay = showAll ? categoriesData : categoriesData.slice(0, 3);
 
   const selectedCategoryData = selectedCategory
-      ? categories.filter(item => item.category_title === selectedCategory.title)
-      : [];
-      const RightPasswordEyeIcon = () => (
-     
-            <TouchableOpacity onPress={toggleModal} >
+    ? directoryData.filter(item => item.category_title === selectedCategory.title)
+    : directoryData.length > 0
+    ? directoryData.filter(item => item.category_title === directoryData[0].category_title)
+    : [];
 
-            <Image source={require('../../../assets/images/logos.png')}
-              style={{ width: 33, height: 34 }} 
-                />
-            
-          </TouchableOpacity>
-      );
-      const [isModalVisible, setIsModalVisible] = useState(false);
-      const [location, setLocation] = useState('');
-      const [city, setCity] = useState('');
-      const [nationality, setNationality] = useState('');
-      const [languages, setLanguages] = useState([]);
-      const [address, setAddress] = useState('');
-      
       // Function to toggle the modal
       const toggleModal = () => {
         setIsModalVisible(!isModalVisible);
       };
-      
+
+      const toggleModalClose = () => {
+        setIsModalVisible(!isModalVisible);
+        setRegionFilter('ALL')
+        setCountryFilter('ALL')
+        setLocationFilter('ALL')
+      };
       // Function to handle form submission
       const handleFormSubmit = () => {
         // Filter based on all fields entered by the user
-        const filteredData = categories.filter(category => {
-          const matchesLocation = location ? (category.location || '').toLowerCase().includes(location.toLowerCase()) : true;
-          const matchesCity = city ? (category.city || '').toLowerCase().includes(city.toLowerCase()) : true;
-          const matchesNationality = nationality ? (category.nationality || '').toLowerCase().includes(nationality.toLowerCase()) : true;
-          const matchesLanguages = languages.length > 0 
-            ? languages.some(lang => (category.languages || []).map(l => l.toLowerCase()).includes(lang.toLowerCase()))
-            : true;
-          const matchesAddress = address ? (category.address || '').toLowerCase().includes(address.toLowerCase()) : true;
+        let filteredData = selectedCategoryData;
       
-          return matchesLocation || matchesCity || matchesNationality || matchesLanguages || matchesAddress;
-        });
+        // Filter by region
+        if (regionFilter !== 'ALL') {
+          filteredData = filteredData.filter(item => item.region?.toLowerCase() === regionFilter.toLowerCase());
+        }
       
+        // Continue filtering by other fields
+        if (locationFilter !== 'ALL') {
+          filteredData = filteredData.filter(item => item.location?.toLowerCase().includes(locationFilter.toLowerCase()));
+        }
+            
+        if (countryFilter !== 'ALL') {
+          filteredData = filteredData.filter(item => item.nationality?.toLowerCase().includes(countryFilter.toLowerCase()));
+        }
+      
+        if (languages.length > 0) {
+          filteredData = filteredData.filter(item => {
+            return languages.some(lang => 
+              item.language && item.language.toLowerCase().includes(lang.toLowerCase())
+            );
+          });
+        }        
+            
         if (filteredData.length === 0) {
           Alert.alert('No results found', 'No categories match your search criteria.');
         } else {
-          setFilteredCategories(filteredData);
+          setFilteredDirectory(filteredData);
         }
       
         toggleModal();  // Close the modal after form submission
       };
       
-      
+
+      if ( loading ) {
+        return (
+          <View style={{flex:1, justifyContent:'center',alignItems:'center'}}>
+            <ActivityIndicator size={"large"} color="#0000ff"  />
+          </View>
+        )
+      }
+          
   return (
-    <View style={{flexGrow:1, backgroundColor: '#F5F5F5'}}>
+    <View style={{flexGrow:1, backgroundColor: '#fff', paddingTop:10,}}>
          <View style={{ 
-          // backgroundColor: colors.backgroundColor3, 
+          // b ackgroundColor: colors.backgroundColor3, 
           borderBottomRightRadius: 50, 
           borderBottomLeftRadius: 50,
-          paddingBottom: 50,
+          paddingBottom: 20,
       }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center',paddingRight: 50 ,   marginBottom: 5,}}>
+      <View style={{ flexDirection: 'row', alignItems: 'center',paddingRight: 30, marginBottom: 5,}}>
         {/* SearchComponent on the left */}
         <View style={{ flex: 1 }}>
           <SearchComponent
             search={searchQuery}
             onSearchInput={handleSearch}
-            isLoading={loading}
             error={error}
           />
         </View>
 
-        {/* RightPasswordEyeIcon on the right */}
-        <RightPasswordEyeIcon />
+        <TouchableOpacity onPress={toggleModal}>
+            <Image source={require('../../../assets/images/logos.png')} style={{ width: 40, height: 40, marginTop: 3 }} />
+          </TouchableOpacity>
       </View>
       </View>
 
-      <View style={{flex: 1, marginTop: -40, paddingHorizontal: 20}}>
-        <Text style={localStyles.categoryHeading}>Categories
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal:30,}}>
+        <View style={{ flex: 1 }}>
+            <Text style={localStyles.categoryHeading}>Categories</Text>
+        </View>
         <TouchableOpacity onPress={handleViewAll} style={localStyles.viewAllButton}>
-              <Text style={localStyles.viewAllText}>View All</Text>
-            </TouchableOpacity>
-        </Text>
-      
+            <Text style={localStyles.viewAllText}>View all</Text>
+        </TouchableOpacity>        
+      </View>
+
+      <View style={{paddingHorizontal: 30,}}>      
         <FlatList
           data={categoriesToDisplay}
           keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
@@ -193,106 +255,160 @@ export default function HomeTab({navigation}) {
               <Image source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${item.file_name}` }} style={localStyles.categoryIcon} />
               <Text style={localStyles.categoryText}>{item.title}</Text>
             </TouchableOpacity>
-          )}
-        
+          )}        
         />
       </View>
-<View style={{flex: 1, marginTop: -200}}>
 
-<FlatList
-    data={selectedCategoryData}
-    keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
-    renderItem={({ item }) => (
-      <>
-      <View style={localStyles.serviceCard}>
-        <View style={localStyles.leftSection}>
-          <Image 
-            source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${item.file_name}` }} 
-            style={localStyles.serviceIcon} 
+      <View style={{paddingHorizontal: 30,}}> 
+        {item ? ( 
+          <Text style={localStyles.catTitle}>{item.title}</Text> 
+        ) : ( 
+          selectedCategoryData.length > 0 ? (
+            <Text style={localStyles.catTitle}>{selectedCategoryData[0].category_title}</Text>
+          ) : (
+            <Text style={localStyles.catTitle}></Text>
+          )
+        )}
+      </View>
+      <View style={{paddingHorizontal: 30, marginBottom:600,}}>
+          <FlatList
+              data={filteredDirectory}
+              keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
+              renderItem={({ item }) => (
+                <View style={localStyles.serviceCard}>
+                  <View style={{ flexDirection: 'row'}}>
+                    <View style={localStyles.leftSection}>
+                      <Image 
+                        source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${item.file_name}` }} 
+                        style={localStyles.serviceIcon} 
+                      />
+                    </View>
+                    
+                    <View style={localStyles.rightSection}>
+                      <Text style={localStyles.title}>{item.name}</Text>
+                      <Text style={localStyles.description}>{item.description}</Text>
+                    </View>
+                  </View>
+                  <View style={{ flexDirection: 'row'}}>
+                      <View style={{ flex: 1 }}>
+                          <Text style={localStyles.name}>{item.name}</Text>
+                      </View>
+                      <View style={{ }}>
+                      <Text style={localStyles.serviceTitle}>{item.category_title}</Text>                  
+                      </View>
+                  </View>
+                  <View>
+                      {/* Area and Location */}
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <FontAwesome
+                          name="map-marker"
+                          size={moderateScale(15)}  
+                          color='#399AF4'
+                          style={styles.mr15}/>
+                        <View>
+                        <Text style={localStyles.area}>{item.area}</Text>
+                        <Text style={localStyles.location}>{item.location}, {item.region}</Text>
+                        </View>
+                      </View>
+
+                      {/* Mobile */}
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <FontAwesome
+                          name="phone"
+                          size={moderateScale(15)}  
+                          color='#399AF4'
+                          style={styles.mr10}/>
+                        <Text style={localStyles.mobile}>{item.mobile}</Text>
+                      </View>
+
+                      {/* Doctor Section */}
+                      {item.category_title === 'Doctor' && (
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <FontAwesome
+                            name="hospital-o"
+                            size={moderateScale(15)}  
+                            color='#399AF4'
+                            style={styles.mr10}/>
+                          <View>
+                            <Text style={localStyles.mobile}>{item.hospital}</Text>
+                            <Text style={localStyles.mobile}>{item.specialisation}</Text>
+                          </View>
+                        </View>
+                      )}
+                  </View>
+
+                  <View style={localStyles.bottomInfo}>
+                      <Text style={localStyles.nationality}><Text style={localStyles.name1}>Nationality</Text>{'\n'}{'\n'}{item.country || "Not specified"}</Text>
+                      <Text style={localStyles.languages}><Text style={localStyles.name1}>Language</Text>{'\n'}{'\n'}{item.language || "Not specified"}</Text>
+                  </View>      
+                </View>
+              )}
           />
-          <Text style={localStyles.name}>{item.name}</Text>
-          <Text style={localStyles.mobile}>{item.mobile}</Text>
-          <Text style={localStyles.location}>{item.location}</Text>
-          <Text style={localStyles.area}>{item.area}</Text>
-        </View>
-        
-        <View style={localStyles.rightSection}>
-          <Text style={localStyles.name}>{item.name}</Text>
-          <Text style={localStyles.description}>{item.description || "Write description here"}</Text>
-          <Text style={localStyles.serviceTitle}>{item.category_title}</Text>
-
-          {/* New row for nationality and languages */}
-         
-        </View>
       </View>
-
-        <View style={localStyles.bottomInfo}>
-        <Text style={localStyles.nationality}><Text style={localStyles.name1}>Nationality</Text>{'\n'}{'\n'}{item.nationality || "not specified"}</Text>
-        <Text style={localStyles.languages}><Text style={localStyles.name1}>Language</Text>{'\n'}{'\n'}{item.language || "Languages not specified"}</Text>
-      </View>
-      
-        </>
-    )}
-/>
-
-      </View>
-
-<Modal
-  visible={isModalVisible}
-  animationType="slide"
-  transparent={true}
-  onRequestClose={toggleModal}
->
+  <Modal
+    visible={isModalVisible}
+    animationType="slide"
+    transparent={true}
+    onRequestClose={toggleModal}
+  >
   <View style={localStyles.modalContainer}>
     <View style={localStyles.modalContent}>
+        <View style={localStyles.pickerContainer}>
+            <Picker
+                selectedValue={regionFilter}
+                dropdownIconColor="#8694B2"
+                onValueChange={(itemValue) => setRegionFilter(itemValue)}
+                style={localStyles.picker}
+            >
+                <Picker.Item label="Select Region" value="ALL" style={localStyles.pickerItem}/>
+                {valuelistRegion.map((item) => (
+                    <Picker.Item key={item.value} label={item.value} value={item.value} style={localStyles.pickerItem} />
+                ))}
+            </Picker>
+        </View>
 
-      {/* Input for State */}
-      <EInput
-        placeholder="State"
-        value={location}
-        onChangeText={setLocation}
-        style={localStyles.inputField}
-      />
+        <View style={localStyles.pickerContainer}>
+            <Picker
+                selectedValue={locationFilter}
+                dropdownIconColor="#8694B2"
+                onValueChange={(itemValue) => setLocationFilter(itemValue)}
+                style={localStyles.picker}
+            >
+                <Picker.Item label="Select Location" value="ALL" style={localStyles.pickerItem}/>
+                {valuelistLocation.map((item) => (
+                    <Picker.Item key={item.value} label={item.value} value={item.value} style={localStyles.pickerItem} />
+                ))}
+            </Picker>
+        </View>
 
-      {/* Input for City */}
-      <EInput
-        placeholder="City"
-        value={city}
-        onChangeText={setCity}
-        style={localStyles.inputField}
-      />
-
-      {/* Input for Nationality */}
-      <EInput
-        placeholder="Nationality"
-        value={nationality}
-        onChangeText={setNationality}
-        style={localStyles.inputField}
-      />
+        <View style={localStyles.pickerContainer}>
+            <Picker
+                selectedValue={countryFilter}
+                dropdownIconColor="#8694B2"
+                onValueChange={(itemValue) => setCountryFilter(itemValue)}
+                style={localStyles.picker}
+            >
+                <Picker.Item label="Select Nationality" value="ALL" style={localStyles.pickerItem}/>
+                {valuelistCountry.map((item) => (
+                    <Picker.Item key={item.name} label={item.name} value={item.nationality} style={localStyles.pickerItem} />
+                ))}
+            </Picker>
+        </View>
 
       {/* Languages (use a multi-select or text input based on your needs) */}
       <EInput
         placeholder="Languages (e.g., English, French)"
-        value={languages.join(', ')}  // Join array for display
-        onChangeText={text => setLanguages(text.split(',').map(lang => lang.trim()))}
-        style={localStyles.inputField}
+        value={languages.join(', ')}  // Display joined array for the input field
+        onChangeText={text => setLanguages(text.split(',').map(lang => lang.trim()))}  // Split input text into an array of languages
+        style={localStyles.inputFieldLang}
       />
 
-      {/* Input for Address */}
-      <EInput
-        placeholder="Address"
-        value={address}
-        onChangeText={setAddress}
-        style={localStyles.inputField}
-      />
       <Text style={localStyles.modalTitle}></Text>
 
-
-
-      <Button   title="Search" onPress={handleFormSubmit} />
+      <Button   title="Submit" onPress={handleFormSubmit} />
 
       {/* Button to Close Modal */}
-      <TouchableOpacity onPress={toggleModal}>
+      <TouchableOpacity onPress={toggleModalClose}>
         <Text style={localStyles.closeModalText}>Close</Text>
       </TouchableOpacity>
     </View>
@@ -300,7 +416,7 @@ export default function HomeTab({navigation}) {
 </Modal>
 
     
-    </View>
+</ View>
     
   );
 }
@@ -338,16 +454,13 @@ const localStyles = StyleSheet.create({
     
   },
   modalContent: {
-    width: '80%',
- 
-
     width: '100%',
     backgroundColor:'#FFFFFF',
      borderRadius: 20,
-     paddingVertical: 70,
-     paddingHorizontal: 30,
+     paddingVertical: 50,
+     paddingHorizontal: 50,
      alignItems: 'center',
-     marginTop: 200, 
+     marginTop: 280, 
      fontFamily: 'Gilroy-Medium',
   },
   modalTitle: {
@@ -356,156 +469,173 @@ const localStyles = StyleSheet.create({
     marginBottom: 10,
     fontFamily: 'Gilroy-Medium',
   },
-  inputField: {
+  inputFieldLang: {
     width: '100%',
     padding: 10,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 5,
+    borderColor: '#8694B2',
+    borderWidth: 0.5,
+    borderRadius: 8,
     fontFamily: 'Gilroy-Medium',
+    marginLeft:18,
   },
   closeModalText: {
-    color: 'blue',
+    color: '#399AF4',
     marginTop: 40,
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: 'Gilroy-Medium',
   },
   categoryContainer: {
     alignItems: 'center',
-    marginRight: 25,
-    marginTop: 65,
+    marginRight: 20,
+    marginTop: 20,
     fontFamily: 'Gilroy-Medium',
-
 },
 categoryIcon: {
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
     marginBottom: 5,
+    borderRadius:5,
+},
+catTitle: {
+  fontSize: 18,
+  fontFamily: 'Gilroy-SemiBold',
+  color:'#242B48',
+  marginBottom:25,
+  marginTop:20,
 },
 categoryHeading: {
-  fontSize: 22,
-  fontWeight: 'bold',
-  paddingBottom: 0,
-  paddingLeft: 15,
-  fontFamily: 'Gilroy-Medium',
+  fontSize: 18,
+  fontFamily: 'Gilroy-SemiBold',
+  color:'#242B48',
 },
 categoryText: {
-    fontSize: 16,
+    fontSize: 13,
     textAlign: 'center',
     marginTop: 5,
-    fontFamily: 'Gilroy-Medium',
-},
-viewAllButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 150,
-    marginRight: 85,
-    marginTop: 95,
+    fontFamily: 'Gilroy-SemiBold',
+    color:'#4A537E',
+    marginBottom:10,
 },
 viewAllText: {
-    color: 'blue',
-    fontSize: 20,
-    fontFamily: 'Gilroy-Medium',
-},
+    color: '#8694B2',
+    fontSize: 18,
+    fontFamily: 'Gilroy-Light',
+    textDecorationLine:'underline',
+  },
 serviceCard: {
-  flexDirection: 'row',  // Main container with two columns: one for the logo, the other for the text
-  padding: 20,
+  padding: 10,
   backgroundColor: '#fff',
-  marginTop: 10,
   borderRadius: 10,
-  marginBottom: 10,
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.3,
-  shadowRadius: 4,
-  elevation: 2,
+  marginBottom: 20,
   fontFamily: 'Gilroy-Medium',
+  borderColor:'#EEEEEE',
+  borderWidth:1,
 },
 leftSection: {
-  flex: 0.5,  // Left section for the logo
   fontFamily: 'Gilroy-Medium',
+  marginRight:10,
 },
 rightSection: {
-  flex: 0.5,  // Right section for the text content
   flexDirection: 'column',  // Stack the text elements vertically
   justifyContent: 'center',
   paddingLeft: 10,
   fontFamily: 'Gilroy-Medium',
   paddingBottom: 20,
 },
+title: {
+  fontSize: 14,
+  color: '#242B48',
+  fontFamily: 'Gilroy-SemiBold',
+  justifyContent: 'center',
+
+},
 name: {
-  fontSize: 16,
-  color: 'skyblue',
-  fontWeight: 'bold',
-  fontFamily: 'Gilroy-Medium',
+  fontSize: 17,
+  color: '#399AF4',
+  fontFamily: 'Gilroy-SemiBold',
+  justifyContent: 'center',
+  marginTop : 20,
 },
 name1: { 
-  fontSize: 16,
-  color: '#ccc',
-  fontFamily: 'Gilroy-Medium',
+  fontSize: 12,
+  color: '#8694B2',
+  fontFamily: 'Gilroy-Light',
 },
 description: {
-  fontSize: 16,
-  color: '#666',
-  fontWeight: 'bold',
+  fontSize: 12,
+  color: '#8694B2',
   marginBottom: 5,
-  fontFamily: 'Gilroy-Medium',
+  fontFamily: 'Gilroy-Light',
 },
 mobile: {
-  fontSize: 14,
-  color: '#333',
+  fontSize: 12,
+  color: '#8694B2',
   fontFamily: 'Gilroy-Medium',
+  marginTop:5,
 },
 location: {
-  fontSize: 14,
-  color: '#333',
+  fontSize: 12,
+  color: '#8694B2',
   fontFamily: 'Gilroy-Medium',
 },
 area: {
-  fontSize: 14,
-  color: '#333',
+  fontSize: 12,
+  color: '#8694B2',
   fontFamily: 'Gilroy-Medium',
 },
 serviceIcon: {
-  width: 90,
-  height: 90,
+  width: 75,
+  height: 75,
 },
 serviceTitle: {
-  fontSize: 19,
-  fontWeight: 'bold',
-  fontFamily: 'Gilroy-Medium',
+  fontSize: 12,
+  fontFamily: 'Gilroy-SemiBold',  
+  color: '#4A537E',
+  backgroundColor: '#F0F7FF',
+  paddingHorizontal: 15,
+  paddingVertical:5,
+  borderRadius:10,
+  maxWidth:150,
+  marginTop:20,
 },
 
 // New style for nationality and languages
 bottomInfo: {
   backgroundColor: '#fff',
-
   flexDirection: 'row',  // Align nationality and languages in a row
   justifyContent: 'space-between',  // Space them apart
-  borderTopWidth: 3,  // Add top border
-  borderTopColor: '#FFF',  // Light grey border color
-  marginBottom: 12,  // Add margin from the top
-  paddingTop: 15,  // Add padding at the top to give space between text and border
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.3,
-  shadowRadius: 4,
-  elevation: 1,
+  borderTopWidth : 1,  // Add top border
+  borderTopColor: '#eee',  // Light grey border color
+  paddingTop: 5,  // Add padding at the top to give space between text and border
   fontFamily: 'Gilroy-Medium',
+  marginTop:10,
 },
 nationality: {
-  fontSize: 14,
-  color: '#333',
-  paddingStart:10,
-  marginBottom: 12, 
-  fontWeight: 'bold',
+  fontSize: 12,
+  color: '#000000',
   fontFamily: 'Gilroy-Medium',
 },
 languages: {
-  fontSize: 14,
-  color: '#333',
-  paddingEnd:10,
-  fontWeight: 'bold',
+  fontSize: 12,
+  color: '#000000',
+  fontFamily: 'Gilroy-Medium',
+},
+pickerContainer: {
+  borderColor: '#8694B2',
+  borderWidth: 0.5,
+  borderRadius: 3,
+  marginVertical: 10,
+  marginLeft:7,
+  width: '100%',
+  borderRadius: 8,
+  height:45,
+  justifyContent: 'center',
+},
+picker: {
+},
+pickerItem: {
+  color: '#8694B2', 
+  fontSize:14,
   fontFamily: 'Gilroy-Medium',
 },
 });

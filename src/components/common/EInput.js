@@ -131,8 +131,6 @@ const localStyle = StyleSheet.create({
     ...styles.flex,
   },
   inputContainer: {
-    borderWidth: moderateScale(1),
-    borderRadius: moderateScale(6),
     ...styles.rowSpaceBetween,
     ...styles.mt5,
     width: '100%',
