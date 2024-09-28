@@ -6,6 +6,7 @@ import { Picker } from '@react-native-picker/picker';
 //import {FlashList} from '@shopify/flash-list';
 import filter from 'lodash.filter';
 import moment from 'moment';
+import EButton from '../../../components/common/EButton';
 // Custom Imports
 import {styles, commonColor} from '../../../themes';
 import HomeHeader from '../../../components/homeComponent/HomeHeader';
@@ -405,7 +406,7 @@ export default function HomeTab({navigation}) {
 
       <Text style={localStyles.modalTitle}></Text>
 
-      <Button   title="Submit" onPress={handleFormSubmit} />
+      <EButton title="Submit" onPress={handleFormSubmit} containerStyle={localStyles.submitBtn}/>
 
       {/* Button to Close Modal */}
       <TouchableOpacity onPress={toggleModalClose}>
@@ -480,7 +481,7 @@ const localStyles = StyleSheet.create({
   },
   closeModalText: {
     color: '#399AF4',
-    marginTop: 40,
+    marginTop: 20,
     fontSize: 16,
     fontFamily: 'Gilroy-Medium',
   },
@@ -637,5 +638,9 @@ pickerItem: {
   color: '#8694B2', 
   fontSize:14,
   fontFamily: 'Gilroy-Medium',
+},
+submitBtn: {
+  borderRadius:10,
+  paddingHorizontal:50,
 },
 });
