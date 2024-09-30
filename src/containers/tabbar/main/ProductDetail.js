@@ -22,7 +22,9 @@ const ProductDetails = ({ route, navigation }) => {
             {/* Product Details */}
             <Image source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${item.file_name}` }} style={styles.image} />
             <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.price}>Price: ${item.price}</Text>
+            <Text style={styles.category}>{item.category_title}</Text>
+            <Text style={styles.location}>{item.region}, {item.location}</Text>
+            <Text style={styles.mobile}>Mob: {item.mobile}</Text>
             <Text style={styles.description1}>Description</Text>
             <Text style={styles.description}>{removeHtmlTags(item.description)}</Text>
 
@@ -69,12 +71,24 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: 'Gilroy-SemiBold',
         color: '#242B48',
-        marginBottom: 15,
+        marginBottom: 10,
     },
-    price: {
-        fontSize: 16,
-        color: '#399AF4',
-        fontFamily: 'Gilroy-SemiBold',
+    category: {
+        fontSize: 14,
+        color: '#8694B2',
+        fontFamily: 'Gilroy-Medium',
+        marginBottom: 5,
+    },
+    location: {
+        fontSize: 12,
+        color: '#8694B2',
+        fontFamily: 'Gilroy-Medium',
+    },
+    mobile: {
+        fontSize: 12,
+        color: '#8694B2',
+        fontFamily: 'Gilroy-Medium',
+        marginTop:10,
     },
     description1: {
         fontSize: 16,

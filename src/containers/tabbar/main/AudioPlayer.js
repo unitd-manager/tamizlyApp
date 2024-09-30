@@ -15,7 +15,6 @@ const volumeControlTime = 3000;
 export const AudioPlayer = (props) => {
   const { url, style, repeatOnComponent, repeatOffComponent } = props;
   const [paused, setPaused] = useState(true);
-
   const videoRef = useRef(null);
   const controlTimer = useRef(0);
 
@@ -84,7 +83,7 @@ export const AudioPlayer = (props) => {
   return (
     <View style={[style && style, {}]}>
       <Video
-        source={{ uri: `http://codeskulptor-demos.commondatastorage.googleapis.com/pang/paza-moduless.mp3` }}
+        source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${props.audio}` }}
         ref={videoRef}
         playInBackground={false}
         audioOnly={true}

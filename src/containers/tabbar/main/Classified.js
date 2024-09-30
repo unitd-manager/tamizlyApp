@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, FlatList, Image, StyleSheet ,Modal,ScrollView} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, FlatList, Image, StyleSheet ,Modal,ScrollView} from 'react-native';
 import SearchComponent from '../../../components/homeComponent/SearchComponent';
 import api from '../../../api/api';  // Ensure this is your correct API import
 import ClassifiedForm from './ClassifiedForm'; // Assuming ClassifiedForm is in the same directory
@@ -90,9 +90,9 @@ const getValuelistRegion = () => {
       });
   };
   const getValuelistLocation = () => {
-    api
-      .get('selectLocation.php')
-      .then((res) => {
+    api.post('selectLocation.php', {
+        region: regionFilter,
+    }).then((res) => {
         setValuelistLocation(res.data.data);
       })
       .catch((error) => {
@@ -102,7 +102,7 @@ const getValuelistRegion = () => {
   useEffect(() => {
     getValuelistLocation()
     getValuelistRegion()
-  }, []);
+  }, [regionFilter]);
 
       // Handle search input for both categories and items
       const handleSearch = (query) => {
@@ -139,7 +139,11 @@ const getValuelistRegion = () => {
       // Function to handle form submission
       const handleFormSubmit = () => {
         // Filter based on all fields entered by the user
-        let filteredData = selectedCategoryData;
+        let filteredData = items;
+
+        if (selectedCategory) {
+            filteredData = filteredData.filter(item => item.category_title === selectedCategory);
+        }
       
         // Filter by region
         if (regionFilter !== 'ALL') {
@@ -154,7 +158,7 @@ const getValuelistRegion = () => {
         if (filteredData.length === 0) {
           Alert.alert('No results found', 'No categories match your search criteria.');
         } else {
-          setFilteredDirectory(filteredData);
+            setFilteredItems(filteredData);
         }
       
         toggleModal();  // Close the modal after form submission
@@ -236,7 +240,7 @@ const getValuelistRegion = () => {
             ) : error ? (
                 <Text>{error}</Text>
             ) : (
-                <View style={{paddingHorizontal: 30,}}>
+                <View style={{paddingHorizontal: 30, marginBottom:160,}}>
                 <FlatList
                 data={filteredItems}
                     keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
@@ -253,12 +257,12 @@ const getValuelistRegion = () => {
                                 </TouchableOpacity>
                                 </View>
                             </>
-                            <Text style={styles.itemCategory}>{item.category_title}</Text>
+                            <Text style={styles.itemCategory}>{item.region}, {item.location}</Text>
                             <Text style={styles.itemTitle}>{item.title}</Text>
                             <Text style={styles.itemDescription}>
                                 {item.description.replace(/(<([^>]+)>)/gi, "").split(' ').slice(0, 5).join(' ')}...
                             </Text>
-                            <Text style={styles.itemPrice}>$ {item.price}</Text>
+                            {/* <Text style={styles.itemPrice}>$ {item.price}</Text> */}
                         </View>
                     )}
                 />
@@ -309,7 +313,7 @@ const getValuelistRegion = () => {
                             style={styles.picker}
                         >
                             <Picker.Item label="Select Location" value="ALL" style={styles.pickerItem}/>
-                            {valuelistLocation.map((item) => (
+                            {valuelistLocation?.map((item) => (
                                 <Picker.Item key={item.value} label={item.value} value={item.value} style={styles.pickerItem} />
                             ))}
                         </Picker>
@@ -375,7 +379,6 @@ const styles = StyleSheet.create({
         color:'#8694B2',
     },
     itemCard: {
-        flex: 1,
         backgroundColor: '#fff',
         borderColor: '#F3F4F6',
         borderWidth:1,
@@ -383,7 +386,9 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginHorizontal:6,
         marginBottom:14,
-        height: 300, // Adjust to control the height of the cards
+        paddingBottom:2,
+        minHeight: 150, // Adjust to control the height of the cards
+        width: '48%',
     },
     itemImage: {
         width: 100,

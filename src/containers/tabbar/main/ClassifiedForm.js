@@ -9,6 +9,7 @@ import ImagePicker from 'react-native-image-crop-picker'; // New image picker li
 import api from '../../../api/api'; // Assuming you have an API utility
 import ProfilePicture from './ProfilePicture'; // Assuming ClassifiedForm is in the same directory
 import EButton from '../../../components/common/EButton';
+import Toast from 'react-native-toast-message';
 
 const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
     const [title, setTitle] = useState('');
@@ -51,7 +52,17 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
           setSelectImage(images);
         });
       };
-    
+
+      const getClose = () => {
+        setCategoryFilter('ALL')
+        setRegionFilter('ALL')
+        setLocationFilter('ALL')
+        setTitle('')
+        setDescription('')
+        setMobile('')
+        onClose()
+      };
+  
     //   useEffect(() => {
     //     if (selectImage && selectImage.path) {
     //       onPressUpdate();
@@ -68,9 +79,9 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
         });
     };
     const getValuelistLocation = () => {
-      api
-        .get('selectLocation.php')
-        .then((res) => {
+      api.post('selectLocation.php', {
+          region: regionFilter,
+      }).then((res) => {
           setValuelistLocation(res.data.data);
         })
         .catch((error) => {
@@ -91,14 +102,41 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
       getValuelistLocation()
       getValuelistRegion()
       getValuelistCategory()
-    }, []);
+    }, [regionFilter]);
           
     const onPressUpdate = async () => {
+      if (categoryFilter === 'ALL') {
+        Alert.alert("Please select the category");
+        return;
+      }
+      if (regionFilter === 'ALL') {
+        Alert.alert("Please select the region");
+        return;
+      }
+      if (locationFilter === 'ALL') {
+        Alert.alert("Please select the location");
+        return;
+      }
+      if (title === '') {
+        Alert.alert("Please enter the title");
+        return;
+      }
+      if (description === '') {
+        Alert.alert("Please enter the description");
+        return;
+      }
+      if (mobile === '') {
+        Alert.alert("Please enter the mobile");
+        return;
+      }
         try {
             const classifiedData = {
                 title,
                 description,
                 mobile,
+                category_id:categoryFilter,
+                region:regionFilter,
+                location:locationFilter,
             };
             
             console.log("FormData:", classifiedData);
@@ -148,13 +186,13 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
             } else {
                 Alert.alert("Classified created successfully");
             }
+            getClose();            
         } catch (error) {
             console.log("Error:", error);
             Alert.alert("Error occurred. Please try again.");
         }
     };
     
-
     return (
         <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
             <ScrollView contentContainerStyle={styles.modalContainer}>
@@ -167,7 +205,7 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
                   >
                     <Picker.Item label="Select Category" value="ALL" style={styles.pickerItem}/>
                     {valuelistCategory.map((item) => (
-                        <Picker.Item key={item.category_title} label={item.category_title} value={item.category_title} style={styles.pickerItem} />
+                        <Picker.Item key={item.category_title} label={item.category_title} value={item.category_id} style={styles.pickerItem} />
                     ))}
                   </Picker>
                 </View>
@@ -194,21 +232,22 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
                         style={styles.picker}
                     >
                         <Picker.Item label="Select Location" value="ALL" style={styles.pickerItem}/>
-                        {valuelistLocation.map((item) => (
+                        {valuelistLocation?.map((item) => (
                             <Picker.Item key={item.value} label={item.value} value={item.value} style={styles.pickerItem} />
                         ))}
                     </Picker>
                 </View>
 
-                <TextInput style={[styles.input, { height: 45, marginTop:10, }]} value={title} onChangeText={setTitle} placeholder="Title" />                             
+                <TextInput style={[styles.input, { height: 45, marginTop:10, }]} value={title} onChangeText={setTitle} placeholderTextColor='#8694B2' placeholder="Title" />                             
                 <TextInput
                     style={[styles.input, { height: 80 }]}
                     value={description}
                     onChangeText={setDescription}
                     placeholder="Description"
+                    placeholderTextColor='#8694B2'
                     multiline
                 />
-                <TextInput style={[styles.input, { height: 45 }]} value={mobile} onChangeText={setMobile} placeholder="Mobile" />                             
+                <TextInput style={[styles.input, { height: 45, color:'#8694B2', }]} value={mobile} onChangeText={setMobile} placeholderTextColor='#8694B2' placeholder="Mobile" />                             
                 {/* <TouchableOpacity onPress={onPressProfilePic} style={[styles.selfCenter, styles.mb20]}>
                   {!!selectImage?.path ? (
                     <Image
@@ -251,10 +290,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 8,
         fontFamily: 'Gilroy-Medium',
+        color:'#8694B2',
       },
     input: {
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: '#8694B2',
         padding: 10,
         marginBottom: 16,
         borderRadius: 5,
