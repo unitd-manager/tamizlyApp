@@ -301,7 +301,7 @@ export default function HomeTab({navigation}) {
                     
                     <View style={localStyles.rightSection}>
                       <Text style={localStyles.title}>{item.name}</Text>
-                      <HTMLView stylesheet={htmlStyles} value={item.description} />
+                      <Text style={localStyles.description}>{item.short_description || ''}</Text>
                     </View>
                   </View>
                   <View style={{ flexDirection: 'row'}}>

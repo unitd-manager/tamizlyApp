@@ -15,6 +15,11 @@ import { AudioPlayer } from './AudioPlayer';
 
 const { width: screenWidth } = Dimensions.get('window');  // Get screen width
 const VideoPlayer = ({ videoUri, visible, onClose }) => {
+  const [paused, setPaused] = useState(true); // Control play/pause state
+
+  const togglePlayPause = () => {
+    setPaused(!paused);
+  };
   
   return(
   <Modal
@@ -31,13 +36,26 @@ const VideoPlayer = ({ videoUri, visible, onClose }) => {
         <Video
           source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${videoUri}` }}
           style={styles.fullscreenVideo}
-          controls
+          controls={false} // We disable default controls to add our custom buttons
+          paused={paused}
           resizeMode="contain"
         />
+        {/* Play/Pause Button */}
+        <TouchableOpacity
+            onPress={togglePlayPause}
+            style={styles.controlButton}
+          >
+            <Icon
+              name={paused ? 'play' : 'pause'}
+              size={30}
+              color="#fff"
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Icon name="close" size={30} color="#fff" />
+          </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-        <Text style={styles.closeText}>Close</Text>
-      </TouchableOpacity>
     </View>
   </Modal>
 )};
@@ -299,7 +317,7 @@ const Post = ({ feedId, name, time, content, images, videos, audios }) => {
           onClose={closeModal}
         />
       )}
- <Modal
+      <Modal
         visible={visibleVideo}
         onRequestClose={closeVideoModal}
         animationType="slide"

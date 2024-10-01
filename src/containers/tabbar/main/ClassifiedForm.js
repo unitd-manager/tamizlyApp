@@ -324,7 +324,7 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
                     <EButton title="Update" onPress={onPressUpdate} containerStyle={styles.submitBtn}/>
 
                     {/* Button to Close Modal */}
-                    <TouchableOpacity onPress={onClose}>
+                    <TouchableOpacity onPress={getClose}>
                       <Text style={styles.closeModalText}>Close</Text>
                     </TouchableOpacity>
                 </View>
