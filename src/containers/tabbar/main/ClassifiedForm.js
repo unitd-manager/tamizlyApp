@@ -4,6 +4,7 @@ import {useSelector} from 'react-redux';
 import images from '../../../assets/images';
 import {moderateScale} from '../../../common/constants';
 import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import ImagePicker from 'react-native-image-crop-picker'; // New image picker library
 import api from '../../../api/api'; // Assuming you have an API utility
@@ -25,10 +26,13 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
     const [valuelistLocation, setValuelistLocation] = useState([]);
     const [categoryFilter, setCategoryFilter] = useState('ALL');
     const [valuelistCategory, setValuelistCategory] = useState([]);
+    const [user, setUser] = useState(null);
 
     const onPressProfilePic = () => ProfilePictureSheetRef?.current.show();
     const ProfilePictureSheetRef = createRef();
-  
+    const name = user?.[0]?.first_name || null;
+    const contactId = user?.[0]?.contact_id || null;
+    
     useEffect(() => {
       ProfilePictureSheetRef?.current?.hide();
     }, [selectImage]);
@@ -62,7 +66,22 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
         setMobile('')
         onClose()
       };
-  
+
+      const getUser = async () => {
+        try {
+          let userData = await AsyncStorage.getItem('USER');
+          if (userData) {
+            setUser(JSON.parse(userData));
+          }
+        } catch (error) {
+          console.error("Failed to load user data", error);
+        }
+      };
+    
+      useEffect(() => {
+        getUser();
+      }, []);
+    
     //   useEffect(() => {
     //     if (selectImage && selectImage.path) {
     //       onPressUpdate();
@@ -137,6 +156,8 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
                 category_id:categoryFilter,
                 region:regionFilter,
                 location:locationFilter,
+                contact_id:contactId,
+                created_by:name,
             };
             
             console.log("FormData:", classifiedData);
