@@ -205,7 +205,7 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
                     Alert.alert("Classified created, but failed to upload media");
                 }
             } else {
-                Alert.alert("Classified created successfully");
+                Alert.alert("Submission Successful");
             }
             getClose();            
         } catch (error) {
@@ -268,7 +268,7 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
                     placeholderTextColor='#8694B2'
                     multiline
                 />
-                <TextInput style={[styles.input, { height: 45, color:'#8694B2', }]} value={mobile} onChangeText={setMobile} placeholderTextColor='#8694B2' placeholder="Mobile" />                             
+                <TextInput style={[styles.input, { height: 45, color:'#8694B2', }]} value={mobile} onChangeText={setMobile} placeholderTextColor='#8694B2' placeholder="Mobile" keyboardType="numeric" /> 
                 {/* <TouchableOpacity onPress={onPressProfilePic} style={[styles.selfCenter, styles.mb20]}>
                   {!!selectImage?.path ? (
                     <Image
@@ -287,7 +287,7 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
                     <EButton title="Update" onPress={onPressUpdate} containerStyle={styles.submitBtn}/>
 
                     {/* Button to Close Modal */}
-                    <TouchableOpacity onPress={onClose}>
+                    <TouchableOpacity onPress={getClose}>
                       <Text style={styles.closeModalText}>Close</Text>
                     </TouchableOpacity>
                 </View>
