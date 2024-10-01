@@ -197,7 +197,7 @@ const Post = ({ feedId, name, time, content, images, videos, audios }) => {
       >
          <View style={styles.videoContainer}>
           <Video 
-          poster='http://tamizhy.smartprosoft.com/media/normal/538_default.jpg'
+          poster='http://tamizhy.smartprosoft.com/media/normal/547_Vx3PB.png'
     // Can be a URL or a local file.
     source={ {uri: `http://tamizhy.smartprosoft.com/media/normal/${item}`}}
     // Store reference  
@@ -211,12 +211,12 @@ const Post = ({ feedId, name, time, content, images, videos, audios }) => {
     style={styles.video} // Apply dynamic width and height
    />
          
-       <TouchableOpacity
+       {/* <TouchableOpacity
         style={styles.controlButton}
         onPress={() => togglePlayPause(index)}
       >
         <Icon name={pausedStates[index] ? 'play' : 'pause'} size={30} color="#fff" />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
    
        </View>
 
@@ -262,9 +262,13 @@ const Post = ({ feedId, name, time, content, images, videos, audios }) => {
         keyExtractor={(item, index) => index.toString()}
       />}
     
-    {audios.length > 0 && <>
-     <AudioPlayer />
-      </>}
+    {audios.length > 0 && (
+      <>
+        {audios.map((audio, index) => (
+          <AudioPlayer key={index} audio={audio} />
+        ))}
+      </>
+    )}
       
 {images.length > 0 && (
   <ImageViewing

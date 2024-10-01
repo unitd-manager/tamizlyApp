@@ -16,6 +16,7 @@ import CardData from './CardData';
 import EInput from '../../../components/common/EInput';
 import {moderateScale} from '../../../common/constants';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import HTMLView from 'react-native-htmlview';
 
 import strings from '../../../i18n/strings';
 import api from '../../../api/api';
@@ -58,9 +59,22 @@ export default function HomeTab({navigation}) {
     api.get('selectCategory.php')
       .then(response => {
         if (response.data && response.data.data) {
-          setCategoriesData(response.data.data.category_data);  // Set categories
-          setDirectoryData(response.data.data.directory_data);  // Set directory
-          setFilteredDirectory(response.data.data.directory_data);  // Set initially filtered directory
+          const fetchedCategories = response.data.data.category_data;
+          const fetchedDirectory = response.data.data.directory_data;
+  
+          setCategoriesData(fetchedCategories);  // Set categories
+          setDirectoryData(fetchedDirectory);  // Set directory
+  
+          // Set initially selected category to the first category
+          const firstCategory = fetchedCategories.length > 0 ? fetchedCategories[0] : null;
+          setSelectedCategory(firstCategory);
+  
+          // Filter the directory based on the first category
+          const filteredData = firstCategory 
+            ? fetchedDirectory.filter(item => item.category_title === firstCategory.title)
+            : fetchedDirectory;
+  
+          setFilteredDirectory(filteredData);  // Set initially filtered directory
         } else {
           setError('Invalid response structure.');
         }
@@ -72,7 +86,7 @@ export default function HomeTab({navigation}) {
         setLoading(false);
       });
   }, []);
-
+  
   const getValuelistRegion = () => {
     api
       .get('selectRegion.php')
@@ -84,9 +98,9 @@ export default function HomeTab({navigation}) {
       });
   };
   const getValuelistLocation = () => {
-    api
-      .get('selectLocation.php')
-      .then((res) => {
+    api.post('selectLocation.php', {
+        region: regionFilter,
+    }).then((res) => {
         setValuelistLocation(res.data.data);
       })
       .catch((error) => {
@@ -107,7 +121,7 @@ export default function HomeTab({navigation}) {
     getValuelistLocation()
     getValuelistRegion()
     getValuelistCountry()
-  }, []);
+  }, [regionFilter]);
   
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -287,7 +301,7 @@ export default function HomeTab({navigation}) {
                     
                     <View style={localStyles.rightSection}>
                       <Text style={localStyles.title}>{item.name}</Text>
-                      <Text style={localStyles.description}>{item.description}</Text>
+                      <HTMLView stylesheet={htmlStyles} value={item.description} />
                     </View>
                   </View>
                   <View style={{ flexDirection: 'row'}}>
@@ -376,7 +390,7 @@ export default function HomeTab({navigation}) {
                 style={localStyles.picker}
             >
                 <Picker.Item label="Select Location" value="ALL" style={localStyles.pickerItem}/>
-                {valuelistLocation.map((item) => (
+                {valuelistLocation?.map((item) => (
                     <Picker.Item key={item.value} label={item.value} value={item.value} style={localStyles.pickerItem} />
                 ))}
             </Picker>
@@ -643,4 +657,26 @@ submitBtn: {
   borderRadius:10,
   paddingHorizontal:50,
 },
+});
+
+const htmlStyles = StyleSheet.create({
+  p: {
+    fontSize: 12,
+    color: '#8694B2',
+    marginBottom: 5,
+    fontFamily: 'Gilroy-Light',
+  },
+  h1: {
+    fontFamily: 'Gilroy-Bold', // Custom font for headings
+    fontSize: 16,
+    color:'#242B48',
+  },
+  // Add other styles for different HTML elements if needed
+  b: {
+    fontFamily: 'Gilroy-Bold',
+  },
+  strong: {
+    fontFamily: 'Gilroy-Bold',
+  },
+  
 });
