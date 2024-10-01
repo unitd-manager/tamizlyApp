@@ -209,7 +209,7 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
                     multiline
                 />
                 <TextInput style={[styles.input, { height: 45 }]} value={mobile} onChangeText={setMobile} placeholder="Mobile" />                             
-                {/* <TouchableOpacity onPress={onPressProfilePic} style={[styles.selfCenter, styles.mb20]}>
+                <TouchableOpacity onPress={onPressProfilePic} style={[styles.selfCenter, styles.mb20]}>
                   {!!selectImage?.path ? (
                     <Image
                       source={{ uri: selectImage?.path }}
@@ -221,7 +221,7 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
                       style={styles.userImageStyle}
                     />
                   )}
-                </TouchableOpacity> */}
+                </TouchableOpacity> 
                 <ProfilePicture onPressCamera={onPressCamera} onPressGallery={onPressGallery} SheetRef={ProfilePictureSheetRef} />
                 <View style={styles.btnContainer}>
                     <EButton title="Update" onPress={onPressUpdate} containerStyle={styles.submitBtn}/>
