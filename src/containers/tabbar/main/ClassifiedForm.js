@@ -178,35 +178,40 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
     
             // Second API call: Upload Media (if image is selected)
             if (selectImage && selectImage.path) {
-                const mediaFormData = new FormData();
-                mediaFormData.append('record_id', classifiedId); // Pass classified_id here
-                mediaFormData.append('media', {
-                    type: selectImage.mime,
-                    uri: selectImage.path,
-                    name: selectImage.path.split('/').pop(),
-                });
-    
-                const mediaResponse = await fetch('http://tamizhy.smartprosoft.com/appdev/uploadMedia.php', {
-                    method: 'POST',
-                    body:mediaFormData,
-
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'multipart/form-data', // Important!
-                    },
-                });
-    
-                const mediaJson = await mediaResponse.json();
-                console.log("Media Upload Response:", mediaJson);
-    
-                if (mediaJson.success) {
-                    Alert.alert("Classified and media uploaded successfully");
-                } else {
-                    Alert.alert("Classified created, but failed to upload media");
-                }
-            } else {
-                Alert.alert("Submission Successful");
-            }
+              const mediaFormData = new FormData();
+              mediaFormData.append('record_id', classifiedId); // Classified ID from the previous API call
+              mediaFormData.append('media[]', {
+                  uri: selectImage.path,
+                  type: selectImage.mime,
+                  name: selectImage.path.split('/').pop(), // Get image name
+              });
+              
+              try {
+                  const mediaResponse = await fetch('http://tamizhy.smartprosoft.com/appdev/uploadMedia.php', {
+                      method: 'POST',
+                      body: mediaFormData,
+                      headers: {
+                          Accept: 'application/json',
+                          'Content-Type': 'multipart/form-data',
+                      },
+                  });
+              
+                  const mediaJson = await mediaResponse.json();
+                  console.log("Media Upload Response:", mediaJson);
+              
+                  if (mediaJson.success) {
+                      Alert.alert("Classified and media uploaded successfully");
+                  } else {
+                      Alert.alert("Classified created, but failed to upload media");
+                  }
+              } catch (error) {
+                  console.log("Error uploading media:", error);
+                  Alert.alert("Error uploading media. Please try again.");
+              }
+          } else {
+              Alert.alert("Classified created successfully, no media uploaded.");
+          }
+          
             getClose();            
         } catch (error) {
             console.log("Error:", error);
@@ -268,8 +273,8 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
                     placeholderTextColor='#8694B2'
                     multiline
                 />
-                <TextInput style={[styles.input, { height: 45, color:'#8694B2', }]} value={mobile} onChangeText={setMobile} placeholderTextColor='#8694B2' placeholder="Mobile" keyboardType="numeric" /> 
-                {/* <TouchableOpacity onPress={onPressProfilePic} style={[styles.selfCenter, styles.mb20]}>
+                <TextInput style={[styles.input, { height: 45, color:'#8694B2', }]} value={mobile} onChangeText={setMobile} placeholderTextColor='#8694B2' placeholder="Mobile" />                             
+                <TouchableOpacity onPress={onPressProfilePic} style={[styles.selfCenter, styles.mb20]}>
                   {!!selectImage?.path ? (
                     <Image
                       source={{ uri: selectImage?.path }}
@@ -281,7 +286,7 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
                       style={styles.userImageStyle}
                     />
                   )}
-                </TouchableOpacity> */}
+                </TouchableOpacity> 
                 <ProfilePicture onPressCamera={onPressCamera} onPressGallery={onPressGallery} SheetRef={ProfilePictureSheetRef} />
                 <View style={styles.btnContainer}>
                     <EButton title="Update" onPress={onPressUpdate} containerStyle={styles.submitBtn}/>
