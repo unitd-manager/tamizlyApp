@@ -18,7 +18,7 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
     const [mobile, setMobile] = useState('');
     const [description, setDescription] = useState('');
     const [media, setMedia] = useState([]);
-    const [selectImage, setSelectImage] = useState('');
+    const [selectImage, setSelectImage] = useState([]);
     const colors = useSelector(state => state.theme.theme);
     const [regionFilter, setRegionFilter] = useState('ALL');
     const [valuelistRegion, setValuelistRegion] = useState([]);
@@ -47,15 +47,25 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
         });
       };
 
+  
       const onPressGallery = () => {
         ImagePicker.openPicker({
           mediaType: 'photo',
-          // includeBase64: true,
+          multiple: true,
+          includeBase64: true,
         }).then(images => {
-          console.log("images",images)
-          setSelectImage(images);
+          const totalSelectedImages = selectImage.length + images.length;
+      
+          if (totalSelectedImages > 5) {
+            Alert.alert("You can only select a maximum of 5 images.");
+          } else {
+            setSelectImage([...selectImage, ...images]);
+          }
+        }).catch(error => {
+          console.log('Image selection cancelled or error occurred:', error);
         });
       };
+      
 
       const getClose = () => {
         setCategoryFilter('ALL')
@@ -148,76 +158,88 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
         Alert.alert("Please enter the mobile");
         return;
       }
-        try {
-            const classifiedData = {
-                title,
-                description,
-                mobile,
-                category_id:categoryFilter,
-                region:regionFilter,
-                location:locationFilter,
-                contact_id:contactId,
-                created_by:name,
-            };
-            
-            console.log("FormData:", classifiedData);
     
-            // First API call: Create Classified
-            const classifiedResponse = await fetch('http://tamizhy.smartprosoft.com/appdev/createClassifiedEndpoint.php', {
-                method: 'POST',
-                body: JSON.stringify(classifiedData),
-                headers: {
-                    Accept: 'application/json',
-                },
-            });
+      try {
+        const classifiedData = {
+          title,
+          description,
+          mobile,
+          category_id: categoryFilter,
+          region: regionFilter,
+          location: locationFilter,
+          contact_id: contactId,
+          created_by: name,
+        };
     
-            const classifiedJson = await classifiedResponse.json();
-            console.log("Classified Creation Response:", classifiedJson);
+        console.log("FormData:", classifiedData);
     
-            const classifiedId = classifiedJson.data.id;
-    
-            // Second API call: Upload Media (if image is selected)
-            if (selectImage && selectImage.path) {
-              const mediaFormData = new FormData();
-              mediaFormData.append('record_id', classifiedId); // Classified ID from the previous API call
-              mediaFormData.append('media[]', {
-                  uri: selectImage.path,
-                  type: selectImage.mime,
-                  name: selectImage.path.split('/').pop(), // Get image name
-              });
-              
-              try {
-                  const mediaResponse = await fetch('http://tamizhy.smartprosoft.com/appdev/uploadMedia.php', {
-                      method: 'POST',
-                      body: mediaFormData,
-                      headers: {
-                          Accept: 'application/json',
-                          'Content-Type': 'multipart/form-data',
-                      },
-                  });
-              
-                  const mediaJson = await mediaResponse.json();
-                  console.log("Media Upload Response:", mediaJson);
-              
-                  if (mediaJson.success) {
-                      Alert.alert("Classified and media uploaded successfully");
-                  } else {
-                      Alert.alert("Classified created, but failed to upload media");
-                  }
-              } catch (error) {
-                  console.log("Error uploading media:", error);
-                  Alert.alert("Error uploading media. Please try again.");
-              }
-          } else {
-              Alert.alert("Classified created successfully, no media uploaded.");
+        // First API call: Create Classified
+        const classifiedResponse = await fetch(
+          'http://tamizhy.smartprosoft.com/appdev/createClassifiedEndpoint.php',
+          {
+            method: 'POST',
+            body: JSON.stringify(classifiedData),
+            headers: {
+              Accept: 'application/json',
+            },
           }
-          
-            getClose();            
-        } catch (error) {
-            console.log("Error:", error);
-            Alert.alert("Error occurred. Please try again.");
+        );
+    
+        const classifiedJson = await classifiedResponse.json();
+        console.log("Classified Creation Response:", classifiedJson);
+    
+        const classifiedId = classifiedJson.data.id;
+    
+        // Second API call: Upload Media (if image is selected)
+        if (selectImage.length > 0) {
+          const mediaFormData = new FormData();
+          mediaFormData.append('record_id', classifiedId); // Classified ID from the previous API call
+    
+          // Iterate over each image and append to FormData
+          selectImage.forEach((image, index) => {
+            mediaFormData.append(`media[${index}]`, {
+              uri: image.path,
+              type: image.mime,
+              name: image.path.split('/').pop(), // Get image name
+            });
+          });
+    
+          try {
+            const mediaResponse = await fetch(
+              'http://tamizhy.smartprosoft.com/appdev/uploadMedia.php',
+              {
+                method: 'POST',
+                body: mediaFormData,
+                headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'multipart/form-data',
+                },
+              }
+            );
+    
+            const mediaJson = await mediaResponse.json();
+            console.log("Media Upload Response:", mediaJson);
+    
+            if (mediaJson.success) {
+              Alert.alert("Classified and media uploaded successfully");
+            } else {
+              Alert.alert("Classified created, but failed to upload media");
+            }
+          } catch (error) {
+            console.log("Error uploading media:", error);
+            Alert.alert("Error uploading media. Please try again.");
+          }
+        } else {
+          Alert.alert("Classified created successfully, no media uploaded.");
         }
+    
+        getClose();
+      } catch (error) {
+        console.log("Error:", error);
+        Alert.alert("Error occurred. Please try again.");
+      }
     };
+    
     
     return (
         <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
@@ -287,6 +309,16 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
                     />
                   )}
                 </TouchableOpacity> 
+                <View style={styles.imageContainer}>
+  {selectImage.map((image, index) => (
+    <Image
+      key={index}
+      source={{ uri: image.path }}
+      style={styles.userImageStyle}
+    />
+  ))}
+</View>
+
                 <ProfilePicture onPressCamera={onPressCamera} onPressGallery={onPressGallery} SheetRef={ProfilePictureSheetRef} />
                 <View style={styles.btnContainer}>
                     <EButton title="Update" onPress={onPressUpdate} containerStyle={styles.submitBtn}/>
