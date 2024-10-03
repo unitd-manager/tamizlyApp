@@ -34,20 +34,32 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
     const contactId = user?.[0]?.contact_id || null;
     
     useEffect(() => {
-      ProfilePictureSheetRef?.current?.hide();
+      if (selectImage && selectImage.length > 0) {
+        ProfilePictureSheetRef?.current?.hide();
+      }
     }, [selectImage]);
+    
+    // const onPressCamera = () => {
+    //     ImagePicker.openCamera({
+    //       // cropping: true,
+    //       mediaType: 'photo',
+    //       includeBase64: true,
+    //     }).then(image => {
+    //       setSelectImage(image);
+    //     });
+    //   };
 
     const onPressCamera = () => {
-        ImagePicker.openCamera({
-          // cropping: true,
-          mediaType: 'photo',
-          includeBase64: true,
-        }).then(image => {
-          setSelectImage(image);
-        });
-      };
-
-  
+      ImagePicker.openCamera({
+        mediaType: 'photo',
+        includeBase64: true,
+      }).then(image => {
+        // Make sure to add the image to the array
+        setSelectImage([...selectImage, image]); // Ensure `selectImage` is always an array
+      });
+    };
+    
+      
       const onPressGallery = () => {
         ImagePicker.openPicker({
           mediaType: 'photo',
@@ -296,21 +308,18 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
                     multiline
                 />
                 <TextInput style={[styles.input, { height: 45, color:'#8694B2', }]} value={mobile} onChangeText={setMobile} placeholderTextColor='#8694B2' placeholder="Mobile" />                             
-                <TouchableOpacity onPress={onPressProfilePic} style={[styles.selfCenter, styles.mb20]}>
-                  {!!selectImage?.path ? (
-                    <Image
-                      source={{ uri: selectImage?.path }}
-                      style={styles.userImageStyle}
-                    />
-                  ) : (
-                    <Image
-                      source={colors.dark ? images.userDark : images.userLight}
-                      style={styles.userImageStyle}
-                    />
-                  )}
-                </TouchableOpacity> 
+                <View style={styles.sectionContainer}>
+  {/* Media Upload Heading */}
+  <Text style={styles.sectionHeading}>Media Upload</Text>
+
+  {/* Image Upload Box */}
+  <TouchableOpacity onPress={onPressProfilePic} style={styles.mediaUpload}>
+    <Text style={styles.uploadText}>Choose your images file here</Text>
+    <Text style={styles.uploadLimitText}>Maximum upload limit is 5</Text>
+  </TouchableOpacity>
+
                 <View style={styles.imageContainer}>
-  {selectImage.map((image, index) => (
+  {Array.isArray(selectImage) && selectImage.map((image, index) => (
     <Image
       key={index}
       source={{ uri: image.path }}
@@ -318,6 +327,7 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
     />
   ))}
 </View>
+</View> 
 
                 <ProfilePicture onPressCamera={onPressCamera} onPressGallery={onPressGallery} SheetRef={ProfilePictureSheetRef} />
                 <View style={styles.btnContainer}>
@@ -334,15 +344,57 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
 };
 
 const styles = StyleSheet.create({
-    modalContainer: {
-        paddingTop: 20,
-        backgroundColor: '#fff',
-        paddingHorizontal:30,
-    },
+  modalContainer: {
+    paddingTop: 20,
+    backgroundColor: '#fff',
+    paddingHorizontal: 30,
+  },
+  sectionContainer: {
+    marginVertical: 10,
+  },
+  sectionHeading: {
+    fontSize: 16,
+    fontFamily: 'Gilroy-Medium',
+    color: '#8694B2',
+    marginBottom: 8,
+  },
+  mediaUpload: {
+    padding: 15,
+    backgroundColor: '#F1F1F1',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#8694B2',
+    alignItems: 'center',
+    marginBottom: 16,
+    height: 150, // Makes it a square box
+    justifyContent: 'center',
+  },
+  uploadText: {
+    color: '#399AF4',
+    fontSize: 14,
+    fontFamily: 'Gilroy-Medium',
+  },
+  uploadLimitText: {
+    color: '#8694B2',
+    fontSize: 12,
+    fontFamily: 'Gilroy-Medium',
+    marginTop: 5,
+  },
+  imageContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 10,
+  },
+  userImageStyle: {
+    width: 60,
+    height: 60,
+    borderRadius: 5,
+    marginRight: 10,
+    marginBottom: 10,
+  },
     userImageStyle: {
-        width: moderateScale(50),
-        height: moderateScale(50),
-        borderRadius: moderateScale(25),
+        width: moderateScale(60),
+        height: moderateScale(60),
       },
     label: {
         fontSize: 16,
@@ -357,13 +409,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         borderRadius: 5,
     },
-    mediaUpload: {
-        padding: 15,
-        backgroundColor: '#eee',
-        borderRadius: 5,
-        alignItems: 'center',
-        marginBottom: 16,
-    },
+  
     pickerContainer: {
       borderColor: '#8694B2',
       borderWidth: 0.5,
