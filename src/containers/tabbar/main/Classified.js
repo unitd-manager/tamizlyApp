@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
         marginBottom:14,
         paddingBottom:2,
         minHeight: 150, // Adjust to control the height of the cards
-        width: '48%',
+        width: '47.5%',
     },
     itemImage: {
         width: 100,
