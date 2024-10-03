@@ -1,12 +1,25 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Carousel, { Pagination } from 'react-native-snap-carousel';
 import EButton from '../../../components/common/EButton';
 
 const ProductDetails = ({ route, navigation }) => {
     const { item } = route.params; // Get the item passed from the previous screen
+    const [activeSlide, setActiveSlide] = useState(0);
+    const carouselRef = useRef(null); // Reference to the carousel
+
     const removeHtmlTags = (text) => {
         return text.replace(/<\/?[^>]+(>|$)/g, ""); // Removes HTML tags
+    };
+
+    // Remove any extra spaces after splitting the URLs
+    const images = item.file_names.split(',').map(image => image.trim());
+
+    const renderImage = ({ item }) => {
+        return (
+            <Image source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${item}` }} style={styles.image} />
+        );
     };
 
     return (
@@ -19,8 +32,44 @@ const ProductDetails = ({ route, navigation }) => {
                 <Text style={styles.headerTitle}>Product Details</Text>
             </View>
 
-            {/* Product Details */}
-            <Image source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${item.file_name}` }} style={styles.image} />
+            {/* Show either the carousel or a single image */}
+            {images.length > 1 ? (
+                <View>
+                    <Carousel
+                        ref={carouselRef}
+                        data={images}
+                        renderItem={renderImage}
+                        sliderWidth={350} // Adjust this based on your layout
+                        itemWidth={350}
+                        onSnapToItem={(index) => setActiveSlide(index)}
+                    />
+                    <Pagination
+                        dotsLength={images.length}
+                        activeDotIndex={activeSlide}
+                        containerStyle={{ paddingVertical: 8 }}
+                        dotStyle={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: 4,
+                            marginHorizontal: 2,
+                            backgroundColor: 'rgba(0, 0, 0, 0.92)',
+                        }}
+                        inactiveDotStyle={{
+                            // Define styles for inactive dots
+                            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                        }}
+                        inactiveDotOpacity={0.4}
+                        inactiveDotScale={0.6}
+                        tappableDots={true}  // Enable tappable dots
+                        carouselRef={carouselRef}
+                        // When a dot is tapped, change the carousel slide
+                        onPress={(index) => carouselRef.current.snapToItem(index)}
+                    />
+                </View>
+            ) : (
+                <Image source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${images[0]}` }} style={styles.image} />
+            )}
+
             <Text style={styles.title}>{item.title}</Text>
             <Text style={styles.category}>{item.category_title}</Text>
             <Text style={styles.location}>{item.region}, {item.location}</Text>

@@ -242,30 +242,32 @@ const getValuelistRegion = () => {
             ) : (
                 <View style={{paddingHorizontal: 30, marginBottom:160,}}>
                 <FlatList
-                data={filteredItems}
-                    keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
-                    numColumns={2}
-                    renderItem={({ item }) => (
-                        <View style={styles.itemCard}>
-                            <>
-                                <View style={styles.itemImage1}>
-                                <TouchableOpacity
-                                    style={styles.itemImage2}
-                                    onPress={() => navigation.navigate('ProductDetail', { item })}
-                                >
-                                    <Image source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${item.file_name}` }} style={styles.itemImage} />                           
-                                </TouchableOpacity>
-                                </View>
-                            </>
-                            <Text style={styles.itemCategory}>{item.region}, {item.location}</Text>
-                            <Text style={styles.itemTitle}>{item.title}</Text>
-                            <Text style={styles.itemDescription}>
-                                {item.description.replace(/(<([^>]+)>)/gi, "").split(' ').slice(0, 5).join(' ')}...
-                            </Text>
-                            {/* <Text style={styles.itemPrice}>$ {item.price}</Text> */}
-                        </View>
-                    )}
-                />
+    data={filteredItems}
+    keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
+    numColumns={2}
+    renderItem={({ item }) => {
+        const firstFileName = item.file_names ? item.file_names.split(', ')[0] : '';
+
+        return (
+            <View style={styles.itemCard}>
+                <View style={styles.itemImage1}>
+                    <TouchableOpacity
+                        style={styles.itemImage2}
+                        onPress={() => navigation.navigate('ProductDetail', { item })}
+                    >
+                        <Image source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${firstFileName}` }} style={styles.itemImage} />
+                    </TouchableOpacity>
+                </View>
+                <Text style={styles.itemCategory}>{item.region}, {item.location}</Text>
+                <Text style={styles.itemTitle}>{item.title}</Text>
+                <Text style={styles.itemDescription}>
+                    {item.description.replace(/(<([^>]+)>)/gi, "").split(' ').slice(0, 5).join(' ')}...
+                </Text>
+            </View>
+        );
+    }}
+/>
+
                 </View>
             )}
 

@@ -327,7 +327,7 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
     />
   ))}
 </View>
-</View>
+</View> 
 
                 <ProfilePicture onPressCamera={onPressCamera} onPressGallery={onPressGallery} SheetRef={ProfilePictureSheetRef} />
                 <View style={styles.btnContainer}>
