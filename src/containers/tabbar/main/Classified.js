@@ -242,32 +242,37 @@ const getValuelistRegion = () => {
             ) : (
                 <View style={{paddingHorizontal: 30, marginBottom:160,}}>
                 <FlatList
-    data={filteredItems}
-    keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
-    numColumns={2}
-    renderItem={({ item }) => {
-        const firstFileName = item.file_names ? item.file_names.split(', ')[0] : '';
+                    data={filteredItems}
+                    keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
+                    numColumns={2}
+                    renderItem={({ item }) => {
+                        const firstFileName = item.file_names ? item.file_names.split(', ')[0] : '';
 
-        return (
-            <View style={styles.itemCard}>
-                <View style={styles.itemImage1}>
-                    <TouchableOpacity
-                        style={styles.itemImage2}
-                        onPress={() => navigation.navigate('ProductDetail', { item })}
-                    >
-                        <Image source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${firstFileName}` }} style={styles.itemImage} />
-                    </TouchableOpacity>
-                </View>
-                <Text style={styles.itemCategory}>{item.region}, {item.location}</Text>
-                <Text style={styles.itemTitle}>{item.title}</Text>
-                <Text style={styles.itemDescription}>
-                    {item.description.replace(/(<([^>]+)>)/gi, "").split(' ').slice(0, 5).join(' ')}...
-                </Text>
-            </View>
-        );
-    }}
-/>
-
+                        return (
+                            <TouchableOpacity
+                                style={styles.itemCard}
+                                onPress={() => navigation.navigate('ProductDetail', { item })}
+                            >
+                                <View style={styles.itemImage1}>
+                                    <Image source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${firstFileName}` }} style={styles.itemImage} />
+                                </View>
+                                <Text style={styles.itemCategory}>{item.region}, {item.location}</Text>
+                                <Text style={styles.itemTitle}>
+                                    {item.title.replace(/(<([^>]+)>)/gi, "").length > 30
+                                        ? item.title.replace(/(<([^>]+)>)/gi, "").substring(0, 30) + '...' 
+                                        : item.title.replace(/(<([^>]+)>)/gi, "")
+                                    }
+                                </Text>
+                                <Text style={styles.itemDescription}>
+                                    {item.description.replace(/(<([^>]+)>)/gi, "").length > 40
+                                        ? item.description.replace(/(<([^>]+)>)/gi, "").substring(0, 40) + '...' 
+                                        : item.description.replace(/(<([^>]+)>)/gi, "")
+                                    }
+                                </Text>
+                            </TouchableOpacity>
+                        );
+                    }}
+                />
                 </View>
             )}
 
@@ -395,15 +400,14 @@ const styles = StyleSheet.create({
     itemImage: {
         width: 100,
         height: 100,
-        justifyContent: 'center',
-        left: 22,
-        top: 25,
     },
     itemImage1: {
         width: '100%',
         height: 150,
         backgroundColor: '#F0F7FF',    
-        borderRadius:5,    
+        borderRadius:5,
+        justifyContent: 'center', // Center vertically
+        alignItems: 'center',    
     },
     itemTitle: {
         fontSize: 14,
