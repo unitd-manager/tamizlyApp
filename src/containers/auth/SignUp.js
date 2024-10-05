@@ -103,54 +103,53 @@ const SignUp = () => {
         // setPasswordError(msg);
     };
     
-    const Insert = () => {  
-        if(conPassword !== password){
+    const Insert = () => {
+        if (conPassword !== password) {
             Toast.show({
                 type: 'error',
-                text1:'Password and confirm password are not same',
-              });
+                text1: 'Password and confirm password are not same',
+            });
             return;
         }
+    
         if (!name || !email || !password || !phone || !conPassword) {
-            //Alert.alert('Please fill in all fields');
             Toast.show({
                 type: 'error',
-                text1:'Please fill in all fields',
-              });
+                text1: 'Please fill in all fields',
+            });
             return;
         }
-
+    
         const registerData = {
             first_name: name,
             email: email,
             password: password,
             mobile: phone,
         };
-
+    
         api
             .post('insertRegister.php', registerData)
             .then(response => {
-                console.log('Error11',response.data);
-                if(response.data.msg === 'Failed'){
+                console.log('Error11', response.data);
+                if (response.data.msg === 'Failed') {
                     Toast.show({
                         type: 'error',
-                        text1:'Email already exist',
-                      });
+                        text1: 'Email already exists',
+                    });
                     return;
-                  }
-        
+                }
+    
                 if (response.status === 200) {
-                    // setTimeout(() => {
-                    //     SendEmail();
-                    // }, 500);
-                    //Alert.alert('You have successfully registered');
                     Toast.show({
-                        type: 'error',
-                        text1:'You have successfully registered',
-                      });
-                    return;
-                            setTimeout(() => {
-                        navigation.navigate(StackNav.Login)
+                        type: 'success',
+                        text1: 'You have successfully registered',
+                    });
+                    
+                    // Call the SendEmail function and pass the email from registerData
+                    SendEmail(registerData.email);
+    
+                    setTimeout(() => {
+                        navigation.navigate(StackNav.Login);
                     }, 500);
                 } else {
                     console.error('Error');
@@ -158,28 +157,29 @@ const SignUp = () => {
             })
             .catch(error => {
                 console.error('Error:', error);
-            }
-
-            );
-
+            });
     };
-
-    const SendEmail = () => {
-        const to = email;
+    
+    // Modify SendEmail to accept email as a parameter
+    const SendEmail = (email) => {
         const subject = "Login Registration";
-        api
-            .post('/commonApi/sendUseremailSignUp', { to, subject })
+    
+        api.post('http://43.228.126.245:3005/commonApi/sendTamizhyUseremail', { to: email, subject })
             .then(response => {
                 if (response.status === 200) {
                     Alert.alert('You have successfully registered');
                     setTimeout(() => {
-                        navigation.navigate(StackNav.Login)
+                        navigation.navigate(StackNav.Login);
                     }, 500);
                 } else {
                     console.error('Error');
                 }
             })
-    }
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    };
+    
     // Icons
     const EmailIcon = () => {
         return <Ionicons name="mail" size={moderateScale(20)} color={'black'} />;
@@ -370,7 +370,8 @@ const SignUp = () => {
                                 color={isSubmitDisabled && colors.white}
                                 containerStyle={styles.signBtnContainer}
                                 onPress={(event) => {
-                                    Insert(event)
+                                    Insert(event);
+                                    SendEmail();
                                 }
                                 }
                                 bgColor={isSubmitDisabled ? colors.primary6 : colors.primary6}
