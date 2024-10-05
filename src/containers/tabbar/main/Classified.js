@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native'; // Import navigation h
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Picker } from '@react-native-picker/picker';
 import EButton from '../../../components/common/EButton';
+import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
 
 const ClassifiedPage = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -24,7 +25,6 @@ const ClassifiedPage = () => {
     const [locationFilter, setLocationFilter] = useState('ALL');
     const [valuelistLocation, setValuelistLocation] = useState([]);
   
-
     const [dropdownVisible, setDropdownVisible] = useState(false); // Dropdown visibility state
     const [isFormVisible, setIsFormVisible] = useState(false);
 
@@ -51,9 +51,20 @@ const ClassifiedPage = () => {
             });
     }, []);
 
+    useFocusEffect(
+        React.useCallback(() => {
+            setSelectedCategory(null); // Reset the selected category when the screen is focused
+            setFilteredItems(items);
+        }, [])
+    );
+
     const handleCategorySelect = (category) => {
         setSelectedCategory(category.category_title);
-        setFilteredItems(items.filter(item => item.category_title === category.category_title));
+        if (category.category_title) {
+            setFilteredItems(items.filter(item => item.category_title === category.category_title));
+        } else {
+            setFilteredItems(items); // Reset to all items if no category is selected
+        }
         setDropdownVisible(false);
     };
     

@@ -556,6 +556,8 @@ rightSection: {
   paddingLeft: 10,
   fontFamily: 'Gilroy-Medium',
   paddingBottom: 20,
+  flex: 1,  // Ensure it takes the available space
+  flexShrink: 1,
 },
 title: {
   fontSize: 14,
@@ -581,7 +583,6 @@ description: {
   color: '#8694B2',
   marginBottom: 5,
   fontFamily: 'Gilroy-Light',
-  width:'65%',
 },
 mobile: {
   fontSize: 12,
