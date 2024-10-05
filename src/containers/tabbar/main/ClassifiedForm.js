@@ -1,8 +1,8 @@
-import React, {  createRef,useState,useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, ScrollView, Button ,Image, Alert} from 'react-native';
-import {useSelector} from 'react-redux';
+import React, { createRef, useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, ScrollView, Button, Image, Alert, ActivityIndicator } from 'react-native';
+import { useSelector } from 'react-redux';
 import images from '../../../assets/images';
-import {moderateScale} from '../../../common/constants';
+import { moderateScale } from '../../../common/constants';
 import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -19,6 +19,7 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
     const [description, setDescription] = useState('');
     const [media, setMedia] = useState([]);
     const [selectImage, setSelectImage] = useState([]);
+    const [loading, setLoading] = useState(false); // Add loading state
     const colors = useSelector(state => state.theme.theme);
     const [regionFilter, setRegionFilter] = useState('ALL');
     const [valuelistRegion, setValuelistRegion] = useState([]);
@@ -80,13 +81,15 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
       
 
       const getClose = () => {
-        setCategoryFilter('ALL')
-        setRegionFilter('ALL')
-        setLocationFilter('ALL')
-        setTitle('')
-        setDescription('')
-        setMobile('')
-        onClose()
+        setCategoryFilter('ALL');
+        setRegionFilter('ALL');
+        setLocationFilter('ALL');
+        setTitle('');
+        setDescription('');
+        setMobile('');
+        setSelectImage([]);
+        setLoading(false); // Reset the loading state
+        onClose();
       };
 
       const getUser = async () => {
@@ -170,6 +173,8 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
         Alert.alert("Please enter the mobile");
         return;
       }
+
+      setLoading(true);
     
       try {
         const classifiedData = {
@@ -233,22 +238,23 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
             console.log("Media Upload Response:", mediaJson);
     
             if (mediaJson.success) {
-              Alert.alert("Classified and media uploaded successfully");
+              Alert.alert("Submission Successful", "Your post has been submitted! Please note that all submissions will be reviewed and approved by our admin.");
             } else {
-              Alert.alert("Classified created, but failed to upload media");
+              Alert.alert("Submission Successful, but failed to upload media");
             }
           } catch (error) {
             console.log("Error uploading media:", error);
             Alert.alert("Error uploading media. Please try again.");
           }
         } else {
-          Alert.alert("Classified created successfully, no media uploaded.");
+          Alert.alert("Submission Successful", "Your post has been submitted! Please note that all submissions will be reviewed and approved by our admin.");
         }
-    
+        setLoading(false);
         getClose();
       } catch (error) {
         console.log("Error:", error);
         Alert.alert("Error occurred. Please try again.");
+        setLoading(false);
       }
     };
     
@@ -307,29 +313,48 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
                     placeholderTextColor='#8694B2'
                     multiline
                 />
-                <TextInput style={[styles.input, { height: 45, color:'#8694B2', }]} value={mobile} onChangeText={setMobile} placeholderTextColor='#8694B2' placeholder="Mobile" />                             
+                <TextInput
+                  style={[styles.input, { height: 45, color: '#8694B2' }]}
+                  value={mobile}
+                  onChangeText={(text) => {
+                    // Allow only 9 digits
+                    if (text.length <= 9 && /^\d*$/.test(text)) {
+                      setMobile(text);
+                    }
+                  }}
+                  placeholderTextColor='#8694B2'
+                  placeholder="Mobile"
+                  keyboardType="numeric"
+                />                             
                 <View style={styles.sectionContainer}>
-  {/* Media Upload Heading */}
-  <Text style={styles.sectionHeading}>Media Upload</Text>
+                  {/* Media Upload Heading */}
+                  <Text style={styles.sectionHeading}>Media Upload</Text>
 
-  {/* Image Upload Box */}
-  <TouchableOpacity onPress={onPressProfilePic} style={styles.mediaUpload}>
-    <Text style={styles.uploadText}>Choose your images file here</Text>
-    <Text style={styles.uploadLimitText}>Maximum upload limit is 5</Text>
-  </TouchableOpacity>
+                  {/* Image Upload Box */}
+                  <TouchableOpacity onPress={onPressProfilePic} style={styles.mediaUpload}>
+                  <Image 
+                      source={require('../../../assets/images/upload.png')} // Add your upload icon path
+                      style={styles.uploadIcon} 
+                  />
+                    <Text style={styles.uploadText}>Choose your images file here</Text>
+                    <Text style={styles.uploadLimitText}>Maximum upload limit is 5</Text>
+                  </TouchableOpacity>
 
-                <View style={styles.imageContainer}>
-  {Array.isArray(selectImage) && selectImage.map((image, index) => (
-    <Image
-      key={index}
-      source={{ uri: image.path }}
-      style={styles.userImageStyle}
-    />
-  ))}
-</View>
-</View> 
+                  <View style={styles.imageContainer}>
+                    {Array.isArray(selectImage) && selectImage.map((image, index) => (
+                      <Image
+                        key={index}
+                        source={{ uri: image.path }}
+                        style={styles.userImageStyle}
+                      />
+                    ))}
+                  </View>
+                </View> 
 
                 <ProfilePicture onPressCamera={onPressCamera} onPressGallery={onPressGallery} SheetRef={ProfilePictureSheetRef} />
+                {loading ? (
+                  <ActivityIndicator size="large" color="#399AF4" />
+                ) : (
                 <View style={styles.btnContainer}>
                     <EButton title="Update" onPress={onPressUpdate} containerStyle={styles.submitBtn}/>
 
@@ -338,6 +363,7 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
                       <Text style={styles.closeModalText}>Close</Text>
                     </TouchableOpacity>
                 </View>
+                )}
             </ScrollView>
         </Modal>
     );
@@ -359,14 +385,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   mediaUpload: {
-    padding: 15,
-    backgroundColor: '#F1F1F1',
-    borderRadius: 5,
-    borderWidth: 1,
+    padding: 10,
+    backgroundColor: '#F0F7FF',
+    borderRadius: 10,
+    borderWidth: 0.5,
     borderColor: '#8694B2',
     alignItems: 'center',
     marginBottom: 16,
-    height: 150, // Makes it a square box
+    height: 130, // Makes it a square box
     justifyContent: 'center',
   },
   uploadText: {
@@ -403,11 +429,12 @@ const styles = StyleSheet.create({
         color:'#8694B2',
       },
     input: {
-        borderWidth: 1,
+        borderWidth: 0.5,
         borderColor: '#8694B2',
         padding: 10,
         marginBottom: 16,
         borderRadius: 5,
+        fontFamily: 'Gilroy-Medium',
     },
   
     pickerContainer: {

@@ -581,6 +581,7 @@ description: {
   color: '#8694B2',
   marginBottom: 5,
   fontFamily: 'Gilroy-Light',
+  width:'65%',
 },
 mobile: {
   fontSize: 12,
