@@ -57,7 +57,8 @@ const ProfileScreen = () => {
         />
         <Text style={localStyles.name}>{user && user.first_name ? `Welcome ${user.first_name}` : 'Loading...'}</Text>
         <Text style={localStyles.email}>{user && user.email ? `${user.email}` : 'Loading...'}</Text>
-        <TouchableOpacity style={localStyles.editButton}>
+        <TouchableOpacity style={localStyles.editButton} onPress={() => navigation.navigate('EditProfile', { contactId: user?.contact_id })}
+        >
           <Text style={localStyles.editText}>Edit Profile</Text>
         </TouchableOpacity>
       </View>
@@ -67,13 +68,19 @@ const ProfileScreen = () => {
         <TouchableOpacity style={localStyles.option}>
           <Text style={localStyles.optionText}>Forgot password</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={localStyles.option}>
+        <TouchableOpacity style={localStyles.option}  onPress={() => navigation.navigate('ClassifiedHistory')}>
           <Text style={localStyles.optionText}>Classified History</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={localStyles.option}>
+        <TouchableOpacity 
+          style={localStyles.option}
+          onPress={() => navigation.navigate('AboutScreen')}
+        >
           <Text style={localStyles.optionText}>About</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={localStyles.option}>
+        
+        <TouchableOpacity style={localStyles.option}
+                  onPress={() => navigation.navigate('PrivacyPolicy')}
+>
           <Text style={localStyles.optionText}>Privacy Policy</Text>
         </TouchableOpacity>
       </View>

@@ -18,10 +18,14 @@ export const TabNav = {
 export const StackNav = {
   Auth: 'Auth',
   TabBar: 'TabBar',
+  ClassifiedHistory: 'ClassifiedHistory',
+
   Splash: 'Splash',
   ProductDetail:'ProductDetail',
-
+  AboutScreen:'AboutScreen',
+  PrivacyPolicy:'PrivacyPolicy',
   Login: 'Login',
+  EditProfile: 'EditProfile',
   SignUp:'SignUp',
   ForgotPass:'ForgotPass',
 

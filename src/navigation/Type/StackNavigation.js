@@ -39,6 +39,10 @@ export default function StackNavigation() {
             <Stack.Screen name={StackNav.TabBar} component={StackRoute.TabBar} />
             <Stack.Screen name={StackNav.Login} component={StackRoute.Login} />
             <Stack.Screen name={StackNav.ProductDetail} component={StackRoute.ProductDetail}  />
+            <Stack.Screen name={StackNav.AboutScreen} component={StackRoute.AboutScreen}  />
+            <Stack.Screen name={StackNav.PrivacyPolicy} component={StackRoute.PrivacyPolicy}  />
+            <Stack.Screen name={StackNav.EditProfile} component={StackRoute.EditProfile}  />
+            <Stack.Screen name={StackNav.ClassifiedHistory} component={StackRoute.ClassifiedHistory}  />
 
                     </>)}
      

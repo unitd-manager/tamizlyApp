@@ -1,6 +1,11 @@
 // Tab Routes
 import MainHome from '../containers/tabbar/main/HomeTab';
 import Classified from '../containers/tabbar/main/Classified';
+import ClassifiedHistory from '../containers/tabbar/main/ClassifiedHistory';
+
+import AboutScreen from '../containers/tabbar/main/AboutScreen';
+import PrivacyPolicy from '../containers/tabbar/main/PrivacyPolicy';
+import EditProfile from '../containers/auth/EditProfile';
 import ProductDetail from '../containers/tabbar/main/ProductDetail';
 import TaskTab from '../containers/tabbar/taskList/TaskTab';
 import Feed from '../containers/tabbar/main/Feed';
@@ -22,6 +27,7 @@ import HomeListCard from '../containers/tabbar/HomeListCard';
 export const TabRoute = {
   MainHome,
   Classified,
+
   Feed,
   TaskTab,
   HomeListCard,
@@ -34,8 +40,11 @@ export const StackRoute = {
   WelcomeScreen,
   OnBoarding,
   Login,
+  ClassifiedHistory,
+  EditProfile,
   ProductDetail,
-
+AboutScreen,
+PrivacyPolicy,
   SignUp,
   ForgotPass,
   TabBar,
