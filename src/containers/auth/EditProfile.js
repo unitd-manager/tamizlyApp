@@ -171,7 +171,7 @@ const SignUp = () => {
                 if (response.status === 200) {
                     Toast.show({
                         type: 'success',
-                        text1: 'You have successfully updated',
+                        text1: 'Profile updated successfully',
                     });
                     
                     // Call the SendEmail function and pass the email from registerData
@@ -290,7 +290,7 @@ const SignUp = () => {
                 <View style={styles.mainContainer}>
                     <View style={styles.header}>
                     <TouchableOpacity onPress={() =>  navigation.goBack()} style={styles.iconContainer}>
-                    <Icon name="arrow-left" size={24} color="black" />
+                    <Icon name="arrow-left" size={24} color="white" />
                 </TouchableOpacity>
                     </View>
 
@@ -386,14 +386,17 @@ const styles = StyleSheet.create({
       },
       cartItemQuantity: {
         fontSize: 16,
-        color: '#FF9800',
-        marginLeft: 18,
+        color: '#1E90FF',
+        marginLeft: 30,
         marginTop: 10,
-      },
+        fontFamily: 'Gilroy-Regular',
+        paddingBottom:5,
+    },
       iconContainer: {
         position: 'absolute',
         left: 0,
-        paddingLeft: 15,
+        paddingLeft: 30,
+        paddingTop:10,
     },
     backgroundImage: {
         flex: 1,
@@ -431,7 +434,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         color: '#000',
         fontSize:30,       
-      },
+    },
       enterDetailsText: {
         textAlign: 'center',
         marginBottom: 20,
@@ -471,12 +474,11 @@ const styles = StyleSheet.create({
     },
     formContainer: {
         paddingHorizontal: 15,
-        paddingVertical: 10,
         width: '100%',
         paddingBottom:50,
+        paddingTop:30,
         backgroundColor: '#FFF',
-        borderRadius: 20,
-       
+        borderRadius: 20,       
     },
     elevation:{
         backgroundColor: '#93c5f3',  // Use a darker color for a darker shadow

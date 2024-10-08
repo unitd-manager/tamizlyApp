@@ -12,7 +12,6 @@ import EText from '../../../components/common/EText';
 import Video, {VideoRef} from 'react-native-video';
 import { AudioPlayer } from './AudioPlayer';
 
-
 const { width: screenWidth } = Dimensions.get('window');  // Get screen width
 const VideoPlayer = ({ videoUri, visible, onClose }) => {
   const [paused, setPaused] = useState(true); // Control play/pause state
