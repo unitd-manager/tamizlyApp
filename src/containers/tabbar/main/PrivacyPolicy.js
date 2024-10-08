@@ -54,22 +54,25 @@ const AboutScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 30,
     backgroundColor: '#fff',
+    paddingTop:50,
   },
   title: {
     fontSize: 22,
-    fontWeight: 'bold',
+    fontFamily: 'Gilroy-Bold',
     marginBottom: 10,
   },
   description: {
     fontSize: 16,
     color: '#333',
-  },
+    fontFamily: 'Gilroy-Regular',
+    lineHeight:20,
+},
   iconContainer: {
     position: 'absolute',
     left: 0,
-    paddingLeft: 15,
+    paddingLeft: 30,
   },
   errorText: {
     color: 'red',
