@@ -3,6 +3,8 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Dimensions
 import Icon from 'react-native-vector-icons/FontAwesome'; // Assuming you're using vector icons
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import EButton from '../../../components/common/EButton';
+import { TabNav } from '../../../navigation/NavigationKeys';
+
 import ImageViewing from 'react-native-image-viewing';
 
 const { width: screenWidth } = Dimensions.get('window'); // Get screen width dynamically
@@ -53,7 +55,7 @@ const ProductDetails = ({ route, navigation }) => {
         <View style={styles.container}>
             {/* Header Section */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconContainer}>
+                <TouchableOpacity onPress={() =>  navigation.navigate(TabNav.Classified)} style={styles.iconContainer}>
                     <Icon name="arrow-left" size={24} color="black" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Product Details</Text>

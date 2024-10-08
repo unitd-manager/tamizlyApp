@@ -3,6 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, Flat
 import SearchComponent from '../../../components/homeComponent/SearchComponent';
 import api from '../../../api/api';  // Ensure this is your correct API import
 import ClassifiedForm from './ClassifiedForm'; // Assuming ClassifiedForm is in the same directory
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { useNavigation } from '@react-navigation/native'; // Import navigation hook
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Picker } from '@react-native-picker/picker';
@@ -10,6 +12,8 @@ import EButton from '../../../components/common/EButton';
 import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
 
 const ClassifiedPage = () => {
+    const [user, setUser] = useState(null);
+
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -67,28 +71,45 @@ const ClassifiedPage = () => {
         }
         setDropdownVisible(false);
     };
+    const getUser = async () => {
+        try {
+          let userData = await AsyncStorage.getItem('USER');
+          if (userData) {
+            setUser(JSON.parse(userData));
+          }
+        } catch (error) {
+          console.error("Failed to load user data", error);
+        }
+      };
     
+      useEffect(() => {
+        getUser();
+      }, []);
+      const contactId = user?.[0]?.contact_id || null;
+      console.log("ddswdf",contactId)
 
  // Fetch classified items from API
  useEffect(() => {
-    setLoading(true);
-    api.get('classifiedItemsEndpoint.php') // Replace with your API endpoint for fetching classified items
-        .then(response => {
-            // console.log('API Response:', response);
-            if (response.data && response.data.data) {
-                setItems(response.data.data);  // Assuming the API returns items in 'data.items'
-                setFilteredItems(response.data.data); // Initially show all items
-            } else {
-                setError('Invalid response structure for classified items.');
-            }
-            setLoading(false);
-        })
-        .catch(error => {
-            console.error('There was an error fetching the classified items!', error);
-            setError('There was an error fetching the classified items!');
-            setLoading(false);
-        });
-}, []);
+    if (contactId) {
+        setLoading(true);
+        api.post('classifiedhistory.php', { contact_id: contactId })
+            .then(response => {
+                if (response.data && response.data.data) {
+                    setItems(response.data.data[0]);  // Adjust based on actual API structure
+                    setFilteredItems(response.data.data);
+                } else {
+                    setError('Invalid response structure for classified items.');
+                }
+                setLoading(false);
+            })
+            .catch(error => {
+                setError('There was an error fetching the classified items!');
+                setLoading(false);
+            });
+    }
+}, [contactId]); // Trigger only when contactId is available
+ 
+console.log("dwddf",items)
 
 const getValuelistRegion = () => {
     api
@@ -187,31 +208,6 @@ const getValuelistRegion = () => {
     return (
         <View style={styles.container}>
            
-
-            {/* Dropdown Modal */}
-            <Modal visible={dropdownVisible} transparent animationType="slide">
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContainer}>
-                        <ScrollView>
-                            {categories.map((category, index) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    style={styles.categoryItem}
-                                    onPress={() => handleCategorySelect(category)}
-                                >
-                                    <Text style={styles.categoryItemText}>{category.category_title}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
-                        <TouchableOpacity
-                            style={styles.closeButton}
-                            onPress={() => setDropdownVisible(false)} // Close modal on button press
-                        >
-                            <Text>Close</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
 
             {/* Items List */}
             {loading ? (

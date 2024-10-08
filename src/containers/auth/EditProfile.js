@@ -1,6 +1,7 @@
 // Library Imports
 import { StyleSheet, TextInput, View, TouchableOpacity, Alert, ImageBackground, Image ,Text,KeyboardAvoidingView, Platform, ScrollView} from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
+import Icon from 'react-native-vector-icons/FontAwesome'; // Assuming you're using vector icons
 import { useSelector } from 'react-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -18,7 +19,7 @@ import EButton from '../../components/common/EButton';
 import api from '../../api/api';
 import { useNavigation } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { TabNav } from '../../navigation/NavigationKeys';
 import EText from '../../components/common/EText';
 import { StackNav } from '../../navigation/NavigationKeys';
 import Toast from 'react-native-toast-message';
@@ -170,13 +171,13 @@ const SignUp = () => {
                 if (response.status === 200) {
                     Toast.show({
                         type: 'success',
-                        text1: 'You have successfully registered',
+                        text1: 'You have successfully updated',
                     });
                     
                     // Call the SendEmail function and pass the email from registerData
     
                     setTimeout(() => {
-                        navigation.navigate(StackNav.EditProfile);
+                        navigation.goBack();
                     }, 500);
                 } else {
                     console.error('Error');
@@ -194,7 +195,7 @@ const SignUp = () => {
         api.post('http://43.228.126.245:3005/commonApi/sendTamizhyUseremail', { to: email, subject })
             .then(response => {
                 if (response.status === 200) {
-                    Alert.alert('You have successfully registered');
+                    Alert.alert('You have successfully updated');
                     setTimeout(() => {
                         navigation.navigate(StackNav.Login);
                     }, 500);
@@ -288,7 +289,9 @@ const SignUp = () => {
         >
                 <View style={styles.mainContainer}>
                     <View style={styles.header}>
-                  
+                    <TouchableOpacity onPress={() =>  navigation.goBack()} style={styles.iconContainer}>
+                    <Icon name="arrow-left" size={24} color="black" />
+                </TouchableOpacity>
                     </View>
 
                     <View style={[styles.logoBg11]}>
@@ -387,6 +390,11 @@ const styles = StyleSheet.create({
         marginLeft: 18,
         marginTop: 10,
       },
+      iconContainer: {
+        position: 'absolute',
+        left: 0,
+        paddingLeft: 15,
+    },
     backgroundImage: {
         flex: 1,
         justifyContent: 'center',

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, FlatList, Image, StyleSheet ,Modal,ScrollView} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, FlatList, Image, StyleSheet ,Modal,ScrollView,RefreshControl} from 'react-native';
 import SearchComponent from '../../../components/homeComponent/SearchComponent';
 import api from '../../../api/api';  // Ensure this is your correct API import
 import ClassifiedForm from './ClassifiedForm'; // Assuming ClassifiedForm is in the same directory
@@ -27,7 +27,29 @@ const ClassifiedPage = () => {
   
     const [dropdownVisible, setDropdownVisible] = useState(false); // Dropdown visibility state
     const [isFormVisible, setIsFormVisible] = useState(false);
-
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = () => {
+        setRefreshing(true); // Start the refreshing animation
+    
+        // Fetch the classified items again
+        api.get('classifiedItemsEndpoint.php') // Replace with your actual API endpoint
+            .then(response => {
+                if (response.data && response.data.data) {
+                    setItems(response.data.data);  // Update the items with the new data
+                    setFilteredItems(response.data.data); // Update the filtered items as well
+                } else {
+                    setError('Invalid response structure for classified items.');
+                }
+            })
+            .catch(error => {
+                console.error('There was an error fetching the classified items!', error);
+                setError('There was an error fetching the classified items!');
+            })
+            .finally(() => {
+                setRefreshing(false); // Stop the refreshing animation after the API call is completed
+            });
+    };
+    
     // Handle form submission
     /*const handleFormSubmit = (newItem) => {
         setItems([...items, newItem]);
@@ -88,8 +110,8 @@ const ClassifiedPage = () => {
             setError('There was an error fetching the classified items!');
             setLoading(false);
         });
+        
 }, []);
-
 const getValuelistRegion = () => {
     api
       .get('selectRegion.php')
@@ -185,6 +207,7 @@ const getValuelistRegion = () => {
       }
 
     return (
+        
         <View style={styles.container}>
             {/* Search and Filter Section */}
             <View style={{ 
@@ -253,6 +276,7 @@ const getValuelistRegion = () => {
             ) : (
                 <View style={{paddingHorizontal: 30, marginBottom:160,}}>
                 <FlatList
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}
                     data={filteredItems}
                     keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
                     numColumns={2}
