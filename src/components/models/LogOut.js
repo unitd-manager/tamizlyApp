@@ -21,40 +21,24 @@ const LogOut = props => {
   const colors = useSelector(state => state.theme.theme);
   const { signOut } = useContext(AuthContext)
 
-  // const onPressLogOut = async () => {
-  //   try {
-  //     await AsyncStorage.clear()
-  //     signOut()
-  //     await removeUserDetail(ACCESS_TOKEN);
-  //     SheetRef?.current?.hide();
-  //     // setTimeout(() => {
-  //     //   navigation.reset({
-  //     //     index: 0,
-  //     //     routes: [{name: StackNav.Auth}],
-  //     //   });
-  //     // }, 500);
-  //     return true;
-  //   } catch (exception) {
-  //     return false;
-  //   }
-  // };
   const onPressLogOut = async () => {
     try {
-      await AsyncStorage.clear();
+      await AsyncStorage.clear()
+      signOut()
       await removeUserDetail(ACCESS_TOKEN);
-      //SheetRef?.current?.hide();
+      SheetRef?.current?.hide();
       
-      // Reset navigation stack after sign out
-      navigation.navigate(StackNav.Login);
-  
-      signOut();
+       navigation.reset({
+          index: 0,
+          routes: [{name: StackNav.Auth}],
+        });
+      
       return true;
     } catch (exception) {
-      console.log("Error logging out:", exception);
       return false;
     }
   };
-  
+
   const onPressCancel = () => SheetRef?.current?.hide();
 
   return (
@@ -107,6 +91,7 @@ export default LogOut
 const localStyles = StyleSheet.create({
   actionSheetContainer: {
     ...styles.ph20,
+    bottom:0,
   },
   btnContainer: {
     ...styles.pv30,

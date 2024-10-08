@@ -66,17 +66,20 @@ const ProfileScreen = () => {
         <RefreshControl refreshing={refreshing} onRefresh={refreshHandler} />
       }
     >
-      <TouchableOpacity
-        onPress={onPressLogOutBtn}
-        style={[
-          localStyles.notificationContainer,
-          { borderColor: colors.dark ? colors.grayScale8 : colors.grayScale3 },
-        ]}
-      >
-        <Text style={localStyles.logout}>Logout</Text>
-      </TouchableOpacity>
+    
+      <View>
+          <TouchableOpacity
+            onPress={onPressLogOutBtn}
+            style={[
+              localStyles.notificationContainer,
+              { borderColor: colors.dark ? colors.grayScale8 : colors.grayScale3 },
+            ]}>
+           
+           <Text style={localStyles.logout}>Logout</Text>
 
-      <LogOut SheetRef={LogOutSheetRef} navigation={navigation} />
+          </TouchableOpacity>
+          <LogOut SheetRef={LogOutSheetRef} navigation={navigation} />
+        </View>
 
       <View style={localStyles.profileSection}>
         <Image
