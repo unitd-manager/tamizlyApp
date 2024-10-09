@@ -93,20 +93,20 @@ const ForgotPass = () => {
     };
 
     const SendEmail = (emailData) => {
+console.log('emailData',emailData.email);
+        const to = emailData.email;
+        const password = emailData.pass_word;
 
-        const to = emailData[0].email;
-        const subject = "Password";
-        const password = emailData[0].pass_word;
-
-        api
-            .post('/commonApi/sendUseremailForgetPassword', {
-                to,
-                subject,
-                password,
-            })
+        api.post('http://43.228.126.245:3005/commonApi/sendTamizhyForgotEmail', 
+            { to,
+              password, })
             .then(response => {
                 if (response.status === 200) {
-                    Alert.alert('Password Sent successfully on your mail.');
+                    Toast.show({
+                        type: 'error',
+                        text1:'Forgot Password',
+                        text2:'Password has been sent to your registered email address. Please enter the password to continue logging in',
+                      });
                     navigation.navigate(StackNav.Login)
                 } else {
                     console.error('Error');
