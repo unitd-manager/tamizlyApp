@@ -35,8 +35,42 @@ const ClassifiedPage = () => {
         api.get('classifiedItemsEndpoint.php') // Replace with your actual API endpoint
             .then(response => {
                 if (response.data && response.data.data) {
-                    setItems(response.data.data);  // Update the items with the new data
-                    setFilteredItems(response.data.data); // Update the filtered items as well
+                    const fetchedItems = response.data.data;
+                    setItems(fetchedItems);  // Update the items with the new data
+    
+                    // Reapply filters after fetching the data
+                    let filteredData = fetchedItems;
+    
+                    // Apply search query filter
+                    if (searchQuery) {
+                        filteredData = filteredData.filter(item =>
+                            item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            item.category_title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            item.description.toLowerCase().includes(searchQuery.toLowerCase())
+                        );
+                    }
+    
+                    // Apply category filter
+                    if (selectedCategory) {
+                        filteredData = filteredData.filter(item => item.category_title === selectedCategory);
+                    }
+    
+                    // Apply region filter
+                    if (regionFilter !== 'ALL') {
+                        filteredData = filteredData.filter(item => item.region?.toLowerCase() === regionFilter.toLowerCase());
+                    }
+    
+                    // Apply location filter
+                    if (locationFilter !== 'ALL') {
+                        filteredData = filteredData.filter(item => item.location?.toLowerCase().includes(locationFilter.toLowerCase()));
+                    }
+    
+                    // Update the filtered items
+                    setFilteredItems(filteredData);
+    
+                    if (filteredData.length === 0) {
+                        Alert.alert('No results found', 'No records match your search criteria.');
+                    }
                 } else {
                     setError('Invalid response structure for classified items.');
                 }
@@ -49,6 +83,7 @@ const ClassifiedPage = () => {
                 setRefreshing(false); // Stop the refreshing animation after the API call is completed
             });
     };
+    
     
     // Handle form submission
     /*const handleFormSubmit = (newItem) => {
@@ -92,26 +127,36 @@ const ClassifiedPage = () => {
     
 
  // Fetch classified items from API
- useEffect(() => {
+ useFocusEffect(
+    React.useCallback(() => {
+        setSelectedCategory(null);
+        fetchClassifiedItems(); // Fetch the items again when screen is focused
+    }, [])
+);
+
+const fetchClassifiedItems = () => {
     setLoading(true);
-    api.get('classifiedItemsEndpoint.php') // Replace with your API endpoint for fetching classified items
+    api.get('classifiedItemsEndpoint.php')
         .then(response => {
-            // console.log('API Response:', response);
             if (response.data && response.data.data) {
-                setItems(response.data.data);  // Assuming the API returns items in 'data.items'
-                setFilteredItems(response.data.data); // Initially show all items
+                setItems(response.data.data);
+                setFilteredItems(response.data.data); // Show all items initially
             } else {
                 setError('Invalid response structure for classified items.');
             }
             setLoading(false);
         })
         .catch(error => {
-            console.error('There was an error fetching the classified items!', error);
+            console.error('Error fetching classified items:', error);
             setError('There was an error fetching the classified items!');
             setLoading(false);
         });
-        
+};
+
+useEffect(() => {
+    fetchClassifiedItems(); // Fetch items when the component mounts
 }, []);
+
 const getValuelistRegion = () => {
     api
       .get('selectRegion.php')
