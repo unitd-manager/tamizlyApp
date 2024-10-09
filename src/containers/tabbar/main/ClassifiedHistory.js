@@ -207,8 +207,13 @@ const getValuelistRegion = () => {
 
     return (
         <View style={styles.container}>
-           
-
+              <View style={styles.header}>
+                <TouchableOpacity onPress={() =>  navigation.popToTop()} style={styles.iconContainer}>
+                    <Icon name="arrow-left" size={24} color="black" />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Product Details</Text>
+            </View>
+ 
             {/* Items List */}
             {loading ? (
                 <Text>Loading...</Text>
@@ -489,6 +494,25 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: 'Gilroy-Medium',
       },
+      header: {
+        fontFamily: 'Gilroy-Medium',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 20,
+        position: 'relative',
+    },
+    iconContainer: {
+        position: 'absolute',
+        left: 0,
+        paddingLeft: 15,
+    },
+    headerTitle: {
+        fontSize: 16,
+        textAlign: 'center',
+        fontFamily: 'Gilroy-SemiBold',
+        color: '#242B48',
+    },
                 
     });
 
