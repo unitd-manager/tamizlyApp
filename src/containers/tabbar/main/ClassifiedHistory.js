@@ -6,7 +6,7 @@ import ClassifiedForm from './ClassifiedForm'; // Assuming ClassifiedForm is in 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useNavigation } from '@react-navigation/native'; // Import navigation hook
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { Picker } from '@react-native-picker/picker';
 import EButton from '../../../components/common/EButton';
 import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
@@ -86,7 +86,6 @@ const ClassifiedPage = () => {
         getUser();
       }, []);
       const contactId = user?.[0]?.contact_id || null;
-      console.log("ddswdf",contactId)
 
  // Fetch classified items from API
  useEffect(() => {
@@ -109,8 +108,6 @@ const ClassifiedPage = () => {
     }
 }, [contactId]); // Trigger only when contactId is available
  
-console.log("dwddf",items)
-
 const getValuelistRegion = () => {
     api
       .get('selectRegion.php')
@@ -211,7 +208,7 @@ const getValuelistRegion = () => {
                 <TouchableOpacity onPress={() =>  navigation.popToTop()} style={styles.iconContainer}>
                     <Icon name="arrow-left" size={24} color="black" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Product Details</Text>
+                <Text style={styles.headerTitle}>Classified History</Text>
             </View>
  
             {/* Items List */}
@@ -391,7 +388,7 @@ const styles = StyleSheet.create({
     itemDescription:{
         fontFamily: 'Gilroy-Light',
         fontSize: 12,
-        color:'8694B2',
+        color:'#8694B2',
         marginBottom:10,
     },
     itemPrice: {
@@ -501,11 +498,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginBottom: 20,
         position: 'relative',
+        marginBottom:30,
+        paddingTop:30,
     },
     iconContainer: {
         position: 'absolute',
         left: 0,
-        paddingLeft: 15,
+        paddingLeft: 30,
+        paddingTop:30,
     },
     headerTitle: {
         fontSize: 16,

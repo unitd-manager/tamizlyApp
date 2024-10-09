@@ -10,6 +10,8 @@ import EButton from '../../../components/common/EButton';
 import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
 
 const ClassifiedPage = () => {
+
+    const PAGE_SIZE = 10;
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -24,15 +26,29 @@ const ClassifiedPage = () => {
     const [valuelistRegion, setValuelistRegion] = useState([]);
     const [locationFilter, setLocationFilter] = useState('ALL');
     const [valuelistLocation, setValuelistLocation] = useState([]);
-  
+    const [currentPage, setCurrentPage] = useState(1);
     const [dropdownVisible, setDropdownVisible] = useState(false); // Dropdown visibility state
     const [isFormVisible, setIsFormVisible] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+
+    const loadMoreQuestions = () => {
+        // Check if all questions have been loaded
+        const totalQuestions = filteredItems.length;
+        const totalPossiblePages = Math.ceil(totalQuestions / PAGE_SIZE);
+        if (currentPage < totalPossiblePages) {
+          setCurrentPage(prevPage => prevPage + 1);
+        }
+      };
     const onRefresh = () => {
         setRefreshing(true); // Start the refreshing animation
-    
+            
         // Fetch the classified items again
-        api.get('classifiedItemsEndpoint.php') // Replace with your actual API endpoint
+        api.get('classifiedItemsEndpoint.php', {
+            params: {
+              page: currentPage,
+              pageSize: PAGE_SIZE,
+            },
+          })// Replace with your actual API endpoint
             .then(response => {
                 if (response.data && response.data.data) {
                     const fetchedItems = response.data.data;
@@ -313,12 +329,13 @@ const getValuelistRegion = () => {
             ) : error ? (
                 <Text>{error}</Text>
             ) : (
-                <View style={{paddingHorizontal: 30, marginBottom:160,}}>
+                <View style={{paddingHorizontal: 30, marginBottom:190,}}>
                 <FlatList
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}
-                    data={filteredItems}
+                    data={filteredItems.slice(0, currentPage * PAGE_SIZE)}
                     keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
                     numColumns={2}
+                    onEndReached={loadMoreQuestions}
                     renderItem={({ item }) => {
                         const firstFileName = item.file_names ? item.file_names.split(', ')[0] : '';
 
@@ -347,6 +364,9 @@ const getValuelistRegion = () => {
                         );
                     }}
                 />
+                    <Text style={styles.pageNumberText}>
+                        Page {currentPage} of {Math.ceil(filteredItems.length / PAGE_SIZE)}
+                    </Text>
                 </View>
             )}
 
@@ -492,7 +512,7 @@ const styles = StyleSheet.create({
     itemDescription:{
         fontFamily: 'Gilroy-Light',
         fontSize: 12,
-        color:'8694B2',
+        color:'#8694B2',
         marginBottom:10,
     },
     itemPrice: {
@@ -594,6 +614,12 @@ const styles = StyleSheet.create({
         marginTop: 20,
         fontSize: 16,
         fontFamily: 'Gilroy-Medium',
+      },
+      pageNumberText: {
+        fontSize: 12,
+        color: '#8694B2',
+        fontFamily: 'Gilroy-Medium',
+        paddingTop:10,
       },
                 
     });

@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import {StackNav} from '../../../navigation/NavigationKeys';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import RNRestart from "react-native-restart"
+import RNRestart from 'react-native-restart';
 
 import api from '../../../api/api';
 import AuthContext, { defaultState, reducer, restoreToken } from '../../../navigation/Type/Auth';

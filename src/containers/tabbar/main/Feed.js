@@ -93,11 +93,8 @@ const Post = ({ feedId, name, time, content, images, videos, audios }) => {
     }
   };
 
-
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-
- 
 
   const handleImageLoad = (uri, width, height) => {
     const aspectRatio = height / width;
@@ -339,9 +336,11 @@ const Post = ({ feedId, name, time, content, images, videos, audios }) => {
 };
 
 const App = () => {
+  const PAGE_SIZE = 5;
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const getUser = async () => {
     try {
@@ -358,9 +357,23 @@ const App = () => {
     getUser();
   }, []);
 
+  const loadMoreQuestions = () => {
+    // Check if all questions have been loaded
+    const totalQuestions = posts.length;
+    const totalPossiblePages = Math.ceil(totalQuestions / PAGE_SIZE);
+    if (currentPage < totalPossiblePages) {
+      setCurrentPage(prevPage => prevPage + 1);
+    }
+  };
+
   useEffect(() => {
     setLoading(true);
-    api.get('feedlist.php')  // Replace with the correct endpoint for fetching posts
+    api.get('feedlist.php', {
+      params: {
+        page: currentPage,
+        pageSize: PAGE_SIZE,
+      },
+    })// Replace with the correct endpoint for fetching posts
       .then(response => {
         setPosts(response.data.data); 
         //console.log('video res',response.data.data)
@@ -398,7 +411,8 @@ const App = () => {
       <HomeHeader user={user} />
       
       <FlatList
-        data={posts}
+        data={posts.slice(0, currentPage * PAGE_SIZE)}
+        onEndReached={loadMoreQuestions}
         renderItem={({ item }) => (
           <Post
             feedId={item.feed_id}
@@ -413,6 +427,9 @@ const App = () => {
         keyExtractor={(item) => item.id}
       />
     {/* <AudioPlayer/> */}
+    <Text style={styles.pageNumberText}>
+        Page {currentPage} of {Math.ceil(posts.length / PAGE_SIZE)}
+    </Text>
     </View>
   );
 };
@@ -566,6 +583,13 @@ const styles = StyleSheet.create({
   closeText: {
     color: '#fff',
     fontSize: 18,
+  },
+
+  pageNumberText: {
+    fontSize: 12,
+    color: '#8694B2',
+    fontFamily: 'Gilroy-Medium',
+    paddingTop:10,
   },
 });
 

@@ -142,7 +142,8 @@ const SignUp = () => {
                 if (response.status === 200) {
                     Toast.show({
                         type: 'success',
-                        text1: 'You have successfully registered',
+                        text1: 'Registration Success',
+                        text2: 'A verification link has been sent to your registered email ID. Please verify and login',
                     });
                     
                     // Call the SendEmail function and pass the email from registerData
