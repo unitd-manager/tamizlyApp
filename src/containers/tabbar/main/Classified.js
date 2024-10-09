@@ -108,12 +108,13 @@ const ClassifiedPage = () => {
             });
     }, []);
 
-    useFocusEffect(
+
         React.useCallback(() => {
             setSelectedCategory(null); // Reset the selected category when the screen is focused
             setFilteredItems(items);
-        }, [])
-    );
+            fetchClassifiedItems(); // Fetch the items again when screen is focused
+
+        }, []);
 
     const handleCategorySelect = (category) => {
         setSelectedCategory(category.category_title);
@@ -126,13 +127,6 @@ const ClassifiedPage = () => {
     };
     
 
- // Fetch classified items from API
- useFocusEffect(
-    React.useCallback(() => {
-        setSelectedCategory(null);
-        fetchClassifiedItems(); // Fetch the items again when screen is focused
-    }, [])
-);
 
 const fetchClassifiedItems = () => {
     setLoading(true);

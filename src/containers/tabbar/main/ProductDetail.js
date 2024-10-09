@@ -55,7 +55,7 @@ const ProductDetails = ({ route, navigation }) => {
         <View style={styles.container}>
             {/* Header Section */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() =>  navigation.navigate(TabNav.Classified)} style={styles.iconContainer}>
+                <TouchableOpacity onPress={() =>  navigation.popToTop()} style={styles.iconContainer}>
                     <Icon name="arrow-left" size={24} color="black" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Product Details</Text>

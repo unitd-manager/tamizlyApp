@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import {StackNav} from '../../../navigation/NavigationKeys';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNRestart from "react-native-restart"
+
 import api from '../../../api/api';
 import AuthContext, { defaultState, reducer, restoreToken } from '../../../navigation/Type/Auth';
 import LogOut from '../../../components/models/LogOut';
@@ -73,24 +75,30 @@ const ProfileScreen = () => {
     setRefreshing(false);
   };
 
-  const authContext = useMemo(() => ({
-    signIn: (data) => {
-      setUserData(data);
-      dispatch({ type: 'SIGN_IN', token: data });
-    },
-    signOut: async () => {
-      try {
-        await AsyncStorage.clear();
-        setUserData(null);
-        navigation.navigate(StackNav.Login);
-      } catch (error) {
-        console.error('Error during sign out:', error);
-      }
-    },
-    signUp: (data) => {
-      dispatch({ type: 'SIGN_IN', token: data });
-    },
-  }), []);
+
+  const authContext = React.useMemo(
+    () => ({
+      signIn: data => {
+        if(data){
+          setUserData(data)
+        }
+        dispatch({type: 'SIGN_IN', token: data});
+      },
+      signOut: () => {  
+        AsyncStorage.clear();
+        setUserData(''); 
+        try {
+           RNRestart.Restart(); // Attempt to restart the application
+        } catch (error) {
+          console.error('Error restarting the application:', error);
+        }
+      },
+      signUp: data => {
+        dispatch({type: 'SIGN_IN', token: data});
+      },
+    }),
+    [],
+  );
 
   if (state.isLoading) return null;
 
