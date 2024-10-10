@@ -181,6 +181,25 @@ useEffect(() => {
     fetchClassifiedItems(); // Fetch items when the component mounts
 }, []);
 
+const resetPageState = () => {
+    setSelectedCategory(null);
+    setSearchQuery('');
+    setRegionFilter('ALL');
+    setLocationFilter('ALL');
+    setCurrentPage(1);
+    fetchClassifiedItems(); // Refetch all items
+};
+
+useEffect(() => {
+    // Add event listener for screen focus
+    const unsubscribe = navigation.addListener('focus', () => {
+        resetPageState(); // Reset the state when screen is focused
+    });
+
+    // Clean up the listener when the component unmounts
+    return unsubscribe;
+}, [navigation]);
+
 const getValuelistRegion = () => {
     api
       .get('selectRegion.php')
