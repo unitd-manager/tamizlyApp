@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { Picker } from '@react-native-picker/picker';
 import EButton from '../../../components/common/EButton';
 import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
+import { useCallback } from 'react';
 
 const ClassifiedPage = () => {
 
@@ -99,7 +100,13 @@ const ClassifiedPage = () => {
                 setRefreshing(false); // Stop the refreshing animation after the API call is completed
             });
     };
-    
+    useFocusEffect(
+        useCallback(() => {
+            return () => {
+                setSelectedCategory(''); // Reset category when navigating away
+            };
+        }, [])
+    );
     
     // Handle form submission
     /*const handleFormSubmit = (newItem) => {
@@ -124,6 +131,13 @@ const ClassifiedPage = () => {
             });
     }, []);
 
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('blur', () => {
+            setSelectedCategory(''); // Reset category when navigating away
+        });
+    
+        return unsubscribe;
+    }, [navigation]);
 
         React.useCallback(() => {
             setSelectedCategory(null); // Reset the selected category when the screen is focused
