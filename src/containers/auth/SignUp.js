@@ -165,7 +165,7 @@ const SignUp = () => {
     const SendEmail = (email) => {
         const subject = "Login Registration";
     
-        api.post('http://43.228.126.245:3005/commonApi/sendTamizhyUseremail', { to: email, subject })
+        api.post('https://ncapi.unitdtechnologies.com:3003/commonApi/sendTamizhyUseremail', { to: email, subject })
             .then(response => {
                 if (response.status === 200) {
                     Alert.alert('You have successfully registered');

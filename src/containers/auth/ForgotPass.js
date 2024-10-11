@@ -97,7 +97,7 @@ console.log('emailData',emailData.email);
         const to = emailData.email;
         const password = emailData.pass_word;
 
-        api.post('http://43.228.126.245:3005/commonApi/sendTamizhyForgotEmail', 
+        api.post('https://ncapi.unitdtechnologies.com:3003/commonApi/sendTamizhyForgotEmail', 
             { to,
               password, })
             .then(response => {
