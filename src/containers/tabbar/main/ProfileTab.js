@@ -46,9 +46,12 @@ const ProfileScreen = () => {
   
   useEffect(() => {
     if (selectImage && selectImage.path) {
+      // Only update the profile if an image has been selected
+      onPressUpdate(); 
       ProfilePictureSheetRef?.current?.hide();
     }
   }, [selectImage]);
+  
 
   useFocusEffect(
     React.useCallback(() => {
@@ -128,6 +131,8 @@ const onPressUpdate = async () => {
 
     if (mediaJson.success) {
       Alert.alert("Submission Successful", "Your post has been submitted!");
+      await getUser();  // Refresh user data
+      resetScreen();  
     } else {
       Alert.alert("Submission failed", mediaJson.message || "An unknown error occurred.");
     }
@@ -147,8 +152,7 @@ const onPressCamera = () => {
   })
     .then(image => {
       setSelectImage(image); // Store the image directly
-      onPressUpdate(); // Upload image after selection
-      resetScreen(); // Reset the screen after update
+      // Do not call onPressUpdate() here
     })
     .catch(error => {
       console.error('Camera error:', error);
@@ -164,14 +168,14 @@ const onPressGallery = () => {
   })
     .then(image => {
       setSelectImage(image); // Store the image directly
-      onPressUpdate(); // Upload image after selection
-      resetScreen(); // Reset the screen after update
+      // Do not call onPressUpdate() here
     })
     .catch(error => {
       console.error('Gallery error:', error);
       Alert.alert('Error', 'Failed to select image.');
     });
 };
+
 
 const resetScreen = () => {
   navigation.reset({
