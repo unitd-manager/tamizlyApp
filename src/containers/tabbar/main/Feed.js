@@ -1,5 +1,5 @@
 import React, { useState, useEffect,useRef } from 'react';
-import { View, Text, Image, ActivityIndicator, StyleSheet, FlatList, TouchableOpacity, TouchableWithoutFeedback, Dimensions,Modal } from 'react-native';
+import { View, Text, Image, ActivityIndicator, StyleSheet, FlatList, TouchableOpacity, TouchableWithoutFeedback, Dimensions,Modal,RefreshControl } from 'react-native';
 import HomeHeader from '../../../components/homeComponent/HomeHeader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../../api/api';
@@ -341,6 +341,7 @@ const App = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [refreshing, setRefreshing] = useState(false);
 
   const getUser = async () => {
     try {
@@ -365,6 +366,33 @@ const App = () => {
       setCurrentPage(prevPage => prevPage + 1);
     }
   };
+
+  const onRefresh = () => {
+    setRefreshing(true); // Start the refreshing animation
+        
+    // Fetch the classified items again
+    api.get('feedlist.php', {
+        params: {
+          page: currentPage,
+          pageSize: PAGE_SIZE,
+        },
+      })// Replace with your actual API endpoint
+        .then(response => {
+            if (response.data && response.data.data) {
+              setPosts(response.data.data); 
+
+            } else {
+                setError('Invalid response structure for classified items.');
+            }
+        })
+        .catch(error => {
+            console.error('There was an error fetching the classified items!', error);
+            setError('There was an error fetching the classified items!');
+        })
+        .finally(() => {
+            setRefreshing(false); // Stop the refreshing animation after the API call is completed
+        });
+};
 
   useEffect(() => {
     setLoading(true);
@@ -411,6 +439,7 @@ const App = () => {
       <HomeHeader user={user} />
       
       <FlatList
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}
         data={posts.slice(0, currentPage * PAGE_SIZE)}
         onEndReached={loadMoreQuestions}
         renderItem={({ item }) => (
@@ -424,7 +453,8 @@ const App = () => {
             audios={Array.isArray(item.media_audios) ? item.media_audios : [item.media_audios]}
           />
         )}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => (item && item.feed_id ? item.feed_id.toString() : Math.random().toString())}
+
       />
     {/* <AudioPlayer/> */}
     <Text style={styles.pageNumberText}>
