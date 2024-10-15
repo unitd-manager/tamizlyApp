@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import api from '../../../api/api';
+import HTMLView from 'react-native-htmlview';
 
 const AboutScreen = () => {
   const navigation = useNavigation();
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
+
   const removeHtmlTags = (text) => {
     return text.replace(/<\/?[^>]+(>|$)/g, ""); 
-};
+  };
 
   useEffect(() => {
     api.get('contentAboutus.php')
@@ -33,20 +35,22 @@ const AboutScreen = () => {
         <Icon name="arrow-left" size={24} color="black" />
       </TouchableOpacity>
 
-      {error ? (
-        <Text style={styles.errorText}>{error}</Text>
-      ) : (
-        categories.length > 0 ? (
-          categories.map((category, index) => (
-            <View key={index}>
-              <Text style={styles.title}>{category.title}</Text>
-              <Text style={styles.description}>{removeHtmlTags(category.description)}</Text>
-            </View>
-          ))
+      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        {error ? (
+          <Text style={styles.errorText}>{error}</Text>
         ) : (
-          <Text>Loading...</Text>
-        )
-      )}
+          categories.length > 0 ? (
+            categories.map((category, index) => (
+              <View key={index}>
+                <Text style={styles.title}>{category.title}</Text>
+                <HTMLView stylesheet={htmlStyles} value={category.description} />
+              </View>
+            ))
+          ) : (
+            <Text>Loading...</Text>
+          )
+        )}
+      </ScrollView>
     </View>
   );
 };
@@ -56,18 +60,22 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 30,
     backgroundColor: '#fff',
-    paddingTop:50,
+    paddingTop: 50,
+  },
+  scrollViewContainer: {
+    paddingBottom: 50, // Add some padding for better scrolling experience
   },
   title: {
     fontSize: 22,
     fontFamily: 'Gilroy-Bold',
     marginBottom: 10,
+    color:'#000',
   },
   description: {
     fontSize: 16,
     color: '#333',
     fontFamily: 'Gilroy-Regular',
-    lineHeight:20,
+    lineHeight: 20,
   },
   iconContainer: {
     position: 'absolute',
@@ -77,6 +85,28 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     fontSize: 16,
+  },
+});
+
+const htmlStyles = StyleSheet.create({
+  p: {
+    fontFamily: 'Gilroy-Regular', // Your custom font
+    fontSize: 15,
+    color: '#242B48',
+    marginTop: 20,
+    marginBottom: -80,
+    lineHeight: 20,
+  },
+  h1: {
+    fontFamily: 'Gilroy-Bold', // Custom font for headings
+    fontSize: 20,
+    color: '#242B48',
+  },
+  b: {
+    fontFamily: 'Gilroy-Bold',
+  },
+  strong: {
+    fontFamily: 'Gilroy-Bold',
   },
 });
 
