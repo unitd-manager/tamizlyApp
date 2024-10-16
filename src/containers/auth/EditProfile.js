@@ -122,7 +122,7 @@ const SignUp = () => {
         getUser();
       }, []);
       const contactId = user?.[0]?.contact_id || null;
-      console.log("ddswdf",contactId)
+      //console.log("ddswdf",contactId)
 
     const [contentDetails, setContentDetails] = useState({
         shipping_first_name: '',
@@ -145,7 +145,7 @@ const SignUp = () => {
             })
          
     }, [contactId]);
-    console.log("ddssfwwdf",contentDetails)
+    //console.log("ddssfwwdf",contentDetails)
     const Insert = () => { 
         const contactUser = {
             first_name: contentDetails?.shipping_first_name,
@@ -342,7 +342,7 @@ const SignUp = () => {
               keyboardType="text"
             />
 
-            <Text style={styles.cartItemQuantity}>Password</Text>
+            {/* <Text style={styles.cartItemQuantity}>Password</Text>
             <TextInput
               style={styles.inputContainerStyle}
               value={contentDetails.shipping_password}
@@ -351,7 +351,7 @@ const SignUp = () => {
               }
               color="black"
               keyboardType="text"
-            />
+            /> */}
                 
                        
                           <EButton
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
         flex: 2,
         justifyContent: 'center',
         paddingHorizontal: 150,
-        marginBottom:47,
+        marginBottom:95,
         marginTop:50,
       },
     mainContainer: {

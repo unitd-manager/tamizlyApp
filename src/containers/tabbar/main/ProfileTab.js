@@ -156,7 +156,7 @@ const onPressCamera = () => {
     })
     .catch(error => {
       console.error('Camera error:', error);
-      Alert.alert('Error', 'Failed to open camera.');
+      //Alert.alert('Error', 'Failed to open camera.');
     });
 };
 
@@ -208,7 +208,7 @@ const resetScreen = () => {
         .catch((err) => console.error('Error fetching contact details:', err));
     }
   }, [user]);
-  console.log("efer",contentDetails.file_name)
+  //console.log("efer",contentDetails.file_name)
 
     // Fetch contact details when the user is available
   

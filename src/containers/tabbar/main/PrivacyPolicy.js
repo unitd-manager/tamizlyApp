@@ -30,9 +30,11 @@ const AboutScreen = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconContainer}>
-        <Icon name="arrow-left" size={24} color="black" />
+        <Icon name="arrow-left" size={20} color="black" />
       </TouchableOpacity>
+      </View>
 
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
       {error ? (
@@ -59,7 +61,16 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 30,
     backgroundColor: '#fff',
-    paddingTop:50,
+    paddingTop:10,
+  },
+  header: {
+    fontFamily: 'Gilroy-Medium',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom:30,
+    paddingTop:30,
+    position: 'relative',
   },
   scrollViewContainer: {
     paddingBottom: 50, // Add some padding for better scrolling experience
@@ -79,7 +90,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     position: 'absolute',
     left: 0,
-    paddingLeft: 30,
+    paddingTop: 30,
   },
   errorText: {
     color: 'red',

@@ -140,18 +140,14 @@ const SignUp = () => {
                 }
     
                 if (response.status === 200) {
-                    Toast.show({
-                        type: 'success',
-                        text1: 'Registration Success',
-                        text2: 'A verification link has been sent to your registered email ID. Please verify and login',
-                    });
-                    
-                    // Call the SendEmail function and pass the email from registerData
+                    Alert.alert(
+                        "Registration Success",
+                        "A verification link has been sent to your registered email ID. Please verify and login",
+                        [
+                            { text: "OK", onPress: () => navigation.navigate(StackNav.Login) } // Navigate to login after OK is clicked
+                        ]
+                    );
                     SendEmail(registerData.email);
-    
-                    setTimeout(() => {
-                        navigation.navigate(StackNav.Login);
-                    }, 500);
                 } else {
                     console.error('Error');
                 }
@@ -163,15 +159,14 @@ const SignUp = () => {
     
     // Modify SendEmail to accept email as a parameter
     const SendEmail = (email) => {
-        const subject = "Login Registration";
+        const subject = "Confirm Your Email Address for Tamizhy App";
     
         api.post('https://ncapi.unitdtechnologies.com:3003/commonApi/sendTamizhyUseremail', { to: email, subject })
             .then(response => {
                 if (response.status === 200) {
-                    Alert.alert('You have successfully registered');
-                    setTimeout(() => {
+                    /*setTimeout(() => {
                         navigation.navigate(StackNav.Login);
-                    }, 500);
+                    }, 500);*/
                 } else {
                     console.error('Error');
                 }

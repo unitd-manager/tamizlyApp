@@ -149,10 +149,10 @@ const getValuelistRegion = () => {
         }
     };
 
-    const selectedCategoryData = selectedCategory
-    ? items.filter(item => item.category_title === selectedCategory.title)
-    : items.length > 0
-    ? items.filter(item => item.category_title === items[0].category_title)
+    const selectedCategoryData = items && items.length > 0 
+    ? selectedCategory
+        ? items.filter(item => item.category_title === selectedCategory.title)
+        : items.filter(item => item.category_title === items[0].category_title)
     : [];
 
       // Function to toggle the modal
@@ -206,7 +206,7 @@ const getValuelistRegion = () => {
         <View style={styles.container}>
               <View style={styles.header}>
                 <TouchableOpacity onPress={() =>  navigation.popToTop()} style={styles.iconContainer}>
-                    <Icon name="arrow-left" size={24} color="black" />
+                    <Icon name="arrow-left" size={20} color="black" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Classified History</Text>
             </View>
@@ -218,38 +218,43 @@ const getValuelistRegion = () => {
                 <Text>{error}</Text>
             ) : (
                 <View style={{paddingHorizontal: 30}}>
-                <FlatList
-                    data={filteredItems}
-                    keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
-                    numColumns={2}
-                    renderItem={({ item }) => {
-                        const firstFileName = item.file_names ? item.file_names.split(', ')[0] : '';
+                {filteredItems && filteredItems.length > 0 ? (
+                    <FlatList
+                        data={filteredItems}
+                        keyExtractor={(item) => (item && item.id ? item.id.toString() : Math.random().toString())}
+                        numColumns={2}
+                        renderItem={({ item }) => {
+                            const firstFileName = item.file_names ? item.file_names.split(', ')[0] : '';
 
-                        return (
-                            <TouchableOpacity
-                                style={styles.itemCard}
-                                onPress={() => navigation.navigate('ProductDetail', { item })}
-                            >
-                                <View style={styles.itemImage1}>
-                                    <Image source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${firstFileName}` }} style={styles.itemImage} />
-                                </View>
-                                <Text style={styles.itemCategory}>{item.region}, {item.location}</Text>
-                                <Text style={styles.itemTitle}>
-                                    {item.title.replace(/(<([^>]+)>)/gi, "").length > 30
-                                        ? item.title.replace(/(<([^>]+)>)/gi, "").substring(0, 30) + '...' 
-                                        : item.title.replace(/(<([^>]+)>)/gi, "")
-                                    }
-                                </Text>
-                                <Text style={styles.itemDescription}>
-                                    {item.description.replace(/(<([^>]+)>)/gi, "").length > 40
-                                        ? item.description.replace(/(<([^>]+)>)/gi, "").substring(0, 40) + '...' 
-                                        : item.description.replace(/(<([^>]+)>)/gi, "")
-                                    }
-                                </Text>
-                            </TouchableOpacity>
-                        );
-                    }}
-                />
+                            return (
+                                <TouchableOpacity
+                                    style={styles.itemCard}
+                                    onPress={() => navigation.navigate('ProductDetail', { item })}
+                                >
+                                    <View style={styles.itemImage1}>
+                                        <Image source={{ uri: `http://tamizhy.smartprosoft.com/media/normal/${firstFileName}` }} style={styles.itemImage} />
+                                    </View>
+                                    <Text style={styles.itemCategory}>{item.region}, {item.location}</Text>
+                                    <Text style={styles.itemTitle}>
+                                        {item.title.replace(/(<([^>]+)>)/gi, "").length > 30
+                                            ? item.title.replace(/(<([^>]+)>)/gi, "").substring(0, 30) + '...' 
+                                            : item.title.replace(/(<([^>]+)>)/gi, "")
+                                        }
+                                    </Text>
+                                    <Text style={styles.itemDescription}>
+                                        {item.description.replace(/(<([^>]+)>)/gi, "").length > 40
+                                            ? item.description.replace(/(<([^>]+)>)/gi, "").substring(0, 40) + '...' 
+                                            : item.description.replace(/(<([^>]+)>)/gi, "")
+                                        }
+                                    </Text>
+                                </TouchableOpacity>
+                            );
+                        }}
+                    />
+                ) : (
+                    // Render message when there are no items
+                    <Text>No posts available. You haven't posted anything yet.</Text>
+                )}
                 </View>
             )}
 

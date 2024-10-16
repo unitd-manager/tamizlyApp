@@ -1,5 +1,5 @@
 // Library Imports
-import { StyleSheet, View, TouchableOpacity, Alert, ImageBackground, Image } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Alert, ImageBackground, ActivityIndicator, Image } from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
 import { useSelector } from 'react-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -142,6 +142,9 @@ console.log('emailData',emailData.email);
                             <EText type={'b16'} style={localStyles.welcomeText}>
                                 Forgot Password?
                             </EText>
+                            <EText type={'b16'} style={localStyles.enterDetailsText}>
+                                Enter your details to continue
+                            </EText>
                                 <EInput
                                     label={'Enter your registered email'}
                                     placeholderTextColor={colors.primary5}
@@ -199,25 +202,25 @@ const localStyles = StyleSheet.create({
         justifyContent: 'center'
     },
     signBtnContainer: {
-        width: '88%',
+        width: '92%',
         ...styles.mv20,
         height: 50,
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        marginLeft:20,
+        marginLeft:15,
     },
     inputContainerStyle: {
         height: 50,
         marginBottom: 15,
         borderRadius: 10,
-        borderWidth: 1,
+        borderWidth: 0.4,
         paddingLeft: 15,
-        borderColor: 'red',
-        width: '88%',
-        marginLeft:20,
-        marginRight:20,
-        paddingHorizontal: 15,
+        borderColor: 'white',
+        width: '92%',
+        marginLeft:15,
+        marginRight:15,
+        paddingHorizontal: 5,
         fontFamily: 'Gilroy-Medium',
         },
     backgroundImage: {
@@ -237,6 +240,13 @@ const localStyles = StyleSheet.create({
         alignContent: 'center',
         backgroundColor: 'white',
     },
+    enterDetailsText: {
+        textAlign: 'center',
+        marginBottom: 20,
+        color: '#6c757d',
+        fontSize:13,
+      },
+    
     loginBg: {
         backgroundColor: "#fff",
         ...styles.ph20,
@@ -257,7 +267,7 @@ const localStyles = StyleSheet.create({
     logoBg11:{
         flex: 2,
         justifyContent: 'center',
-        paddingHorizontal: 150,
+        alignItems: 'center',
         marginBottom:47,
         marginTop:120,
     },
@@ -268,7 +278,7 @@ const localStyles = StyleSheet.create({
     },
     welcomeText: {
         textAlign: 'center',
-        marginBottom: 50,
+        marginBottom: 10,
         color: '#000',
         fontSize:30,       
       },
