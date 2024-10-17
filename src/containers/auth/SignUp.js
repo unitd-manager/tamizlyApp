@@ -147,7 +147,9 @@ const SignUp = () => {
                             { text: "OK", onPress: () => navigation.navigate(StackNav.Login) } // Navigate to login after OK is clicked
                         ]
                     );
-                    SendEmail(registerData.email);
+                    SendEmail(registerData.email, registerData.first_name);
+                    //console.log('name', registerData.first_name);
+                    //console.log('email', registerData.email);
                 } else {
                     console.error('Error');
                 }
@@ -158,10 +160,10 @@ const SignUp = () => {
     };
     
     // Modify SendEmail to accept email as a parameter
-    const SendEmail = (email) => {
+    const SendEmail = (email, first_name) => {
         const subject = "Confirm Your Email Address for Tamizhy App";
     
-        api.post('https://ncapi.unitdtechnologies.com:3003/commonApi/sendTamizhyUseremail', { to: email, subject })
+        api.post('https://ncapi.unitdtechnologies.com:3003/commonApi/sendTamizhyUseremail', { to: email, subject, name: first_name })
             .then(response => {
                 if (response.status === 200) {
                     /*setTimeout(() => {
@@ -312,14 +314,13 @@ const SignUp = () => {
                         <EInput
                             label="Phone"
                             placeholderTextColor={colors.primary5}
-                            keyBoardType={'phone-pad'}
                             _value={phone}
                             autoCapitalize={'none'}
                             // insideLeftIcon={() => <FontAwesome name="phone" size={moderateScale(20)} color={'black'} />}
                             toGetTextFieldValue={onChangedPhone}
                             inputContainerStyle={styles.inputContainerStyle}
                             inputBoxStyle={styles.inputBoxStyle}
-                            keyboardType="phone-pad"  // Ensures only numeric keyboard is shown
+                            keyBoardType={'phone-pad'}  // Ensures only numeric keyboard is shown
                             maxLength={9}
                         />
 

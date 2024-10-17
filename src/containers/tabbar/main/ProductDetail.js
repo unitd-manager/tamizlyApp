@@ -111,9 +111,9 @@ const ProductDetails = ({ route, navigation }) => {
                 <Text style={styles.description}>{removeHtmlTags(item.description)}</Text>
 
                 {/* Button container */}
-                <View style={styles.btnContainer}>
+                {/* <View style={styles.btnContainer}>
                     <EButton title="Buy Now" onPress={() => alert('Item purchased!')} containerStyle={styles.buyBtn}/>
-                </View>
+                </View> */}
             </ScrollView>
 
             {images.length > 0 && (
