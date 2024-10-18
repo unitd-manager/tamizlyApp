@@ -27,9 +27,11 @@ const LogOut = props => {
       signOut()
       await removeUserDetail(ACCESS_TOKEN);
       SheetRef?.current?.hide();
-      navigation.navigate(StackNav.Login);
 
-      
+      setTimeout(() => {
+        navigation.navigate(StackNav.Login);
+
+      }, 500);
       return true;
     } catch (exception) {
       return false;

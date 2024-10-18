@@ -220,34 +220,33 @@ const resetScreen = () => {
   };
 
 
-  const authContext = React.useMemo(
-    () => ({
-      signIn: data => {
-        if(data){
-          setUserData(data)
-        }
-        dispatch({type: 'SIGN_IN', token: data});
-      },
-      signOut: () => {  
-        AsyncStorage.clear();
-        setUserData(''); 
-        try {
-           RNRestart.Restart(); // Attempt to restart the application
-        } catch (error) {
-          console.error('Error restarting the application:', error);
-        }
-      },
-      signUp: data => {
-        dispatch({type: 'SIGN_IN', token: data});
-      },
-    }),
-    [],
-  );
+  // const authContext = React.useMemo(
+  //   () => ({
+  //     signIn: data => {
+  //       if(data){
+  //         setUserData(data)
+  //       }
+  //       dispatch({type: 'SIGN_IN', token: data});
+  //     },
+  //     signOut: () => {  
+  //       AsyncStorage.clear();
+  //       setUserData(''); 
+  //       try {
+  //          RNRestart.Restart(); // Attempt to restart the application
+  //       } catch (error) {
+  //         console.error('Error restarting the application:', error);
+  //       }
+  //     },
+  //     signUp: data => {
+  //       dispatch({type: 'SIGN_IN', token: data});
+  //     },
+  //   }),
+  //   [],
+  // );
 
   if (state.isLoading) return null;
 
   return (
-    <AuthContext.Provider value={authContext}>
       <ScrollView
         contentContainerStyle={localStyles.container}
         refreshControl={
@@ -318,7 +317,6 @@ const resetScreen = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </AuthContext.Provider>
   );
 };
 
