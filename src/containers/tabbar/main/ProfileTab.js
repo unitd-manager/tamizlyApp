@@ -1,5 +1,5 @@
 import React, { createRef, useState, useEffect, useReducer, useMemo } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, RefreshControl,Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, RefreshControl,Alert ,ActivityIndicator} from 'react-native';
 import { useSelector } from 'react-redux';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import {StackNav} from '../../../navigation/NavigationKeys';
@@ -253,6 +253,12 @@ const resetScreen = () => {
           <RefreshControl refreshing={refreshing} onRefresh={refreshHandler} />
         }
       >
+         {loading && (
+        <View style={localStyles.loadingContainer}>
+          <ActivityIndicator size="large" color="#399af4" />
+        </View>
+      )}
+
         <View>
           <TouchableOpacity
             onPress={onPressLogOutBtn}
