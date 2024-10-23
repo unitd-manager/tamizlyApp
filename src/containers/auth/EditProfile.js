@@ -334,10 +334,24 @@ const SignUp = () => {
         <Text style={styles.cartItemQuantity}>Phone</Text>
             <TextInput
               style={styles.inputContainerStyle}
-              value={contentDetails.shipping_mobile}
-              onChangeText={text =>
-                setContentDetails({...contentDetails, shipping_mobile: text})
-              }
+              value={`+966 ${contentDetails.shipping_mobile}`}
+            //   onChangeText={text =>
+
+            //     const newText = text.replace("+91", "").trim();
+            //     setContentDetails({...contentDetails, shipping_mobile: text})
+            //   }
+              onChangeText={(text) => {
+                // Only store phone number part excluding the +91
+                let numericValue = text.replace(/[^0-9]/g, '');
+    
+                // Ensure the first three digits are +91 and slice the rest to 9 digits
+                if (numericValue.startsWith('966')) {
+                    numericValue = numericValue.slice(3, 12); // Slice the first '91' and limit to 9 digits
+                } else {
+                    numericValue = numericValue.slice(0, 9);  // If not starting with 91, just limit to 9 digits
+                }
+                setContentDetails({...contentDetails, shipping_mobile: numericValue})
+            }}
               color="black"
               keyboardType="text"
             />

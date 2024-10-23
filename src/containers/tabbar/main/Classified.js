@@ -148,6 +148,7 @@ const ClassifiedPage = () => {
 
     const handleCategorySelect = (category) => {
         setSelectedCategory(category.category_title);
+        setCurrentPage(1);
         if (category.category_title) {
             setFilteredItems(items.filter(item => item.category_title === category.category_title));
         } else {

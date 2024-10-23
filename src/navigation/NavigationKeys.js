@@ -19,7 +19,6 @@ export const StackNav = {
   Auth: 'Auth',
   TabBar: 'TabBar',
   ClassifiedHistory: 'ClassifiedHistory',
-
   Splash: 'Splash',
   ProductDetail:'ProductDetail',
   AboutScreen:'AboutScreen',
@@ -28,7 +27,8 @@ export const StackNav = {
   EditProfile: 'EditProfile',
   SignUp:'SignUp',
   ForgotPass:'ForgotPass',
-
   Language: 'Language',
   Search: 'Search',
+  ChangePassword: 'ChangePassword',
+  OtpVerifyChangePassword: 'OtpVerifyChangePassword',
 };

@@ -43,6 +43,8 @@ export default function StackNavigation() {
             <Stack.Screen name={StackNav.PrivacyPolicy} component={StackRoute.PrivacyPolicy}  />
             <Stack.Screen name={StackNav.EditProfile} component={StackRoute.EditProfile}  />
             <Stack.Screen name={StackNav.ClassifiedHistory} component={StackRoute.ClassifiedHistory}  />
+            <Stack.Screen name={StackNav.ChangePassword} component={StackRoute.ChangePassword}  />
+            <Stack.Screen name={StackNav.OtpVerifyChangePassword} component={StackRoute.OtpVerifyChangePassword}  />
 
                     </>)}
      

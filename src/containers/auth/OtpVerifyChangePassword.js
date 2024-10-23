@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native'
 import { AppFavicon } from '../../assets/svgs';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 // Local Imports
 import strings from '../../i18n/strings';
@@ -19,8 +20,15 @@ import api from '../../api/api';
 import EText from '../../components/common/EText';
 import { StackNav } from '../../navigation/NavigationKeys';
 import Toast from 'react-native-toast-message';
+import EHeader from '../../components/common/EHeader';
 
-const ForgotPass = () => {
+const ForgotPass = ({route}) => {
+
+  const { otp,useremail,newpassword} = route.params;
+
+  console.log('otp',otp)
+  console.log('useremail',useremail)
+  console.log('newpassword',newpassword)
     const navigation = useNavigation()
 
     const colors = useSelector(state => state.theme.theme);
@@ -29,110 +37,48 @@ const ForgotPass = () => {
         // backgroundColor: colors.inputBg,
         borderColor: colors.primary5,
     };
-    const FocusedStyle = {
-        backgroundColor: colors.inputFocusColor,
-        borderColor: colors.primary5,
-    };
 
-    const BlurredIconStyle = colors.primary5;
-    const FocusedIconStyle = colors.primary5;
     const [loading, setLoading] = useState(false);
 
-    const [email, setEmail] = useState('');
-    const [emailError, setEmailError] = useState('');
-    const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
+    const [compareOtp, setOtp] = useState('');
+
     const [emailInputStyle, setEmailInputStyle] = useState(BlurredStyle);
-    const [emailIcon, setEmailIcon] = useState(BlurredIconStyle);
-
-    const onFocusInput = onHighlight => onHighlight(FocusedStyle);
-    const onFocusIcon = onHighlight => onHighlight(FocusedIconStyle);
-    const onBlurInput = onUnHighlight => onUnHighlight(BlurredStyle);
-    const onBlurIcon = onUnHighlight => onUnHighlight(BlurredIconStyle);
-
-    useEffect(() => {
-        if (
-            email.length > 0 &&
-            !emailError
-        ) {
-            setIsSubmitDisabled(false);
-        } else {
-            setIsSubmitDisabled(true);
-        }
-    }, [email, emailError]);
-
+  
     const onChangedEmail = val => {
-        const { msg } = validateEmail(val.trim());
-        setEmail(val.trim());
-        setEmailError(msg);
-    };
-
-    const EmailIcon = () => {
-        return <Ionicons name="mail" size={moderateScale(20)} color={'black'} />;
-    };
-
-    const onFocusEmail = () => {
-        onFocusInput(setEmailInputStyle);
-        onFocusIcon(setEmailIcon);
-    };
-    const onBlurEmail = () => {
-        onBlurInput(setEmailInputStyle);
-        onBlurIcon(setEmailIcon);
+        setOtp(val.trim());
     };
 
     const onPressSignWithPassword = async () => {
-        api.post('forgotPassword.php', {
-            email: email,
-        }).then(async (res) => {
-            SendEmail(res.data.data);
-        }).catch(() => {
-            //Alert.alert('Please verify the email address and try again.')
-            Toast.show({
-                type: 'error',
-                text1:'Please verify the email address and try again',
-              });
-        })
-    };
-
-    const SendEmail = (emailData) => {
-console.log('emailData',emailData.email);
-        setLoading(true);
-        const to = emailData.email;
-        const password = emailData.pass_word;
-
-        api.post('https://ncapi.unitdtechnologies.com:3003/commonApi/sendTamizhyForgotEmail', 
-            { to,
-              password, })
-            .then(response => {
-                if (response.status === 200) {
-                    Toast.show({
-                        type: 'error',
-                        text1:'Forgot Password',
-                        text2:'Password has been sent to your registered email address. Please enter the password to continue logging in',
-                      });
-                      setLoading(false);
-                      navigation.navigate(StackNav.Login)
-                } else {
-                    console.error('Error');
-                    setLoading(false);
-                }
-            });
+        if(otp !== compareOtp){
+          Toast.show({
+            type: 'error',
+            text1:'Otp you have entered is incorrect!',
+          });
+        } else {
+          api.post('updatePassword.php', {
+              password: newpassword,
+              email: useremail,
+          }).then(async (res) => {
+                Toast.show({
+                  type: 'error',
+                  text1:'Your password changed successfully',
+                });
+            }).catch(() => {
+              //Alert.alert('Please verify the email address and try again.')
+              Toast.show({
+                  type: 'error',
+                  text1:'Please check the process',
+                });
+          })
+        }
     };
 
     const onPressSignIn = () => {
-        navigation.navigate(StackNav.Login);
+      navigation.navigate(StackNav.Profile);
     };
-    
-    // if ( loading ) {
-    //     return (
-    //       <View style={{flex:1, justifyContent:'center',alignItems:'center'}}>
-    //         <ActivityIndicator size={"large"} color="#0000ff"  />
-    //       </View>
-    //     )
-    //   }
-    
+
     return (
         <ESafeAreaView style={localStyles.root}>
-            {/* <EHeader isHideBack/> */}
             <KeyBoardAvoidWrapper contentContainerStyle={{ flex: 1 }}>
                 <ImageBackground
                      source={require('../../assets/images/sky.jpg')}
@@ -152,17 +98,14 @@ console.log('emailData',emailData.email);
                         <View style={[localStyles.loginBg, { justifyContent: 'space-between' }]}>                            
                             <View>
                             <EText type={'b16'} style={localStyles.welcomeText}>
-                                Forgot Password?
+                                Enter OTP
                             </EText>
-                            <EText type={'b16'} style={localStyles.enterDetailsText}>
-                                Enter your details to continue
-                            </EText>
+                            {
                                 <EInput
-                                    label={'Enter your registered email'}
+                                    label={'OTP'}
                                     placeholderTextColor={colors.primary5}
-                                    keyBoardType={'email-address'}
-                                    _value={email}
-                                    _errorText={emailError}
+                                    keyBoardType={'default'}
+                                    _value={compareOtp}
                                     errorStyle={colors.primary5}
                                     autoCapitalize={'none'}
                                     //insideLeftIcon={() => <EmailIcon />}
@@ -172,41 +115,34 @@ console.log('emailData',emailData.email);
                                         emailInputStyle,
                                     ]}
                                     inputBoxStyle={[localStyles.inputBoxStyle]}
-                                    _onFocus={onFocusEmail}
-                                    onBlur={onBlurEmail}
-                                />
-                            { loading &&
+                                />}
+                            {/* { loading &&
                                 <View style={{flex:1, justifyContent:'center',alignItems:'center'}}>
                                     <ActivityIndicator size={"large"} color="#0000ff"  />
                                 </View>
-                            }
-
+                            } */}
+                               {
                                 <EButton
-                                    title='Send'
+                                    title='Submit'
                                     type={'S16'}
-                                    color={isSubmitDisabled && colors.white}
                                     containerStyle={localStyles.signBtnContainer}
                                     onPress={onPressSignWithPassword}
-                                    bgColor={isSubmitDisabled && colors.primary6}
                                 />
-
+                                }
                                 <TouchableOpacity
                                     onPress={onPressSignIn}
                                     style={localStyles.signUpContainer}>
                                     <EText
                                         type={'m15'}
                                         color={colors.dark ? colors.grayScale7 : colors.grayScale5}>
-                                        Back to Login
+                                        Back to Home
                                     </EText>
                                 </TouchableOpacity>
                             </View>
                         </View>
                     </View>
                 </ImageBackground>
-
             </KeyBoardAvoidWrapper>
-
-
         </ESafeAreaView>
     );
 };
@@ -302,6 +238,18 @@ const localStyles = StyleSheet.create({
     emailLabel: {
         marginBottom:10,
         marginLeft:3,
-    }
-
+    },
+    header: {
+        fontFamily: 'Gilroy-Medium',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingTop:30,
+        position: 'relative',
+    },
+    iconContainer: {
+        position: 'absolute',
+        left: 30,
+        paddingTop:50,
+    },        
 });

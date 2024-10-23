@@ -172,7 +172,7 @@ const onPressGallery = () => {
     })
     .catch(error => {
       console.error('Gallery error:', error);
-      Alert.alert('Error', 'Failed to select image.');
+      //Alert.alert('Error', 'Failed to select image.');
     });
 };
 
@@ -309,8 +309,8 @@ const resetScreen = () => {
         </View>
 
         <View style={localStyles.optionsContainer}>
-          <TouchableOpacity style={localStyles.option}>
-            <Text style={localStyles.optionText}>Forgot password</Text>
+          <TouchableOpacity style={localStyles.option} onPress={() => navigation.navigate('ChangePassword')}>
+            <Text style={localStyles.optionText}>Change password</Text>
           </TouchableOpacity>
           <TouchableOpacity style={localStyles.option} onPress={() => navigation.navigate('ClassifiedHistory')}>
             <Text style={localStyles.optionText}>Classified History</Text>

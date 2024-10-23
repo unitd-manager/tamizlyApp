@@ -88,10 +88,18 @@ const SignUp = () => {
         setEmailError(msg);
     };
     const onChangedPhone = (value) => {
-        // Ensure only numeric characters are entered
-        const numericValue = value.replace(/[^0-9]/g, '').slice(0, 9);
-        setPhone(numericValue);
-      };
+        // Remove any non-numeric characters (except the first "+91")
+        let numericValue = value.replace(/[^0-9]/g, '');
+    
+        // Ensure the first three digits are +91 and slice the rest to 9 digits
+        if (numericValue.startsWith('966')) {
+            numericValue = numericValue.slice(3, 12); // Slice the first '91' and limit to 9 digits
+        } else {
+            numericValue = numericValue.slice(0, 9);  // If not starting with 91, just limit to 9 digits
+        }
+    
+        setPhone(numericValue);  // Set only the 9-digit phone number
+    };
     const onChangedPassword = val4 => {
         // const {msg} = validatePassword(val.trim());
         setPassword(val4.trim());
@@ -314,7 +322,7 @@ const SignUp = () => {
                         <EInput
                             label="Phone"
                             placeholderTextColor={colors.primary5}
-                            _value={phone}
+                            _value={`+966 ${phone}`}
                             autoCapitalize={'none'}
                             // insideLeftIcon={() => <FontAwesome name="phone" size={moderateScale(20)} color={'black'} />}
                             toGetTextFieldValue={onChangedPhone}

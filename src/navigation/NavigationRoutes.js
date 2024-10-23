@@ -4,6 +4,7 @@ import Classified from '../containers/tabbar/main/Classified';
 import ClassifiedHistory from '../containers/tabbar/main/ClassifiedHistory';
 
 import AboutScreen from '../containers/tabbar/main/AboutScreen';
+import ChangePassword from '../containers/auth/ChangePassword';
 import PrivacyPolicy from '../containers/tabbar/main/PrivacyPolicy';
 import EditProfile from '../containers/auth/EditProfile';
 import ProductDetail from '../containers/tabbar/main/ProductDetail';
@@ -17,6 +18,7 @@ import OnBoarding from '../containers/OnBoarding';
 import Login from '../containers/auth/Login';
 import SignUp from '../containers/auth/SignUp';
 import ForgotPass from '../containers/auth/ForgotPass';
+import OtpVerifyChangePassword from '../containers/auth/OtpVerifyChangePassword';
 
 import TabBar from './Type/TabBarNavigation';
 import Connect from '../containers/auth/Connect';
@@ -43,11 +45,12 @@ export const StackRoute = {
   ClassifiedHistory,
   EditProfile,
   ProductDetail,
-AboutScreen,
-PrivacyPolicy,
+  AboutScreen,
+  PrivacyPolicy,
   SignUp,
   ForgotPass,
   TabBar,
   SelfieWithId,
-  
+  ChangePassword,
+  OtpVerifyChangePassword,
 };

@@ -315,12 +315,21 @@ const ClassifiedForm = ({ visible, onClose, onSubmit }) => {
                 />
                 <TextInput
                   style={[styles.input, { height: 45, color: '#8694B2' }]}
-                  value={mobile}
+                  value={`+966 ${mobile}`}
                   onChangeText={(text) => {
-                    // Allow only 9 digits
-                    if (text.length <= 9 && /^\d*$/.test(text)) {
-                      setMobile(text);
+                    let numericValue = text.replace(/[^0-9]/g, '');
+    
+                    // Ensure the first three digits are +91 and slice the rest to 9 digits
+                    if (numericValue.startsWith('966')) {
+                        numericValue = numericValue.slice(3, 12); // Slice the first '91' and limit to 9 digits
+                    } else {
+                        numericValue = numericValue.slice(0, 9);  // If not starting with 91, just limit to 9 digits
                     }
+                    // Allow only 9 digits
+                    /*if (text.length <= 9 && /^\d*$/.test(text)) {
+                      setMobile(text);
+                    }*/
+                      setMobile(numericValue);
                   }}
                   placeholderTextColor='#8694B2'
                   placeholder="Mobile"
